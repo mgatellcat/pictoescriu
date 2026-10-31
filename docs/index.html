@@ -1416,6 +1416,13 @@ function onEdKey(e){
   if(mod && /^[zZyY]$/.test(e.key)){ e.preventDefault(); e.stopPropagation(); (e.key.toLowerCase() === 'y' || e.shiftKey) ? redo() : undo(); return; }
   if(mod) return;
   if(S.editor.mode === 'edit'){
+    if(e.key === 'Backspace' && S.editor.flow && edInput.value === ''){
+      // Retrocés continu: el text ja és buit (el pictograma s'ha conservat fins ara); un retrocés més elimina el bloc.
+      e.preventDefault(); const id = S.editor.id, at = idxOf(id);
+      pushUndo(); S.editor = null; if(edInput.parentNode) edInput.remove();
+      doc.blocks.splice(at, 1); S.selectedId = null;
+      startCompose(at); scheduleSave(); return;
+    }
     if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); }
     return;
   }
@@ -1429,11 +1436,11 @@ function onEdKey(e){
     if(prev.kind === 'br'){ pushUndo(); doc.blocks.splice(i-1, 1); renderAll(); focusEditor(); scheduleSave(); return; }
     // Retrocés sobre la paraula anterior: s'editen les lletres, el pictograma es conserva.
     doc.blocks.splice(i, 1); S.editor = null;
-    startEdit(prev, true);
+    startEdit(prev, true); S.editor.flow = true;
     if(prev.text){ pushUndo(); S.editPushed = true; prev.text = Array.from(prev.text).slice(0, -1).join(''); edInput.value = prev.text; paintBlock(prev, idxOf(prev.id)); sizeEditor(); schedulePaginate(); updatePanel(true); scheduleSave(); }
     return;
   }
-  if(e.key === 'Delete'){ e.preventDefault(); const nx = doc.blocks[i+1]; if(nx && nx.kind === 'br'){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); } return; }
+  if(e.key === 'Delete'){ e.preventDefault(); const nx = doc.blocks[i+1]; if(nx){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); } return; }
   if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
     e.preventDefault(); const j = i + (e.key === 'ArrowLeft' ? -1 : 1);
     if(j < 0 || j >= doc.blocks.length) return;
@@ -1538,7 +1545,7 @@ document.addEventListener('keydown', e => {
   const isBtn = tg.closest && tg.closest('button');
   const sel = selectedWord();
   if(sel){
-    if(e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); deleteBlock(sel.id); return; }
+    if(e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); const at = idxOf(sel.id); deleteBlock(sel.id); S.selectedId = null; startCompose(at); return; }
     if(e.key === 'Enter' || e.key === 'F2'){ if(isBtn && e.key === 'Enter') return; e.preventDefault(); startEdit(sel); return; }
     if(e.key === 'Escape'){ deselect(); return; }
     if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ e.preventDefault(); moveSel(e.key === 'ArrowLeft' ? -1 : 1); return; }

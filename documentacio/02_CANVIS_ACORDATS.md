@@ -14,6 +14,11 @@ Estat actual: versió 0.5, construïda i provada al xat de claude.ai entre el 29
 - **«Mateixa línia»:** la frase s'escriu en línia i només salta de línia al marge; els pictogrames queden alineats a sota de cada paraula.
 - **NOM / DATA i el peu d'atribució** segueixen l'idioma de la interfície.
 - **Retrocés després d'una paraula acabada:** entra a editar el text d'aquella paraula, sense tocar el pictograma. Si el text i el pictograma deixen de coincidir, el panell ofereix «Cercar «...»».
+- **Tecles d'esborrar (corregit el 31/10/2026, a petició de la mestra):**
+  - **Retrocés** mentre s'escriu: esborra les lletres de la paraula anterior, i el pictograma es conserva mentre hi queden lletres. Quan el text ja és buit, un retrocés més elimina el bloc i es continua amb la paraula d'abans. Abans, en aquest punt, el retrocés no feia res.
+  - **Suprimir** amb el cursor d'escriptura: esborra la paraula o el salt de línia que hi ha a la dreta. Abans només esborrava salts de línia.
+  - **Suprimir o Retrocés amb una paraula seleccionada:** l'esborra i hi deixa el cursor d'escriptura. Ja no se selecciona la paraula anterior, que quedava amb el marc blau ratllat.
+  - Si el text es buida amb doble clic o amb «Editar text», el pictograma es conserva igual que abans (regla 1).
 - **Botó «Amb text»:** mostra o amaga la paraula escrita sobre tots els pictogrames.
 
 ## 3. Cerca a ARASAAC (verificada amb el servei real)

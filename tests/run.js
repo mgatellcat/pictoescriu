@@ -224,6 +224,27 @@ let offline = false; const hits = [];
   B = await blocks(); ok('2 Canviar idioma no modifica el document', B.map(b=>b.text).join(' ')==='La niña come una manzana');
   await page.screenshot({path: OUT + '/s2-castella.png'});
 
+  // Tecles d'esborrar (Retrocés i Suprimir)
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('la nena menja ', {delay:20}); await idle();
+  const txt = () => page.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.text + (b.pictoId ? '*' : '')).join(' '));
+  for(let k = 0; k < 5; k++) await page.keyboard.press('Backspace');
+  ok('Retrocés: esborra lletres i conserva el pictograma amb el text buit', (await txt())==='la* nena* *', await txt());
+  await page.keyboard.press('Backspace');
+  ok('Retrocés: un cop buit, elimina el bloc', (await txt())==='la* nena*', await txt());
+  await page.keyboard.press('Backspace');
+  ok('Retrocés: continua a la paraula anterior', (await txt())==='la* nen*', await txt());
+  await page.keyboard.press('Escape');
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('la nena menja ', {delay:20}); await idle();
+  await clickBlock('nena'); await page.keyboard.press('Delete');
+  const ed = await page.evaluate(() => ({sel:S.selectedId, mode:S.editor && S.editor.mode}));
+  ok('Suprimir amb paraula seleccionada: l\'esborra i no en selecciona cap altra', (await txt())==='la* menja*' && !ed.sel && ed.mode==='compose', (await txt()) + ' ' + JSON.stringify(ed));
+  await page.keyboard.press('Delete');
+  ok('Suprimir amb el cursor: esborra la paraula següent', (await txt())==='la*', await txt());
+  await page.keyboard.press('Control+z');
+  ok('Suprimir es pot desfer', (await txt())==='la* menja*', await txt());
+
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 
   await browser.close();
