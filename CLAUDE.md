@@ -39,8 +39,8 @@ Documentació a `documentacio/`, en aquest ordre:
    - Cerca àmplia: `.../search/{paraula}`. És molt sorollosa («la» → 476 resultats), cal filtrar per paraula clau igual o gairebé igual.
    - Imatges: `https://static.arasaac.org/pictograms/{id}/{id}_500.png` (CORS obert: es poden incrustar al PDF).
    - `keywords[].type`: 1 nom propi, 2 nom comú, 3 verb, 4 descriptiu, 5 contingut social, 6 miscel·lània.
-6. **Atribució obligatòria** (llicència CC BY-NC-SA): Sergio Palao, ARASAAC, Govern d'Aragó, als crèdits i al peu de cada pàgina.
-7. **Privacitat:** a ARASAAC només s'envien les paraules que cal cercar; mai el nom ni la data de la capçalera. Tot es desa localment.
+6. **Atribució obligatòria** (llicència CC BY-NC-SA): Sergio Palao, ARASAAC, Govern d'Aragó, als crèdits i al peu de cada pàgina. Les imatges de Wikimedia Commons hi afegeixen títol, autor i llicència (`footText()`).
+7. **Privacitat:** a ARASAAC només s'envien les paraules que cal cercar, i a Wikimedia Commons (cerca d'imatges de la web) només la paraula que es cerca; mai el nom ni la data de la capçalera. Tot es desa localment.
 8. Les cadenes de la interfície són a l'objecte `I18N` (`ca` i `es`): qualsevol text nou ha de tenir les dues versions.
 9. **No es pot publicar com a artefacte de claude.ai**: aquell entorn bloqueja ARASAAC, la impressió i les descàrregues. Es distribueix com a fitxer HTML o via GitHub Pages.
 

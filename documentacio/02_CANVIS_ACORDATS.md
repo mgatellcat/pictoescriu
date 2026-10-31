@@ -58,12 +58,25 @@ Ordre de cerca, a `findPictos()`:
 - També hi ha «Sense capçalera» i l'opció **«Versió per pintar (blanc i negre)»**.
 - Són dibuixos SVG propis, en mm, generats per `headSVG()`. Al PDF es rasteritzen a 300 ppp i el text NOM/DATA s'hi escriu a sobre en format vectorial.
 
-## 9. Altres
+## 9. Imatges de la web o pròpies (acordat el 31/10/2026)
+- Si una paraula no té pictograma (per exemple, «barça»), o si se'n vol un altre, el panell té l'apartat **«Imatge de la web o pròpia»**, sota «Cercar un altre pictograma». Hi ha tres maneres de posar una imatge:
+  1. **Cercar a la web**, a **Wikimedia Commons**: imatges de lliure ús, que es poden posar dins el PDF. No es fa servir Google Imatges, perquè demana un compte de pagament i no deixa posar les imatges dins el PDF.
+  2. **Pujar una imatge** de l'ordinador.
+  3. **Enganxar una imatge** copiada (botó o Ctrl+V amb la paraula seleccionada).
+- La imatge ocupa el requadre del pictograma, amb el mateix marc de color, la mateixa mida i la mateixa paraula dins el pictograma. El text de la frase no canvia mai.
+- Es converteix en un quadrat de 360 px, sense retallar-la, i es desa dins el projecte (`own` del bloc). Funciona sense connexió i surt igual a la pantalla, al PDF i en imprimir.
+- Triar després un pictograma d'ARASAAC, o prémer «Treure la imatge», torna al pictograma.
+- **Privacitat:** a Wikimedia Commons només s'envia la paraula que es cerca. Mai el nom ni la data.
+- **Crèdits:** les imatges de Wikimedia surten al peu de pàgina, sota el text d'ARASAAC: «Altres imatges: Wikimedia Commons («títol», autor, llicència)». Les imatges pujades o enganxades no porten crèdit: la mestra n'és responsable.
+- Si el document és massa gran per desar-lo automàticament al navegador, surt un avís per desar-lo amb «Desar».
+- La cerca a Wikimedia s'ha provat amb un servei simulat. **Encara cal provar-la amb el servei real.**
+
+## 10. Altres
 - Zoom en una barreta flotant a baix a l'esquerra.
 - Barra superior compacta en tauletes (menys de 1180 px).
 
-## 10. Pendent / idees
+## 11. Pendent / idees
 - **Generador d'activitats de lectoescriptura:** vegeu `03_PROPOSTA_GENERADOR_ACTIVITATS.md` i, **sobretot**, els dubtes de `05_ANALISI_I_DUBTES.md`, que s'han de resoldre amb la mestra abans d'implementar-lo.
 - Convertir-la en PWA instal·lable.
 - Lletra lligada.
-- Fotos pròpies en lloc de pictogrames (pendent de decidir: dubte 2).
+- ~~Fotos pròpies en lloc de pictogrames~~: fet (apartat 9).

@@ -68,7 +68,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 .page{width:210mm;height:297mm;background:#fff;position:relative;flex:none;box-shadow:0 1px 2px rgba(20,30,50,.12),0 6px 20px rgba(20,30,50,.10)}
 .page-inner{position:absolute;inset:15mm;display:flex;flex-direction:column}
 .flow{flex:1;min-height:0;position:relative;display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-end;gap:5mm 0;overflow:hidden;cursor:text}
-.attrib{flex:none;height:6mm;display:flex;align-items:flex-end;justify-content:center;text-align:center;font-size:6.5pt;line-height:1.2;color:#707070}
+.attrib{flex:none;min-height:6mm;white-space:pre-line;display:flex;align-items:flex-end;justify-content:center;text-align:center;font-size:6.5pt;line-height:1.2;color:#707070}
 .pnum{position:absolute;right:15mm;bottom:6mm;font-size:7pt;color:#9aa1ad}
 .hint{position:absolute;left:0;right:0;top:40mm;text-align:center;color:#9AA3B2;font-size:15pt;pointer-events:none}
 
@@ -153,6 +153,8 @@ body.panel-open .workspace{right:var(--panel-w)}
 .danger{color:var(--danger);border-color:#E9B7B3}
 .danger:hover:not(:disabled){background:var(--danger-weak)!important}
 .stack-btns{display:flex;flex-wrap:wrap;gap:6px}
+.alts.web button{position:relative}
+.alts.web button.busy{opacity:.45;cursor:progress}
 .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{flex:1;border:0;border-right:1px solid var(--line);background:#fff;padding:8px 4px;font-size:12.5px;cursor:pointer;color:var(--ink)}
 .seg button:last-child{border-right:0}
@@ -322,6 +324,22 @@ body.panel-open .workspace{right:var(--panel-w)}
     </div>
   </div>
 
+  <div class="sec" id="secOwn">
+    <h3 data-i18n="ownSec"></h3>
+    <label class="msg" for="pWebQ" data-i18n="webLabel"></label>
+    <div class="fld-row">
+      <input class="fld" id="pWebQ" autocomplete="off" spellcheck="false">
+      <button class="btn outline" id="pWebSearch"><span data-icon="globe"></span><span data-i18n="search"></span></button>
+    </div>
+    <div class="msg" id="pWebMsg"></div>
+    <div class="alts web" id="pWeb" hidden></div>
+    <div class="stack-btns">
+      <button class="btn outline" id="pUpload"><span data-icon="upload"></span><span data-i18n="upload"></span></button>
+      <button class="btn outline" id="pPaste"><span data-icon="clipboard-paste"></span><span data-i18n="paste"></span></button>
+      <button class="btn outline" id="pOwnOff" hidden><span data-icon="x"></span><span data-i18n="ownOff"></span></button>
+    </div>
+  </div>
+
   <div class="sec" id="secWord">
     <h3 data-i18n="wordSec"></h3>
     <div class="seg" id="pPos" role="group"><button data-v="none" data-i18n="capNone"></button><button data-v="top" data-i18n="capTop"></button><button data-v="bottom" data-i18n="capBottom"></button></div>
@@ -350,6 +368,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="imgIn" accept="image/*" hidden>
 
 <script>
 /*__JSPDF__*/
@@ -409,9 +428,17 @@ const I18N = {
     pdfAnyway:'Exportar sense aquests pictogrames', pdfDone:'PDF descarregat.', pdfLib:'No s\'ha pogut iniciar el generador de PDF.',
     netToast:'Algunes paraules no han pogut connectar amb ARASAAC. El text es conserva.', retryAll:'Reintentar',
     creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar; mai el nom ni la data.',
+    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar, i a Wikimedia Commons només les paraules que cerquis com a imatge; mai el nom ni la data.',
     attrib:'Pictogrames: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Llicència: CC BY-NC-SA. Propietat: Govern d\'Aragó.',
-    page:'Pàgina {n}', fileBase:'material'
+    page:'Pàgina {n}', fileBase:'material',
+    ownSec:'Imatge de la web o pròpia', webLabel:'Cercar imatges a la web (Wikimedia Commons)', webSearching:'Cercant imatges…',
+    webNone:'No hi ha imatges per a «{q}». Prova una altra paraula o puja una imatge.', webError:'No s\'ha pogut connectar amb Wikimedia Commons. Torna-ho a provar.',
+    webPick:'Tria una imatge:', upload:'Pujar una imatge', paste:'Enganxar una imatge', ownOff:'Treure la imatge',
+    pasteHint:'No hi ha cap imatge copiada. Copia una imatge i, amb la paraula seleccionada, prem Ctrl+V.',
+    ownErr:'No s\'ha pogut carregar aquesta imatge. Prova\'n una altra.', ownAdded:'Imatge afegida.',
+    st_own:'Imatge pròpia (no és d\'ARASAAC). El text no canvia.', st_web:'Imatge de Wikimedia Commons: «{t}», {a} ({l}).',
+    ownAttrib:'Altres imatges: Wikimedia Commons ({list}).', unknownAuthor:'autor desconegut',
+    saveFull:'El document és massa gran per desar-lo automàticament al navegador. Desa\'l amb el botó «Desar».'
   },
   es: {
     new:'Nuevo', open:'Abrir', save:'Guardar', undo:'Deshacer', redo:'Rehacer', pdf:'Exportar PDF', print:'Imprimir', credits:'Créditos', lang:'Idioma',
@@ -453,9 +480,17 @@ const I18N = {
     pdfAnyway:'Exportar sin estos pictogramas', pdfDone:'PDF descargado.', pdfLib:'No se ha podido iniciar el generador de PDF.',
     netToast:'Algunas palabras no han podido conectar con ARASAAC. El texto se conserva.', retryAll:'Reintentar',
     creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar; nunca el nombre ni la fecha.',
+    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar, y a Wikimedia Commons solo las palabras que busques como imagen; nunca el nombre ni la fecha.',
     attrib:'Pictogramas: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Licencia: CC BY-NC-SA. Propiedad: Gobierno de Aragón.',
-    page:'Página {n}', fileBase:'material'
+    page:'Página {n}', fileBase:'material',
+    ownSec:'Imagen de la web o propia', webLabel:'Buscar imágenes en la web (Wikimedia Commons)', webSearching:'Buscando imágenes…',
+    webNone:'No hay imágenes para «{q}». Prueba otra palabra o sube una imagen.', webError:'No se ha podido conectar con Wikimedia Commons. Vuelve a intentarlo.',
+    webPick:'Elige una imagen:', upload:'Subir una imagen', paste:'Pegar una imagen', ownOff:'Quitar la imagen',
+    pasteHint:'No hay ninguna imagen copiada. Copia una imagen y, con la palabra seleccionada, pulsa Ctrl+V.',
+    ownErr:'No se ha podido cargar esta imagen. Prueba con otra.', ownAdded:'Imagen añadida.',
+    st_own:'Imagen propia (no es de ARASAAC). El texto no cambia.', st_web:'Imagen de Wikimedia Commons: «{t}», {a} ({l}).',
+    ownAttrib:'Otras imágenes: Wikimedia Commons ({list}).', unknownAuthor:'autor desconocido',
+    saveFull:'El documento es demasiado grande para guardarlo automáticamente en el navegador. Guárdalo con el botón «Guardar».'
   }
 };
 const CATS = ['persones','verbs','descriptius','substantius','social','misc'];
@@ -476,7 +511,7 @@ const SIZES = [12,14,16,18,20,22,24,28,32,36,40,48,56,64,72];
 /* ================= State ================= */
 const LS = {
   get(k, d){ try{ const v = localStorage.getItem('pictoescriu.'+k); return v===null? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('pictoescriu.'+k, JSON.stringify(v)); }catch(e){} }
+  set(k, v){ try{ localStorage.setItem('pictoescriu.'+k, JSON.stringify(v)); return true; }catch(e){ return false; } }
 };
 const DEF_SETTINGS = {cap:'none', capCase:'upper', font:'roboto', size:20, color:'#000000', bold:false, italic:false, caseMode:null, showText:true, pictoSize:26, fitz:'frame'};
 function newDoc(){ return {header:{name:'', date:'', show:true, style:'classic', bw:false}, settings:{...DEF_SETTINGS}, blocks:[]}; }
@@ -499,6 +534,9 @@ const find = id => doc.blocks.find(b => b.id === id);
 const idxOf = id => doc.blocks.findIndex(b => b.id === id);
 const IMG = (id, s=500) => `https://static.arasaac.org/pictograms/${id}/${id}_${s}.png`;
 const API = 'https://api.arasaac.org/api/pictograms';
+// Imatge pròpia o de la web (b.own = {src:dataURL, from:'commons'|'file'|'paste', title, author, license, page}); té prioritat sobre ARASAAC
+const hasOwn = b => !!(b && b.own && b.own.src) && !b.picOff;
+const showsArasaac = b => !hasOwn(b) && b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch;
 
 function mkWord(text){ return {id:uid(), kind:'word', text, query:'', usedQuery:null, lang:S.lang, pictos:[], idx:0, pictoId:null,
   status:'idle', cat:null, catManual:false, fmt:{}, picOff:false, noSearch:false, searchSeq:0, searchedQuery:null}; }
@@ -634,7 +672,7 @@ function packBlock(b){
   if(b.kind === 'br') return {id:b.id, kind:'br'};
   const st = (b.status === 'loading' || b.status === 'idle' || b.status === 'error') ? 'pending' : b.status;
   return {id:b.id, kind:'word', text:b.text, query:b.query, usedQuery:b.usedQuery, lang:b.lang, pictos:b.pictos, idx:b.idx, pictoId:b.pictoId,
-    status:st, cat:b.cat, catManual:b.catManual, fmt:b.fmt, capText:b.capText, picOff:b.picOff, autoOff:b.autoOff, userPic:b.userPic, noSearch:b.noSearch, searchedQuery:b.searchedQuery};
+    status:st, cat:b.cat, catManual:b.catManual, fmt:b.fmt, capText:b.capText, picOff:b.picOff, autoOff:b.autoOff, userPic:b.userPic, noSearch:b.noSearch, searchedQuery:b.searchedQuery, own:b.own || null};
 }
 function snapshot(){ return {header:{...doc.header}, settings:{...doc.settings}, blocks:doc.blocks.filter(b => !b.composing).map(packBlock)}; }
 function hydrate(o){
@@ -669,7 +707,11 @@ function redo(){
   updateToolbar();
 }
 let saveTimer = null;
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => LS.set('draft', {app:'PictoEscriu', format:1, ...snapshot()}), 700); }
+let saveFullShown = false;
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => {
+  const okSave = LS.set('draft', {app:'PictoEscriu', format:1, ...snapshot()});
+  if(!okSave && !saveFullShown){ saveFullShown = true; toast(t('saveFull'), {kind:'error', timeout:9000}); } else if(okSave) saveFullShown = false;
+}, 700); }
 function projectData(){ return {app:'PictoEscriu', format:1, savedAt:new Date().toISOString(), ...snapshot()}; }
 function fileBase(){
   const n = (doc.header.name || t('fileBase')).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40) || 'material';
@@ -816,7 +858,7 @@ function makePage(i){
   const el = document.createElement('section'); el.className = 'page';
   el.innerHTML = '<div class="page-inner"><div class="flow"></div><footer class="attrib"></footer></div><div class="pnum no-print"></div>';
   const pg = {el, inner:el.firstChild, flow:el.querySelector('.flow'), foot:el.querySelector('.attrib'), num:el.querySelector('.pnum'), count:null};
-  pg.foot.textContent = t('attrib'); pg.num.textContent = t('page', {n:i+1});
+  pg.foot.textContent = footText(); pg.num.textContent = t('page', {n:i+1});
   if(i === 0){ pg.inner.insertBefore(headEl, pg.flow); const h = document.createElement('div'); h.className = 'hint no-print'; pg.hint = h; pg.inner.appendChild(h); h.textContent = t('hint'); }
   stack.appendChild(el); pages.push(pg); return pg;
 }
@@ -838,8 +880,9 @@ function paintBlock(b, i){
     return el;
   }
   const editing = S.editor && S.editor.id === b.id;
-  const noRes = b.status === 'none' && !b.composing && !b.picOff && !b.noSearch;
-  const textOnly = b.picOff || b.noSearch || noRes;
+  const own = hasOwn(b);
+  const noRes = !own && b.status === 'none' && !b.composing && !b.picOff && !b.noSearch;
+  const textOnly = !own && (b.picOff || b.noSearch || noRes);
   const f = eff(b);
   el.className = 'blk' + (b.id === S.selectedId ? ' sel' : '') + (b.composing ? ' composing' : '') + (b.composing && !b.text ? ' empty' : '') + (editing && !b.composing ? ' editing' : '') + (textOnly ? ' textonly' : '') + (noRes ? ' nores' : '');
   el.style.setProperty('--fs', f.size + 'pt');
@@ -852,13 +895,16 @@ function paintBlock(b, i){
   lbl.style.fontFamily = fontStack(f.font);
   lbl.style.fontWeight = f.bold ? '700' : '400'; lbl.style.fontStyle = f.italic && hasItalic(f.font) ? 'italic' : 'normal';
   const realPic = !textOnly && !(b.composing && !b.text);
-  const st = b.imgErr ? 'error' : b.status;
+  const st = own ? 'ok' : b.imgErr ? 'error' : b.status;
   lbl.classList.toggle('hasp', realPic && st === 'ok');
   const ct = realPic && st === 'ok' && f.cap !== 'none' ? capText(b, f) : '';
   pic.className = 'pic ' + (realPic ? 'st-' + st + ' cat-' + (b.cat || 'misc') : 'spacer') + (ct ? ' cap-' + f.cap : '');
   if(ct){ const pt = capSize(ct, f); cap.textContent = ct; cap.style.fontFamily = fontStack(f.font); cap.style.fontSize = pt + 'pt'; }
   else if(cap.textContent) cap.textContent = '';
-  if(realPic && b.status === 'ok' && b.pictoId != null){
+  if(realPic && own){
+    if(img.dataset.base !== 'own:' + b.own.src.length + b.own.src.slice(-40)){ img.dataset.base = 'own:' + b.own.src.length + b.own.src.slice(-40); img.src = b.own.src; }
+    img.hidden = false; img.alt = b.text;
+  } else if(realPic && b.status === 'ok' && b.pictoId != null){
     const src = IMG(b.pictoId); if(img.getAttribute('src') !== src && !(b.imgErr && img.dataset.base === src)){ img.dataset.base = src; img.src = src; }
     img.hidden = !!b.imgErr; img.alt = b.text;
   } else { img.hidden = true; if(img.getAttribute('src')){ img.removeAttribute('src'); img.dataset.base = ''; } }
@@ -896,6 +942,7 @@ function paginate(){
   const hadFocus = document.activeElement === edInput; const pos = edInput.selectionStart;
   S.suppressBlur = true;
   if(!pages.length) makePage(0);
+  const ft = footText(); pages.forEach(pg => { if(pg.foot.textContent !== ft) pg.foot.textContent = ft; });
   const items = doc.blocks.map(b => els.get(b.id));
   const bottom = el => el.offsetTop + el.offsetHeight;
   let start = 0, p = 0;
@@ -1177,15 +1224,15 @@ function deleteBlock(id){
 function cycle(b, d){
   if(!b || b.pictos.length < 2) return;
   mutate(() => {
-    b.idx = (b.idx + d + b.pictos.length) % b.pictos.length; b.pictoId = b.pictos[b.idx].id; b.imgErr = false; b.picOff = false; b.userPic = true;
+    b.idx = (b.idx + d + b.pictos.length) % b.pictos.length; b.pictoId = b.pictos[b.idx].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
     if(!b.catManual) b.cat = categorize(b.pictos[b.idx], b.usedQuery || b.searchedQuery, b.lang, b.text);
   });
 }
-function pickAlt(b, i){ mutate(() => { b.idx = i; b.pictoId = b.pictos[i].id; b.imgErr = false; b.picOff = false; b.userPic = true;
+function pickAlt(b, i){ mutate(() => { b.idx = i; b.pictoId = b.pictos[i].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
   if(!b.catManual) b.cat = categorize(b.pictos[i], b.usedQuery || b.searchedQuery, b.lang, b.text); }); }
 function searchOther(b, q){
   q = lower(q, S.lang); if(!q) return;
-  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; startSearch(b, q); renderAll(); scheduleSave();
+  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; b.own = null; startSearch(b, q); renderAll(); scheduleSave();
 }
 
 /* ================= Toolbar ================= */
@@ -1247,16 +1294,19 @@ function updatePanel(fromTyping){
   const pText = $('#pText'); if(document.activeElement !== pText) pText.value = b.text;
   const pq = $('#pQuery'); if(document.activeElement !== pq) pq.value = b.query || '';
   pq.placeholder = t('searchPh');
-  let st = b.imgErr ? 'imgerr' : b.picOff || b.noSearch ? 'off' : b.status;
+  const own = hasOwn(b);
+  let st = own ? 'own' : b.imgErr ? 'imgerr' : b.picOff || b.noSearch ? 'off' : b.status;
   if(st === 'idle' || st === 'pending') st = 'loading';
   const ghost = st === 'off' && b.picOff && b.status === 'ok' && b.pictos.length > 0 && b.pictoId != null;
   const img = $('#pImg'); const showImg = (st === 'ok' || ghost) && b.pictoId != null;
-  img.hidden = !showImg; img.style.opacity = ghost ? '0.4' : '1'; if(showImg){ const src = IMG(b.pictoId, 300); if(img.getAttribute('src') !== src) img.src = src; }
-  $('#pPrev').style.borderColor = showImg && doc.settings.fitz !== 'off' ? (CAT_COLOR[b.cat] || 'var(--line)') : 'var(--line)';
+  img.hidden = !(showImg || own); img.style.opacity = ghost ? '0.4' : '1';
+  if(own){ if(img.src !== b.own.src) img.src = b.own.src; }
+  else if(showImg){ const src = IMG(b.pictoId, 300); if(img.getAttribute('src') !== src) img.src = src; }
+  $('#pPrev').style.borderColor = (showImg || own) && doc.settings.fitz !== 'off' ? (CAT_COLOR[b.cat] || 'var(--line)') : 'var(--line)';
   const q = b.searchedQuery || b.query || deriveQuery(b.text, S.lang);
   const textQ = deriveQuery(b.text, b.lang || S.lang);
   const changed = !!textQ && st !== 'off' && norm(textQ) !== norm(b.searchedQuery || '') && norm(textQ) !== norm(b.usedQuery || '');
-  let msg = st === 'ok' ? (b.approx ? t('st_approx', {q:b.usedQuery}) : t('st_ok', {q})) : st === 'off' && b.autoOff ? t('st_autooff') : t('st_' + st, {q});
+  let msg = st === 'own' ? ownMsg(b) : st === 'ok' ? (b.approx ? t('st_approx', {q:b.usedQuery}) : t('st_ok', {q})) : st === 'off' && b.autoOff ? t('st_autooff') : t('st_' + st, {q});
   if(changed && st === 'ok') msg += ' ' + t('st_changed');
   const m = $('#pMsg'); m.className = 'msg' + (st === 'error' || st === 'imgerr' || st === 'none' ? ' err' : '');
   m.innerHTML = esc(msg) + (st === 'error' || st === 'imgerr' ? ` <button class="btn outline" id="pRetry" style="height:28px;margin-top:6px">${icon('refresh-cw')}${esc(t('retry'))}</button>` : '');
@@ -1272,7 +1322,8 @@ function updatePanel(fromTyping){
   }
   const byQ = textQ && changed ? t('byTextQ', {q:textQ}) : t('byText');
   $('#pByTextLbl').textContent = byQ; $('#pByText').classList.toggle('hl-search', changed); $('#pByText').disabled = !textQ;
-  const adding = b.picOff || b.noSearch;
+  const adding = b.picOff || (b.noSearch && !own);
+  updateOwnPanel(b);
   $('#pTogglePicLbl').textContent = adding ? t('addPic') : t('removePic');
   $('#pTogglePic').classList.toggle('hl-search', adding);
   const ic = adding ? 'image' : 'image-off'; const icEl = $('#pTogglePicIc'); if(icEl.dataset.k !== ic){ icEl.dataset.k = ic; icEl.innerHTML = icon(ic); }
@@ -1302,7 +1353,8 @@ $('#pSearch').onclick = () => { const b = selectedWord(); if(b) searchOther(b, $
 $('#pQuery').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#pSearch').click(); } });
 $('#pByText').onclick = () => { const b = selectedWord(); if(b) searchOther(b, deriveQuery(b.text, S.lang)); };
 $('#pTogglePic').onclick = () => { const b = selectedWord(); if(!b) return;
-  if(b.picOff || b.noSearch){ if(b.pictos.length && b.status === 'ok'){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; }); }
+  if(b.picOff && b.own && b.own.src){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; }); return; }
+  if(b.picOff || (b.noSearch && !hasOwn(b))){ if(b.pictos.length && b.status === 'ok'){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; }); }
     else { const q = deriveQuery(b.text, S.lang); if(q) searchOther(b, q); } }
   else mutate(() => { b.picOff = true; b.autoOff = false; b.userPic = true; }); };
 $('#pCats').addEventListener('click', e => { const c = e.target.closest('[data-c]'); const b = selectedWord(); if(c && b) mutate(() => { b.cat = c.dataset.c; b.catManual = true; }); });
@@ -1318,6 +1370,106 @@ $('#pWordAll').onclick = () => { const b = selectedWord(); if(!b) return; const 
   toast(t('applyWordAll') + ' ✓'); };
 $('#pClearFmt').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.fmt = {}; }); };
 $('#pDelete').onclick = () => { const b = selectedWord(); if(b) deleteBlock(b.id); };
+
+/* ================= Imatges pròpies i de la web (Wikimedia Commons) ================= */
+const COMMONS = 'https://commons.wikimedia.org/w/api.php';
+const webCache = new Map();
+const stripHtml = h => { const d = document.createElement('div'); d.innerHTML = String(h || ''); return (d.textContent || '').replace(/\s+/g, ' ').trim(); };
+function ownCredit(o){ return `«${o.title}», ${o.author || t('unknownAuthor')}, ${o.license || '?'}`; }
+function footText(){
+  const seen = new Set(), list = [];
+  for(const b of doc.blocks){ if(b.kind === 'word' && hasOwn(b) && b.own.from === 'commons'){ const c = ownCredit(b.own); if(!seen.has(c)){ seen.add(c); list.push(c); } } }
+  return t('attrib') + (list.length ? '\n' + t('ownAttrib', {list:list.join('; ')}) : '');
+}
+function ownMsg(b){ const o = b.own; return o.from === 'commons' ? t('st_web', {t:o.title, a:o.author || t('unknownAuthor'), l:o.license || '?'}) : t('st_own'); }
+// Només s'envia la paraula de cerca; mai el nom ni la data
+async function searchCommons(q){
+  const key = q.toLocaleLowerCase();
+  if(webCache.has(key)) return webCache.get(key);
+  const u = COMMONS + '?' + new URLSearchParams({action:'query', format:'json', origin:'*', generator:'search', gsrnamespace:'6',
+    gsrsearch:q + ' filetype:bitmap|drawing', gsrlimit:'24', prop:'imageinfo', iiprop:'url|mime|extmetadata', iiurlwidth:'400',
+    iiextmetadatafilter:'Artist|LicenseShortName|ObjectName', iiextmetadatalanguage:S.lang});
+  const r = await fetch(u); if(!r.ok) throw new Error('commons ' + r.status);
+  const j = await r.json(); const pagesObj = (j.query && j.query.pages) || {};
+  const list = Object.values(pagesObj).sort((a, b) => (a.index || 0) - (b.index || 0)).map(p => {
+    const ii = p.imageinfo && p.imageinfo[0]; if(!ii || !ii.thumburl || !/^image\/(jpeg|png|gif|webp|svg\+xml)$/.test(ii.mime || '')) return null;
+    const m = ii.extmetadata || {}, v = k => m[k] && m[k].value;
+    const title = stripHtml(v('ObjectName')) || String(p.title || '').replace(/^[^:]+:/, '').replace(/\.[a-z0-9]+$/i, '');
+    return {thumb:ii.thumburl, page:ii.descriptionurl || '', title, author:stripHtml(v('Artist')).slice(0, 80), license:stripHtml(v('LicenseShortName'))};
+  }).filter(Boolean);
+  webCache.set(key, list); return list;
+}
+// Converteix qualsevol imatge en un quadrat de 360 px (com els pictogrames), sense retallar-la
+async function toSquare(blob){
+  const url = URL.createObjectURL(blob);
+  try{
+    const im = new Image(); im.src = url; await im.decode();
+    const w = im.naturalWidth || 300, h = im.naturalHeight || 300, N = 360, k = Math.min(N / w, N / h);
+    const cv = document.createElement('canvas'); cv.width = cv.height = N; const cx = cv.getContext('2d');
+    const dw = w * k, dh = h * k; cx.drawImage(im, (N - dw) / 2, (N - dh) / 2, dw, dh);
+    let out = cv.toDataURL('image/png');
+    if(out.length > 200000){ const c2 = document.createElement('canvas'); c2.width = c2.height = N; const x2 = c2.getContext('2d');
+      x2.fillStyle = '#fff'; x2.fillRect(0, 0, N, N); x2.drawImage(cv, 0, 0); out = c2.toDataURL('image/jpeg', 0.86); }
+    return out;
+  } finally { URL.revokeObjectURL(url); }
+}
+function setOwn(b, own){
+  mutate(() => { b.own = own; b.picOff = false; b.autoOff = false; b.userPic = true; b.imgErr = false;
+    if(!b.catManual && (!b.cat || b.cat === 'misc') && b.status !== 'ok') b.cat = 'substantius'; });
+  toast(t('ownAdded'));
+}
+async function ownFromBlob(b, blob, from, meta){
+  if(!blob || !/^image\//.test(blob.type || 'image/')) { toast(t('ownErr'), {kind:'error'}); return; }
+  try{ const src = await toSquare(blob); if(find(b.id)) setOwn(b, {src, from, ...(meta || {})}); }
+  catch(e){ toast(t('ownErr'), {kind:'error'}); }
+}
+function updateOwnPanel(b){
+  const q = $('#pWebQ'); if(document.activeElement !== q && q.dataset.for !== b.id){ q.dataset.for = b.id; q.value = deriveQuery(b.text, S.lang); }
+  q.placeholder = t('searchPh');
+  $('#pOwnOff').hidden = !(b.own && b.own.src);
+  const box = $('#pWeb'), w = S.web;
+  const mine = w && w.id === b.id;
+  $('#pWebMsg').textContent = !mine ? '' : w.loading ? t('webSearching') : w.error ? t('webError') : !w.list.length ? t('webNone', {q:w.q}) : t('webPick');
+  $('#pWebMsg').className = 'msg' + (mine && (w.error || (!w.loading && !w.list.length)) ? ' err' : '');
+  box.hidden = !(mine && !w.loading && w.list.length);
+  if(!box.hidden){ const key = b.id + ':' + w.q + ':' + w.list.length;
+    if(box.dataset.k !== key){ box.dataset.k = key;
+      box.innerHTML = w.list.map((r, i) => `<button data-w="${i}" title="${esc(r.title + ' · ' + (r.author || '') + ' · ' + r.license)}"><img loading="lazy" alt="${esc(r.title)}" src="${esc(r.thumb)}"></button>`).join(''); } }
+}
+async function webSearch(b, q){
+  q = (q || '').trim(); if(!q) return;
+  const ticket = {id:b.id, q, loading:true, list:[]}; S.web = ticket; updatePanel();
+  try{ ticket.list = await searchCommons(q); }
+  catch(e){ ticket.error = true; }
+  ticket.loading = false; if(S.web === ticket) updatePanel();
+}
+$('#pWebSearch').onclick = () => { const b = selectedWord(); if(b) webSearch(b, $('#pWebQ').value); };
+$('#pWebQ').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#pWebSearch').click(); } });
+$('#pWeb').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-w]'), b = selectedWord(); if(!btn || !b || !S.web || btn.classList.contains('busy')) return;
+  const r = S.web.list[+btn.dataset.w]; btn.classList.add('busy');
+  try{ const resp = await fetch(r.thumb); if(!resp.ok) throw new Error('img'); await ownFromBlob(b, await resp.blob(), 'commons', {title:r.title, author:r.author, license:r.license, page:r.page}); }
+  catch(err){ toast(t('ownErr'), {kind:'error'}); }
+  btn.classList.remove('busy');
+});
+$('#pUpload').onclick = () => { $('#imgIn').value = ''; $('#imgIn').click(); };
+$('#imgIn').addEventListener('change', e => { const f = e.target.files && e.target.files[0], b = selectedWord(); if(f && b) ownFromBlob(b, f, 'file', {title:f.name}); });
+$('#pPaste').onclick = async () => {
+  const b = selectedWord(); if(!b) return;
+  try{
+    const items = await navigator.clipboard.read();
+    for(const it of items){ const ty = it.types.find(x => x.startsWith('image/')); if(ty){ await ownFromBlob(b, await it.getType(ty), 'paste', {title:''}); return; } }
+    toast(t('pasteHint'));
+  }catch(err){ toast(t('pasteHint')); }
+};
+$('#pOwnOff').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.own = null; }); };
+// Ctrl+V amb una imatge copiada i una paraula seleccionada
+document.addEventListener('paste', e => {
+  const b = selectedWord(); if(!b || e.target === edInput) return;
+  const it = [...((e.clipboardData && e.clipboardData.items) || [])].find(x => x.kind === 'file' && x.type.startsWith('image/'));
+  if(!it) return;
+  e.preventDefault(); e.stopImmediatePropagation(); ownFromBlob(b, it.getAsFile(), 'paste', {title:''});
+}, true);
 
 /* ================= Header fields ================= */
 function syncHeaderInputs(){ $('#hName').value = doc.header.name || ''; $('#hDate').value = doc.header.date || ''; }
@@ -1400,7 +1552,7 @@ async function exportPDF(force){
   showBusy(t('pdfPrep'));
   try{
     await document.fonts.ready;
-    const words = doc.blocks.filter(b => b.kind === 'word' && b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch);
+    const words = doc.blocks.filter(b => b.kind === 'word' && showsArasaac(b));
     const failed = await loadImages([...new Set(words.map(b => b.pictoId))]);
     if(failed.length && !force){
       hideBusy();
@@ -1443,12 +1595,14 @@ async function exportPDF(force){
       for(const el of pg.flow.children){
         const b = find(el.dataset.id); if(!b || b.kind !== 'word') continue;
         const f = eff(b), pic = el.querySelector('.pic'), lbl = el.querySelector('.lbl');
-        if(b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch && imgData.has(b.pictoId)){
+        const own = hasOwn(b);
+        if(own || (showsArasaac(b) && imgData.has(b.pictoId))){
           const r = R(pic), col = CAT_COLOR[b.cat], mode = doc.settings.fitz, bw = 1.2;
           if(mode === 'frame' && col){ const [cr, cg, cb] = hexRgb(col); pdf.setDrawColor(cr, cg, cb); pdf.setFillColor(255, 255, 255); pdf.setLineWidth(bw); pdf.roundedRect(r.x + bw/2, r.y + bw/2, r.w - bw, r.h - bw, 1.2, 1.2, 'FD'); }
           if(mode === 'bg' && col){ const [cr, cg, cb] = hexRgb(col); pdf.setFillColor(cr, cg, cb); pdf.roundedRect(r.x, r.y, r.w, r.h, 1.8, 1.8, 'F'); }
           const ir = R(pic.querySelector('img')), side = Math.min(ir.w, ir.h);
-          pdf.addImage(imgData.get(b.pictoId), 'PNG', ir.x + (ir.w - side) / 2, ir.y + (ir.h - side) / 2, side, side, 'p' + b.pictoId, 'FAST');
+          const data = own ? b.own.src : imgData.get(b.pictoId), kind = /^data:image\/jpe?g/i.test(data) ? 'JPEG' : 'PNG';
+          pdf.addImage(data, kind, ir.x + (ir.w - side) / 2, ir.y + (ir.h - side) / 2, side, side, own ? 'o' + b.id : 'p' + b.pictoId, 'FAST');
           const capEl = pic.querySelector('.cap');
           if(capEl && capEl.textContent && getComputedStyle(capEl).display !== 'none'){
             const cr = R(capEl), cpt = parseFloat(capEl.style.fontSize), cfs = cpt * PT, clh = cfs * 1.15, cfm = fontMetrics({font:f.font});
@@ -1466,7 +1620,8 @@ async function exportPDF(force){
         }
       }
       const fr = R(pg.foot); pdf.setFont('roboto', 'normal'); pdf.setFontSize(6.5); pdf.setTextColor(112, 112, 112);
-      pdf.text(pg.foot.textContent, 105, fr.y + fr.h - 0.8, {align:'center'});
+      const flines = pg.foot.textContent.split('\n').flatMap(l => pdf.splitTextToSize(l, 180)), flh = 6.5 * PT * 1.2;
+      flines.forEach((l, i) => pdf.text(l, 105, fr.y + fr.h - 0.8 - (flines.length - 1 - i) * flh, {align:'center'}));
     });
     pdf.save(fileBase() + '.pdf');
     toast(t('pdfDone'));
@@ -1480,7 +1635,7 @@ function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
   document.querySelectorAll('[data-tip]').forEach(el => { el.title = t(el.dataset.tip); el.setAttribute('aria-label', t(el.dataset.tip)); });
   $('#hNameL').textContent = t('headName'); $('#hDateL').textContent = t('headDate'); $('#hToday').textContent = t('today');
-  pages.forEach((pg, i) => { pg.foot.textContent = t('attrib'); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
+  pages.forEach((pg, i) => { pg.foot.textContent = footText(); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
   $('#sLang').value = S.lang; fillFonts();
   $('#pCats').dataset.k = '';
   updateToolbar(); updatePanel();
