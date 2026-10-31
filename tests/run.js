@@ -318,6 +318,9 @@ let offline = false; const hits = [];
   offline = false;
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
+  await page.click('#bCredits');
+  ok('La versió surt als crèdits', /versió 0\.6/.test(await page.textContent('.overlay')));
+  await page.click('.overlay .btn.primary');
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 
   await browser.close();

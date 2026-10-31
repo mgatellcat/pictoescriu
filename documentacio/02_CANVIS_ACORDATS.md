@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: versió 0.5, construïda i provada al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real.
+Estat actual: **versió 0.6** (31/10/2026). La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. La 0.6 hi afegeix les tecles d'esborrar corregides, les imatges de la web o pròpies (apartat 9) i els verbs auxiliars sense «?» (apartat 4). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real.
 
 ## 1. Distribució
 - **Fitxer HTML autònom** (`docs/index.html`), d'uns 1,2 MB, amb tipus de lletra, icones i jsPDF incrustats.

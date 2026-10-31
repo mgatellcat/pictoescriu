@@ -375,6 +375,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 </script>
 <script>
 'use strict';
+const VERSION = '0.6';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -427,7 +428,7 @@ const I18N = {
     pdfPrep:'Preparant el PDF…', pdfFailT:'Falten pictogrames', pdfFailB:'No s\'han pogut carregar {n} pictogrames ({list}). El PDF quedaria incomplet.',
     pdfAnyway:'Exportar sense aquests pictogrames', pdfDone:'PDF descarregat.', pdfLib:'No s\'ha pogut iniciar el generador de PDF.',
     netToast:'Algunes paraules no han pogut connectar amb ARASAAC. El text es conserva.', retryAll:'Reintentar',
-    creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
+    version:'PictoEscriu, versió {v}.', creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
     privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar, i a Wikimedia Commons només les paraules que cerquis com a imatge; mai el nom ni la data.',
     attrib:'Pictogrames: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Llicència: CC BY-NC-SA. Propietat: Govern d\'Aragó.',
     page:'Pàgina {n}', fileBase:'material',
@@ -479,7 +480,7 @@ const I18N = {
     pdfPrep:'Preparando el PDF…', pdfFailT:'Faltan pictogramas', pdfFailB:'No se han podido cargar {n} pictogramas ({list}). El PDF quedaría incompleto.',
     pdfAnyway:'Exportar sin estos pictogramas', pdfDone:'PDF descargado.', pdfLib:'No se ha podido iniciar el generador de PDF.',
     netToast:'Algunas palabras no han podido conectar con ARASAAC. El texto se conserva.', retryAll:'Reintentar',
-    creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
+    version:'PictoEscriu, versión {v}.', creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
     privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar, y a Wikimedia Commons solo las palabras que busques como imagen; nunca el nombre ni la fecha.',
     attrib:'Pictogramas: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Licencia: CC BY-NC-SA. Propiedad: Gobierno de Aragón.',
     page:'Página {n}', fileBase:'material',
@@ -1668,7 +1669,7 @@ $('#bSave').onclick = saveProject;
 $('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
 $('#bHead').onclick = openHeadGallery;
 $('#sLang').addEventListener('change', e => { S.lang = e.target.value; LS.set('lang', S.lang); applyI18n(); });
-$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('creditsB') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
+$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('version', {v:VERSION}) + '\n' + t('creditsB') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
 $('#bPdf').onclick = () => exportPDF(false);
 $('#bPrint').onclick = doPrint;
 $('#bNext').onclick = () => cycle(selectedWord(), 1);
