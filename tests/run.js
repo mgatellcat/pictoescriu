@@ -258,6 +258,15 @@ let offline = false; const hits = [];
   await page.keyboard.press('Control+z');
   ok('Suprimir es pot desfer', (await txt())==='la* menja*', await txt());
 
+  // Verbs auxiliars i paraules funcionals sense pictograma: només text, sense «?»
+  await page.keyboard.press('Escape');
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('HA vaig els xyzzy ', {delay:20}); await idle();
+  const aux = await page.evaluate(() => doc.blocks.filter(b => !b.composing && b.kind==='word').map(b => b.text + ':' + (document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores') ? '?' : 'text')).join(' '));
+  ok('Auxiliars («ha», «vaig») i articles sense resultats: només text, sense «?»', aux==='HA:text vaig:text els:text xyzzy:?', aux);
+  await clickBlock('HA'); await page.click('#pTogglePic'); await idle();
+  ok('Auxiliar: «Afegir pictograma» torna a cercar i mostra el «?» si no n\'hi ha', await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='HA'); return !b.picOff && document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores'); }));
+
   // Imatges de la web (Wikimedia Commons) i pròpies
   await page.keyboard.press('Escape');
   await page.click('#bNew'); await page.click('.overlay .btn.primary');

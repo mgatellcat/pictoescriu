@@ -395,7 +395,7 @@ const I18N = {
     head_space:'Viatge a l\'espai', head_cork:'Suro amb notes', head_flags:'Festa amb banderoles', head_garden:'Jardí', head_none:'Sense capçalera',
     wordSec:'Paraula dins el pictograma', capNone:'Sense paraula', capTop:'A dalt', capBottom:'A baix', capUpper:'MAJÚSCULES', capLower:'minúscules',
     capTextLabel:'Paraula que surt dins el pictograma (la frase no canvia)',
-    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula sense pictograma automàtic (article, preposició, conjunció, pronom, nom propi o expressió). Pots afegir-n\'hi un.',
+    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula sense pictograma automàtic (article, preposició, conjunció, pronom, verb auxiliar com «ha» o «vaig», nom propi o expressió). Pots afegir-n\'hi un.',
     next:'Següent pictograma', nextTip:'Canvia la imatge del bloc seleccionat per la següent alternativa',
     nextNoSel:'Selecciona una paraula per canviar-ne el pictograma', nextOne:'Aquesta paraula només té una alternativa',
     alts:'Veure alternatives', withText:'Amb text', textTip:'Mostrar o amagar la paraula escrita sobre els pictogrames',
@@ -447,7 +447,7 @@ const I18N = {
     head_space:'Viaje al espacio', head_cork:'Corcho con notas', head_flags:'Fiesta con banderines', head_garden:'Jardín', head_none:'Sin cabecera',
     wordSec:'Palabra dentro del pictograma', capNone:'Sin palabra', capTop:'Arriba', capBottom:'Abajo', capUpper:'MAYÚSCULAS', capLower:'minúsculas',
     capTextLabel:'Palabra que aparece dentro del pictograma (la frase no cambia)',
-    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra sin pictograma automático (artículo, preposición, conjunción, pronombre, nombre propio o expresión). Puedes añadirle uno.',
+    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra sin pictograma automático (artículo, preposición, conjunción, pronombre, verbo auxiliar como «ha», nombre propio o expresión). Puedes añadirle uno.',
     next:'Siguiente pictograma', nextTip:'Cambia la imagen del bloque seleccionado por la siguiente alternativa',
     nextNoSel:'Selecciona una palabra para cambiar su pictograma', nextOne:'Esta palabra solo tiene una alternativa',
     alts:'Ver alternativas', withText:'Con texto', textTip:'Mostrar u ocultar la palabra escrita sobre los pictogramas',
@@ -502,8 +502,12 @@ const PRON = {
   es:new Set('yo tú él ella nosotros nosotras vosotros vosotras ellos ellas usted ustedes mí ti'.split(' '))
 };
 const FUNC = {
-  ca:new Set("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap".split(' ')),
-  es:new Set('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde'.split(' '))
+  ca:new Set(("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap" +
+    // verbs auxiliars (haver i passat perifràstic): només text, sense «?» ("vas" no hi és perquè també és un nom)
+    " he has ha hem heu han havia havies havíem havíeu havien hagi hagis hàgim hàgiu hagin hauria vaig vam vau van vàrem vàreu varen").split(' ')),
+  es:new Set(('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde' +
+    // verbos auxiliares (haber): solo texto, sin «?»
+    ' he has ha hemos habéis han había habías habíamos habíais habían haya hayas hayamos hayáis hayan hube hubo habría').split(' '))
 };
 const AUTO_PIC = new Set(['substantius','verbs','descriptius']);
 const SIZES = [12,14,16,18,20,22,24,28,32,36,40,48,56,64,72];
@@ -619,6 +623,10 @@ async function findPictos(q, lang){
   }
   return {list:[], used:q};
 }
+function isFuncWord(used, lang, text){
+  const w = norm(stripPunct(text)), q = norm(used), P = PRON[lang] || PRON.ca, F = FUNC[lang] || FUNC.ca;
+  return [...P, ...F].some(x => { const n = norm(x); return n === w || n === q; });
+}
 function categorize(p, used, lang, text){
   const w = norm(stripPunct(text)), q = norm(used);
   const P = PRON[lang] || PRON.ca, F = FUNC[lang] || FUNC.ca;
@@ -643,7 +651,8 @@ async function startSearch(b, q){
     const autoCat = categorize(list[0], used, lang, cur.text);
     if(!cur.catManual) cur.cat = autoCat;
     // Només substantius, verbs i adjectius/adverbis porten pictograma automàtic; la resta es pot afegir després
-    if(!cur.userPic){ cur.picOff = !!list.length && !AUTO_PIC.has(autoCat); cur.autoOff = cur.picOff; }
+    // Articles, preposicions, pronoms, auxiliars…: només text, també si ARASAAC no en té cap pictograma (sense «?»)
+    if(!cur.userPic){ const fw = isFuncWord(used, lang, cur.text); cur.picOff = (!!list.length || fw) && !AUTO_PIC.has(autoCat); cur.autoOff = cur.picOff; }
   }catch(e){
     const cur = find(b.id); if(!cur || cur.searchSeq !== seq) return;
     cur.status = 'error'; noteNetError();

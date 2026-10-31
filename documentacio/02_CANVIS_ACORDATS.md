@@ -33,6 +33,8 @@ Ordre de cerca, a `findPictos()`:
 - Reben pictograma automàtic: **substantius, verbs i adjectius** (tipus ARASAAC 2, 3 i 4).
 - Queden només amb text: **articles, preposicions, conjuncions, pronoms personals, noms propis i expressions socials**. La mestra els pot posar pictograma després, amb un clic.
 - El panell mostra el pictograma que tindrien, esvaït, amb el botó **«Afegir pictograma»**.
+- **Verbs auxiliars (31/10/2026, a petició de la mestra):** *he, has, ha, hem, heu, han, havia…, vaig, vam, van…* (i en castellà *he, has, ha, hemos, han, había…*) també queden només amb text. «vas» no hi és, perquè també és un nom.
+- Aquestes paraules (articles, preposicions, pronoms i auxiliars) **ja no mostren el «?»** encara que ARASAAC no en tingui cap pictograma. El «?» queda només per a les paraules amb contingut que no tenen pictograma. Amb «Afegir pictograma» es torna a cercar.
 - Flags del bloc: `picOff` (sense pictograma), `autoOff` (tret automàticament), `userPic` (la mestra ha decidit, i la cerca no ho tornarà a canviar).
 
 ## 5. Separació entre paraules
