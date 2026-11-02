@@ -19,12 +19,12 @@ Documentació a `documentacio/`, en aquest ordre:
 
 ## Estructura del codi
 - `src/app.html`: tot el codi de l'aplicació (HTML, CSS i JavaScript en un fitxer). Conté tres marcadors que omple el build: `/*__ICONS__*/{}`, `/*__FONTS_JSON__*/{}` i `/*__JSPDF__*/`.
-  - La veu (botó ▶, ressaltat, mode alumne i finestra «Veu») és a la secció «Veu» de `src/app.html`. Fa servir les veus del navegador (`speechSynthesis`); els ajustos es desen a `localStorage` (`pictoescriu.voice`), no al projecte.
+  - La veu (botó ▶, ressaltat, mode alumne i finestra «Veu») és a la secció «Veu» de `src/app.html`. Fa servir les veus del navegador (`speechSynthesis`) o les veus descarregables (objecte `PV`: Piper amb ONNX Runtime, guardades a Cache Storage; el motor es comprova amb SHA-256). Els ajustos es desen a `localStorage` (`pictoescriu.voice`), no al projecte.
 - `assets/fonts.json`: tipus de lletra incrustats (TTF en base64, subconjunt llatí): roboto, andika, atkinson, lexend, comic, dyslexic. Cada un amb `family` i `faces` (normal, bold, italic, bolditalic quan n'hi ha).
 - `assets/icons.json`: icones Lucide (contingut SVG).
 - `vendor/jspdf.umd.min.js`: jsPDF 2.5.1, per generar el PDF amb text seleccionable.
 - `docs/index.html`: **l'aplicació construïda**. No l'editis a mà: es regenera.
-- `tests/run.js`: proves d'acceptació amb Playwright, un ARASAAC simulat (`tests/fixtures/*.png`) i una veu simulada (el Chromium de proves no té veus).
+- `tests/run.js`: proves d'acceptació amb Playwright, un ARASAAC simulat (`tests/fixtures/*.png`), una veu del navegador simulada i un motor de veus descarregables simulat (`tests/fixtures/veu/`).
 
 ## Ordres
 - Construir: `python3 scripts/build.py`

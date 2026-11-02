@@ -196,6 +196,14 @@ body.panel-open .playfab{right:calc(var(--panel-w) + 24px)}
 .swatches button{width:34px;height:28px;border-radius:7px;border:2px solid var(--line);cursor:pointer}
 .swatches button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent-weak)}
 .dialog .msg{margin:0}
+.pvrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.pvrow.ok{background:#EAF6EC;border-color:#B9DFC0;color:#1E5B2B}
+.pvrow.ok span{flex:1;font-size:13px}
+.pvrow.dl{flex-direction:column;align-items:flex-start}
+.btn.pvdl{background:var(--accent);color:#fff;height:auto;min-height:38px;padding:6px 12px;white-space:normal;text-align:left}
+.btn.pvdl:hover:not(:disabled){background:#1C449A}
+.pvbar{flex:1;min-width:160px;height:12px;border-radius:6px;background:#fff;border:1px solid var(--line);overflow:hidden}
+.pvbar span{display:block;height:100%;background:var(--accent);transition:width .2s}
 
 /* ---------- Dialogs & toasts ---------- */
 .overlay{position:fixed;inset:0;background:rgba(20,26,40,.38);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
@@ -506,7 +514,18 @@ const I18N = {
     hlChk:'Ressaltar la paraula que es llegeix', hlc_0:'Groc', hlc_1:'Verd', hlc_2:'Blau', hlc_3:'Rosa',
     bndYes:'Aquesta veu ressalta cada paraula.', bndNo:'Aquesta veu no diu quina paraula llegeix: amb «Natural» es ressaltarà la frase sencera. Per ressaltar paraula per paraula, tria «Paraula a paraula».',
     noVoiceToast:'Aquest ordinador no té veu en {lang}.', langName_ca:'català', langName_es:'castellà',
-    nothingToRead:'Encara no hi ha res per llegir.', listen:'Escoltar'
+    nothingToRead:'Encara no hi ha res per llegir.', listen:'Escoltar',
+    tagDownloaded:'baixada · sense internet', dlNow:'Baixar-la',
+    noVoiceDl_ca:'Aquest ordinador no té cap veu en català. Baixa aquí sota la veu gratuïta Ona: només cal fer-ho una vegada.',
+    noVoiceDl_es:'Aquest ordinador no té cap veu en castellà. Baixa aquí sota la veu gratuïta Sharvard: només cal fer-ho una vegada.',
+    pvGet_ca:'Baixar la veu catalana gratuïta Ona (uns {mb} MB)', pvGet_es:'Baixar la veu castellana gratuïta Sharvard, de dona i d\'home (uns {mb} MB)',
+    pvNote:'Només cal fer-ho una vegada en aquest ordinador i navegador. Després funciona sense internet i el text no surt de l\'ordinador.',
+    pvProgress:'Baixant… {a} MB de {b} MB', pvReady:'Veu {v} baixada: funciona sense internet.', pvRemove:'Esborrar-la',
+    pvDone:'Veu {v} baixada. Ja es pot fer servir.', pvNet:'No s\'ha pogut baixar la veu. Comprova la connexió a internet i torna-ho a provar.',
+    pvBad:'Un fitxer baixat no era l\'original i no s\'ha fet servir. Torna-ho a provar més tard.',
+    pvFail:'No s\'ha pogut fer servir la veu baixada. Obre «Veu», esborra-la i torna-la a baixar.', pvPreparing:'Preparant la veu…',
+    pvBnd:'Aquesta veu ressalta les paraules de manera aproximada. Amb «Paraula a paraula» el ressaltat és exacte.', pvF:'dona', pvM:'home',
+    voiceCredits:'Veus descarregables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; llicència CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; llicència CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft) i eSpeak NG.'
   },
   es: {
     new:'Nuevo', open:'Abrir', save:'Guardar', undo:'Deshacer', redo:'Rehacer', pdf:'Exportar PDF', print:'Imprimir', credits:'Créditos', lang:'Idioma',
@@ -576,7 +595,18 @@ const I18N = {
     hlChk:'Resaltar la palabra que se lee', hlc_0:'Amarillo', hlc_1:'Verde', hlc_2:'Azul', hlc_3:'Rosa',
     bndYes:'Esta voz resalta cada palabra.', bndNo:'Esta voz no indica qué palabra lee: con «Natural» se resaltará la frase entera. Para resaltar palabra por palabra, elige «Palabra a palabra».',
     noVoiceToast:'Este ordenador no tiene voz en {lang}.', langName_ca:'catalán', langName_es:'castellano',
-    nothingToRead:'Todavía no hay nada que leer.', listen:'Escuchar'
+    nothingToRead:'Todavía no hay nada que leer.', listen:'Escuchar',
+    tagDownloaded:'descargada · sin internet', dlNow:'Descargarla',
+    noVoiceDl_ca:'Este ordenador no tiene ninguna voz en catalán. Descarga aquí debajo la voz gratuita Ona: solo hay que hacerlo una vez.',
+    noVoiceDl_es:'Este ordenador no tiene ninguna voz en castellano. Descarga aquí debajo la voz gratuita Sharvard: solo hay que hacerlo una vez.',
+    pvGet_ca:'Descargar la voz catalana gratuita Ona (unos {mb} MB)', pvGet_es:'Descargar la voz castellana gratuita Sharvard, de mujer y de hombre (unos {mb} MB)',
+    pvNote:'Solo hay que hacerlo una vez en este ordenador y navegador. Después funciona sin internet y el texto no sale del ordenador.',
+    pvProgress:'Descargando… {a} MB de {b} MB', pvReady:'Voz {v} descargada: funciona sin internet.', pvRemove:'Borrarla',
+    pvDone:'Voz {v} descargada. Ya se puede usar.', pvNet:'No se ha podido descargar la voz. Comprueba la conexión a internet y vuelve a intentarlo.',
+    pvBad:'Un archivo descargado no era el original y no se ha usado. Vuelve a intentarlo más tarde.',
+    pvFail:'No se ha podido usar la voz descargada. Abre «Voz», bórrala y vuelve a descargarla.', pvPreparing:'Preparando la voz…',
+    pvBnd:'Esta voz resalta las palabras de forma aproximada. Con «Palabra a palabra» el resaltado es exacto.', pvF:'mujer', pvM:'hombre',
+    voiceCredits:'Voces descargables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; licencia CC BY-SA) y Sharvard (corpus de V. Aubanel, M. L. García Lecumberri y M. Cooke; licencia CC BY), hechas con Piper (Rhasspy). Funcionan con ONNX Runtime (Microsoft) y eSpeak NG.'
   }
 };
 const CATS = ['persones','verbs','descriptius','substantius','social','misc'];
@@ -1647,16 +1677,18 @@ const SAMPLE = {ca:'Hola! Sóc la veu de PictoEscriu.', es:'¡Hola! Soy la voz d
 const ENDS = /[.!?…]["»”)\]]*$/;   // final de frase
 const SP = {seq:0, reading:false, active:0, hl:new Set(), voices:[], bnd:{}, warned:{}, live:new Set()};
 const synth = () => window.speechSynthesis;
-const canSpeak = () => !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+const hasSynth = () => !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+const canSpeak = () => hasSynth() || PV.st.ca === 'ready' || PV.st.es === 'ready';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const vLang = v => String(v.lang).toLowerCase().replace(/_/g, '-');
 function loadVoices(){
-  if(!canSpeak()) return;
+  if(!hasSynth()){ if(voiceDlg) voiceDlg.refresh(); return; }
   try{ SP.voices = Array.from(synth().getVoices() || []).filter(v => v && v.name && v.name !== 'undefined' && v.lang); }catch(e){ SP.voices = []; }
   if(voiceDlg) voiceDlg.refresh();
 }
 // Ordre de preferència: veus naturals (Edge), millorades (Apple), de Google, i la variant d'Espanya
 function voiceScore(v, lang){
+  if(v.piper) return 58 - v.piper.i;   // veus baixades: just després de les naturals d'Edge
   const n = v.name; let s = 0;
   if(/natural|neural/i.test(n)) s += 50;
   if(/enhanced|premium|millorada|mejorada/i.test(n)) s += 30;
@@ -1666,11 +1698,11 @@ function voiceScore(v, lang){
   if(/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i.test(n)) s -= 20;
   return s;
 }
-function voicesFor(lang){ return SP.voices.filter(v => vLang(v).split('-')[0] === lang).sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang)); }
+function voicesFor(lang){ return [...SP.voices.filter(v => vLang(v).split('-')[0] === lang), ...pvVoices(lang)].sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang)); }
 function pickVoice(lang){ const list = voicesFor(lang), want = VS.voice[lang];
   return (want && list.find(v => v.voiceURI === want || v.name === want)) || list[0] || null; }
 const voiceKey = v => v ? (v.voiceURI || v.name) : '-';
-function voiceTags(v){ return [/natural|neural/i.test(v.name) ? t('tagNatural') : '', v.localService === false ? t('tagOnline') : t('tagLocal')].filter(Boolean).join(' · '); }
+function voiceTags(v){ if(v.piper) return t('tagDownloaded'); return [/natural|neural/i.test(v.name) ? t('tagNatural') : '', v.localService === false ? t('tagOnline') : t('tagLocal')].filter(Boolean).join(' · '); }
 // El que diu la veu per a un bloc: el text en minúscules (perquè «HE» no es lletregi). Sense text, la paraula del pictograma.
 function spokenText(b){
   if(!b || b.kind !== 'word') return '';
@@ -1696,8 +1728,11 @@ function chunksOf(blocks){
 }
 // Diu un text. La promesa es resol quan acaba o quan s'interromp.
 function utter(text, lang, h = {}){
+  const pv = pickVoice(lang);
+  if(pv && pv.piper) return pvUtter(text, lang, pv, h);
+  if(!hasSynth()) return Promise.resolve();
   return new Promise(res => {
-    const u = new SpeechSynthesisUtterance(text), v = pickVoice(lang);
+    const u = new SpeechSynthesisUtterance(text), v = pv;
     u.lang = v ? v.lang : (lang === 'es' ? 'es-ES' : 'ca-ES'); if(v) u.voice = v;
     u.rate = VS.rate; u.pitch = 1; u.volume = 1;
     let done = false;
@@ -1710,6 +1745,195 @@ function utter(text, lang, h = {}){
     try{ synth().speak(u); }catch(e){ fin(); }
   });
 }
+/* ---- Veus descarregables (Piper): parlen dins el navegador i, un cop baixades, sense internet ---- */
+// El motor (ONNX Runtime i el convertidor de text a sons de Piper/eSpeak NG) es baixa de jsDelivr o unpkg en versions fixes,
+// i abans d'executar-lo se'n comprova l'empremta (SHA-256): si el fitxer no és l'original, no es fa servir.
+// Les veus (Ona en català, Sharvard en castellà) es baixen de Hugging Face (rhasspy/piper-voices).
+// Tot queda a la memòria del navegador (Cache Storage), que funciona també obrint el fitxer amb doble clic.
+const PV = {
+  CACHE:'pictoescriu-veus-1', KEY:'https://pictoescriu.local/veus/',
+  CDN:['https://cdn.jsdelivr.net/npm/', 'https://unpkg.com/'],
+  HF:['https://huggingface.co/rhasspy/piper-voices/resolve/main/', 'https://huggingface.co/diffusionstudio/piper-voices/resolve/main/'],
+  ENGINE:[
+    {k:'ort.js', p:'onnxruntime-web@1.18.0/dist/ort.wasm.min.js', size:142930, sha:'kFM6P9cAbff4l8DWPEaJltpcjkMOOZZNkuvlhsSZZhQ=', type:'text/javascript'},
+    {k:'ort-wasm-simd.wasm', p:'onnxruntime-web@1.18.0/dist/ort-wasm-simd.wasm', size:10595041, sha:'9TO18heQVj11VsYRw4NaxlhI7jJtomiarFTtfZzIxqQ=', type:'application/wasm'},
+    {k:'piper_phonemize.js', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.js', size:120714, sha:'/vDC/EQtJP3vXHx8w31dojFEB2QP4Rqxv+NHxyPf8Zs=', type:'text/javascript'},
+    {k:'piper_phonemize.wasm', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.wasm', size:635212, sha:'t3fNEHqR0rzGoepG8sJqZip0BzlP6EWJGYrqqD3XqdY=', type:'application/wasm'},
+    {k:'piper_phonemize.data', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.data', size:18077249, sha:'KfECXrI6W1wZLNFKbvvORQlAL/JlQFBy7m99Ggm3j4w=', type:'application/octet-stream'}],
+  MODELS:{
+    ca:{name:'Ona', path:'ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium', size:63201294, voices:[{spk:null}]},
+    es:{name:'Sharvard', path:'es/es_ES/sharvard/medium/es_ES-sharvard-medium', size:76700000, voices:[{spk:'F', sex:'pvF'}, {spk:'M', sex:'pvM'}]}},
+  st:{ca:'none', es:'none'}, got:{ca:0, es:0}, need:{ca:0, es:0}, err:{ca:'', es:''}, abort:{},
+  engine:null, sess:{}, cfg:{}, ph:null, phOut:[], ctx:null, src:null, done:null, tok:0, timers:[], mem:new Map(), failed:false, shown:0
+};
+const pvCanStore = () => typeof caches !== 'undefined' && !!(window.crypto && crypto.subtle);
+const pvKey = k => PV.KEY + k;
+const pvFiles = lang => { const m = PV.MODELS[lang], base = m.path.split('/').pop();
+  return [{k:base + '.onnx.json', p:m.path + '.onnx.json', hf:true, size:5000, type:'application/json'}, {k:base + '.onnx', p:m.path + '.onnx', hf:true, size:m.size, type:'application/octet-stream'}]; };
+const pvCache = () => caches.open(PV.CACHE);
+async function pvMissing(lang){
+  const c = await pvCache(), out = [];
+  for(const f of [...PV.ENGINE, ...pvFiles(lang)]) if(!(await c.match(pvKey(f.k)))) out.push(f);
+  return out;
+}
+// En obrir l'aplicació: quines veus ja s'havien baixat en aquest ordinador?
+async function pvCheck(){
+  if(!pvCanStore()) return;
+  for(const lang of ['ca', 'es']){ try{ if(PV.st[lang] !== 'downloading') PV.st[lang] = (await pvMissing(lang)).length ? 'none' : 'ready'; }catch(e){} }
+  loadVoices(); updatePlayBtn();
+}
+function pvVoices(lang){
+  if(PV.st[lang] !== 'ready') return [];
+  const m = PV.MODELS[lang];
+  return m.voices.map((x, i) => ({name:x.sex ? `${m.name} (${t(x.sex)})` : m.name, lang:lang === 'es' ? 'es-ES' : 'ca-ES', voiceURI:`piper:${lang}:${i}`, localService:true, piper:{lang, spk:x.spk, i}}));
+}
+function pvMB(lang){ const other = lang === 'ca' ? 'es' : 'ca';
+  return Math.round((PV.MODELS[lang].size + (PV.st[other] === 'ready' ? 0 : PV.ENGINE.reduce((n, f) => n + f.size, 0))) / 1e6); }
+async function pvSha(blob){ const h = new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer())); let b = ''; h.forEach(x => b += String.fromCharCode(x)); return btoa(b); }
+async function pvFetch(f, lang, signal){
+  let last = null;
+  for(const base of (f.hf ? PV.HF : PV.CDN)){
+    const before = PV.got[lang];
+    try{
+      const r = await fetch(base + f.p, {signal}); if(!r.ok) throw new Error('http ' + r.status);
+      if(!r.body || !r.body.getReader){ const b = await r.blob(); PV.got[lang] += b.size; pvShow(lang); return b; }
+      const rd = r.body.getReader(), parts = [];
+      for(;;){ const {done, value} = await rd.read(); if(done) break; parts.push(value); PV.got[lang] += value.length; pvShow(lang); }
+      return new Blob(parts);
+    }catch(e){ if(signal.aborted) throw e; last = e; PV.got[lang] = before; }
+  }
+  throw last || new Error('net');
+}
+function pvShow(lang){ const now = performance.now(); if(now - PV.shown < 120) return; PV.shown = now; if(voiceDlg) voiceDlg.progress(lang); }
+async function pvDownload(lang){
+  if(!pvCanStore() || PV.st[lang] === 'downloading') return;
+  const ac = new AbortController(); PV.abort[lang] = ac;
+  PV.st[lang] = 'downloading'; PV.err[lang] = ''; PV.got[lang] = 0; PV.need[lang] = 1;
+  if(voiceDlg) voiceDlg.render();
+  try{
+    const c = await pvCache(), files = await pvMissing(lang);
+    PV.need[lang] = files.reduce((n, f) => n + f.size, 0) || 1; pvShow(lang);
+    for(const f of files){
+      const blob = await pvFetch(f, lang, ac.signal);
+      if(f.sha && await pvSha(blob) !== f.sha) throw new Error('integrity');
+      await c.put(pvKey(f.k), new Response(blob, {headers:{'Content-Type':f.type}}));
+    }
+    PV.st[lang] = 'ready'; PV.failed = false;
+    try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+    toast(t('pvDone', {v:PV.MODELS[lang].name}));
+  }catch(e){
+    const cancelled = ac.signal.aborted;
+    PV.st[lang] = cancelled ? 'none' : 'error';
+    PV.err[lang] = cancelled ? '' : t(e && e.message === 'integrity' ? 'pvBad' : 'pvNet');
+  }
+  PV.abort[lang] = null; SP.warned[lang] = false;
+  loadVoices(); updatePlayBtn();
+}
+async function pvRemove(lang){
+  pvStop();
+  const c = await pvCache(), other = lang === 'ca' ? 'es' : 'ca';
+  for(const f of pvFiles(lang)) await c.delete(pvKey(f.k));
+  if(PV.st[other] === 'none' || PV.st[other] === 'error') for(const f of PV.ENGINE) await c.delete(pvKey(f.k));
+  PV.sess[lang] = null; PV.mem.clear(); PV.st[lang] = 'none';
+  if(String(VS.voice[lang] || '').startsWith('piper:')){ VS.voice[lang] = ''; saveVS(); }
+  loadVoices(); updatePlayBtn();
+}
+// Motor: es carrega des de la memòria del navegador la primera vegada que es fa servir
+async function pvBlobURL(k){ const r = await (await pvCache()).match(pvKey(k)); if(!r) throw new Error('missing ' + k); return URL.createObjectURL(await r.blob()); }
+function pvScript(url){ return new Promise((res, rej) => { const el = document.createElement('script'); el.src = url; el.onload = res; el.onerror = () => rej(new Error('script')); document.head.appendChild(el); }); }
+async function pvNewPhonemizer(){
+  const wasm = await pvBlobURL('piper_phonemize.wasm'), data = await pvBlobURL('piper_phonemize.data');
+  PV.ph = await createPiperPhonemize({print:l => PV.phOut.push(l), printErr:() => {}, locateFile:f => f.endsWith('.wasm') ? wasm : f.endsWith('.data') ? data : f});
+}
+function pvEngine(){
+  return PV.engine || (PV.engine = (async () => {
+    if(!window.ort) await pvScript(await pvBlobURL('ort.js'));
+    ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;
+    ort.env.wasm.wasmPaths = {'ort-wasm-simd.wasm':await pvBlobURL('ort-wasm-simd.wasm')};
+    if(!window.createPiperPhonemize) await pvScript(await pvBlobURL('piper_phonemize.js'));
+    await pvNewPhonemizer();
+  })().catch(e => { PV.engine = null; throw e; }));
+}
+function pvSession(lang){
+  return PV.sess[lang] || (PV.sess[lang] = (async () => {
+    await pvEngine();
+    const c = await pvCache(), [cf, md] = pvFiles(lang);
+    PV.cfg[lang] = await (await c.match(pvKey(cf.k))).json();
+    return ort.InferenceSession.create(await (await c.match(pvKey(md.k))).arrayBuffer(), {executionProviders:['wasm']});
+  })().catch(e => { PV.sess[lang] = null; throw e; }));
+}
+// Text → sons (identificadors de fonema). Una llista per a cada frase que troba eSpeak.
+function pvPhonemize(text, voice){
+  const run = () => { PV.phOut = []; PV.ph.callMain(['-l', voice, '--input', JSON.stringify([{text}]), '--espeak_data', '/espeak-ng-data']);
+    const out = []; for(const l of PV.phOut){ try{ const j = JSON.parse(l); if(j.phoneme_ids && j.phoneme_ids.length) out.push(j.phoneme_ids); }catch(e){} } return out; };
+  let lines = []; try{ lines = run(); }catch(e){}
+  return lines;
+}
+async function pvSynth(lang, text, spk){
+  const key = [lang, spk, VS.rate, text].join('|');
+  if(PV.mem.has(key)) return PV.mem.get(key);
+  const sess = await pvSession(lang), cfg = PV.cfg[lang], map = cfg.phoneme_id_map || {}, inf = cfg.inference || {};
+  let lines = pvPhonemize(text, (cfg.espeak && cfg.espeak.voice) || lang);
+  if(!lines.length){ await pvNewPhonemizer(); lines = pvPhonemize(text, (cfg.espeak && cfg.espeak.voice) || lang); }   // si el convertidor s'ha encallat, se'n fa un de nou
+  if(!lines.length) throw new Error('phonemes');
+  const SPACE = (map[' '] || [3])[0], SKIP = new Set([(map['_'] || [0])[0], (map['^'] || [1])[0], (map['$'] || [2])[0]]);
+  const pcms = [], groups = []; let g = 0;
+  for(const ids of lines){
+    const feeds = {input:new ort.Tensor('int64', BigInt64Array.from(ids, x => BigInt(x)), [1, ids.length]),
+      input_lengths:new ort.Tensor('int64', BigInt64Array.from([BigInt(ids.length)]), [1]),
+      scales:new ort.Tensor('float32', Float32Array.from([inf.noise_scale ?? 0.667, (inf.length_scale ?? 1) / VS.rate, inf.noise_w ?? 0.8]), [3])};
+    if((cfg.num_speakers || 1) > 1){ const m = cfg.speaker_id_map || {}; feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(spk != null && spk in m ? m[spk] : 0)]), [1]); }
+    const out = await sess.run(feeds); pcms.push(Object.values(out)[0].data);
+    // Pes de cada paraula (fonemes entre espais), per ressaltar-la quan sona
+    for(const id of ids){ if(id === SPACE){ if(g){ groups.push(g); g = 0; } } else if(!SKIP.has(id)) g++; }
+    if(g){ groups.push(g); g = 0; }
+  }
+  const pcm = new Float32Array(pcms.reduce((n, x) => n + x.length, 0)); let o = 0; pcms.forEach(x => { pcm.set(x, o); o += x.length; });
+  const res = {pcm, sr:(cfg.audio && cfg.audio.sample_rate) || 22050, groups};
+  PV.mem.set(key, res); if(PV.mem.size > 300) PV.mem.delete(PV.mem.keys().next().value);
+  return res;
+}
+// Diu un text amb la veu baixada. Com que aquesta veu no diu quina paraula està dient, es calcula pel nombre de sons de cada paraula.
+function pvUtter(text, lang, v, h = {}){
+  return new Promise(async res => {
+    const my = ++PV.tok; let fin = false, slow = null;
+    const done = () => { if(fin) return; fin = true; clearTimeout(slow); PV.timers.forEach(clearTimeout); PV.timers = []; if(PV.done === done) PV.done = null; res(); };
+    if(PV.done) PV.done(); PV.done = done;
+    try{
+      if(!PV.sess[lang]) slow = setTimeout(() => toast(t('pvPreparing')), 700);
+      const {pcm, sr, groups} = await pvSynth(lang, text, v.piper.spk);
+      clearTimeout(slow);
+      if(my !== PV.tok) return done();
+      const ctx = PV.ctx || (PV.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      if(ctx.state === 'suspended'){ try{ await ctx.resume(); }catch(e){} }
+      if(my !== PV.tok) return done();
+      const buf = ctx.createBuffer(1, Math.max(1, pcm.length), sr); buf.getChannelData(0).set(pcm);
+      const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination); PV.src = src;
+      src.onended = () => { if(PV.src === src) PV.src = null; done(); };
+      if(h.start) h.start();
+      src.start();
+      if(h.boundary){
+        const words = [...text.matchAll(/\S+/g)];
+        const w = groups.length === words.length ? groups : words.map(m => Math.max(1, m[0].replace(/[^\p{L}\p{N}]/gu, '').length));
+        const total = w.reduce((a, b) => a + b, 0) || 1, dur = buf.duration, lead = Math.min(0.12, dur * 0.05), span = Math.max(0.05, dur - lead - Math.min(0.25, dur * 0.1));
+        let acc = 0;
+        words.forEach((m, k) => { const at = lead + span * acc / total; acc += w[k];
+          PV.timers.push(setTimeout(() => { if(my === PV.tok) h.boundary({name:'word', charIndex:m.index}); }, at * 1000)); });
+      }
+      PV.timers.push(setTimeout(() => { if(PV.src === src) PV.src = null; done(); }, buf.duration * 1000 + 2000));
+    }catch(e){
+      clearTimeout(slow); console.warn('Veu baixada:', e);
+      if(!PV.failed){ PV.failed = true; toast(t('pvFail'), {kind:'error', timeout:9000, action:{label:t('voiceBtn'), fn:openVoiceDialog}}); }
+      done();
+    }
+  });
+}
+function pvStop(){
+  PV.tok++;
+  const src = PV.src; PV.src = null;
+  if(src){ try{ src.onended = null; src.stop(); }catch(e){} }
+  if(PV.done) PV.done();
+}
 function setHL(ids){
   const next = new Set(VS.highlight ? ids : []);
   for(const id of SP.hl) if(!next.has(id)){ const el = els.get(id); if(el) el.classList.remove('speaking'); }
@@ -1720,9 +1944,9 @@ function setHL(ids){
     if(r.top < w.top + 8 || r.bottom > w.bottom - 8) el.scrollIntoView({block:'center', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }
 }
 function warnNoVoice(lang){
-  if(!SP.voices.length || voicesFor(lang).length || SP.warned[lang]) return;
+  if(voicesFor(lang).length || SP.warned[lang]) return;
   SP.warned[lang] = true;
-  toast(t('noVoiceToast', {lang:t('langName_' + lang)}), {timeout:9000, action:{label:t('voiceBtn'), fn:openVoiceDialog}});
+  toast(t('noVoiceToast', {lang:t('langName_' + lang)}), {timeout:12000, action:{label:pvCanStore() ? t('dlNow') : t('voiceBtn'), fn:openVoiceDialog}});
 }
 async function speakChunks(chunks, token){
   for(let ci = 0; ci < chunks.length; ci++){
@@ -1766,14 +1990,15 @@ async function speakChunks(chunks, token){
 }
 function stopSpeech(){
   SP.seq++; const was = SP.reading; SP.reading = false;
-  if(canSpeak()){ try{ synth().cancel(); }catch(e){} }
+  if(hasSynth()){ try{ synth().cancel(); }catch(e){} }
+  pvStop();
   setHL([]); if(was) updatePlayBtn();
 }
 // Interromp el que s'estigui dient i en comença un de nou
 async function begin(){
-  const busy = canSpeak() && (synth().speaking || synth().pending);
+  const busy = !!PV.src || (hasSynth() && (synth().speaking || synth().pending));
   stopSpeech(); const token = SP.seq;
-  try{ synth().resume(); }catch(e){}
+  if(hasSynth()){ try{ synth().resume(); }catch(e){} }
   if(busy) await wait(60);   // alguns navegadors perden la frase nova si es diu just després d'interrompre
   return token;
 }
@@ -1862,7 +2087,17 @@ function openVoiceDialog(){
     return `<select id="vdV${lang}" class="sel-in"><option value="">${esc(t('voiceAuto', {v:list[0].name}))}</option>${list.map(v => `<option value="${esc(v.voiceURI || v.name)}"${(VS.voice[lang] === v.voiceURI || VS.voice[lang] === v.name) ? ' selected' : ''}>${esc(v.name)} · ${esc(voiceTags(v))}</option>`).join('')}</select>`;
   };
   const voiceRow = lang => `<div class="vrow"><label for="vdV${lang}">${esc(t('voice_' + lang))}</label>${voiceSel(lang)}<button class="btn outline" data-test="${lang}"${voicesFor(lang).length ? '' : ' disabled'}>${icon('volume-2')}${esc(t('test'))}</button></div>
-    <p class="msg" id="vdM${lang}">${esc(voicesFor(lang).length ? msgs[lang] : t('noVoice_' + lang))}</p>`;
+    <p class="msg${voicesFor(lang).length ? '' : ' err'}" id="vdM${lang}">${esc(voicesFor(lang).length ? msgs[lang] : t(pvCanStore() ? 'noVoiceDl_' + lang : 'noVoice_' + lang))}</p>${pvRow(lang)}`;
+  // Veu gratuïta descarregable: botó, progrés o «ja baixada»
+  const pvPct = lang => Math.min(99, Math.floor(PV.got[lang] * 100 / (PV.need[lang] || 1)));
+  const pvTxt = lang => t('pvProgress', {a:Math.round(PV.got[lang] / 1e6), b:Math.max(1, Math.round(PV.need[lang] / 1e6))});
+  const pvRow = lang => {
+    if(!pvCanStore()) return '';
+    const st = PV.st[lang], name = PV.MODELS[lang].name;
+    if(st === 'ready') return `<div class="pvrow ok">${icon('check')}<span>${esc(t('pvReady', {v:name}))}</span><button class="btn" data-pvrm="${lang}">${icon('trash-2')}${esc(t('pvRemove'))}</button></div>`;
+    if(st === 'downloading') return `<div class="pvrow"><div class="pvbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pvPct(lang)}" id="vdBar${lang}"><span style="width:${pvPct(lang)}%"></span></div><span class="msg" id="vdBarT${lang}">${esc(pvTxt(lang))}</span><button class="btn outline" data-pvcancel="${lang}">${esc(t('cancel'))}</button></div>`;
+    return `<div class="pvrow dl">${PV.err[lang] ? `<p class="msg err">${esc(PV.err[lang])}</p>` : ''}<button class="btn pvdl" data-pvdl="${lang}">${icon('download')}${esc(t('pvGet_' + lang, {mb:pvMB(lang)}))}</button><p class="msg">${esc(t('pvNote'))}</p></div>`;
+  };
   const chk = (id, on, key) => `<label class="chk"><input type="checkbox" id="${id}"${on ? ' checked' : ''}> ${esc(t(key))}</label>`;
   const render = () => {
     const a = document.activeElement, inside = a && ov.contains(a) && a !== ov;
@@ -1891,6 +2126,9 @@ function openVoiceDialog(){
     [['#vdLetters', 'letters'], ['#vdWords', 'words'], ['#vdSent', 'sentences'], ['#vdTouch', 'touch'], ['#vdHl', 'highlight']].forEach(([s, k]) => { $o(s).onchange = e => { set(k, e.target.checked); render(); }; });
     ['ca', 'es'].forEach(lang => { const s = $o('#vdV' + lang); if(s && !s.disabled) s.onchange = e => { VS.voice[lang] = e.target.value; saveVS(); msgs[lang] = ''; $o('#vdM' + lang).textContent = ''; }; });
     ov.querySelectorAll('[data-test]').forEach(b => b.onclick = () => testVoice(b.dataset.test));
+    ov.querySelectorAll('[data-pvdl]').forEach(b => b.onclick = () => pvDownload(b.dataset.pvdl));
+    ov.querySelectorAll('[data-pvcancel]').forEach(b => b.onclick = () => { const a = PV.abort[b.dataset.pvcancel]; if(a) a.abort(); });
+    ov.querySelectorAll('[data-pvrm]').forEach(b => b.onclick = () => pvRemove(b.dataset.pvrm));
     $o('#vdRate').oninput = e => { set('rate', +e.target.value); $o('#vdRateV').textContent = Math.round(VS.rate * 100) + ' %'; };
     $o('#vdFlow').onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ set('flow', b.dataset.v); render(); } };
     $o('#vdHlC').onclick = e => { const b = e.target.closest('button[data-c]'); if(b){ set('hlColor', b.dataset.c); applyVoiceUI(); render(); } };
@@ -1902,15 +2140,20 @@ function openVoiceDialog(){
     let got = false; const key = voiceKey(pickVoice(lang));
     await utter(SAMPLE[lang], lang, {boundary:e => { if(!e.name || e.name === 'word'){ got = true; } }});
     if(token !== SP.seq) return;
-    SP.bnd[key] = got; msgs[lang] = t(got ? 'bndYes' : 'bndNo');
+    SP.bnd[key] = got; const pv = pickVoice(lang); msgs[lang] = t(pv && pv.piper ? 'pvBnd' : got ? 'bndYes' : 'bndNo');
     const m = ov.querySelector('#vdM' + lang); if(m) m.textContent = msgs[lang];
   };
   const close = () => { ov.remove(); voiceDlg = null; };
-  voiceDlg = {render, refresh:render};
+  // Durant la descàrrega només s'actualitza la barra (així no es perd el focus)
+  const progress = lang => { const bar = ov.querySelector('#vdBar' + lang), tx = ov.querySelector('#vdBarT' + lang);
+    if(!bar){ render(); return; } bar.firstChild.style.width = pvPct(lang) + '%'; bar.setAttribute('aria-valuenow', pvPct(lang)); tx.textContent = pvTxt(lang); };
+  voiceDlg = {render, refresh:render, progress};
   render();
   ov.addEventListener('keydown', e => { if(e.key === 'Escape'){ e.stopPropagation(); close(); } });
   ov.addEventListener('click', e => { if(e.target === ov) close(); });
-  document.body.appendChild(ov); ov.querySelector('#vdStudent').focus();
+  document.body.appendChild(ov);
+  const dl = ['ca', 'es'].find(l => !voicesFor(l).length) && ov.querySelector(`[data-pvdl="${['ca', 'es'].find(l => !voicesFor(l).length)}"]`);
+  if(dl){ dl.scrollIntoView({block:'center'}); dl.focus(); } else ov.querySelector('#vdStudent').focus();
 }
 
 /* ================= Print ================= */
@@ -2070,7 +2313,7 @@ $('#bSave').onclick = saveProject;
 $('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
 $('#bHead').onclick = openHeadGallery;
 $('#sLang').addEventListener('change', e => { S.lang = e.target.value; LS.set('lang', S.lang); applyI18n(); });
-$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('version', {v:VERSION}) + '\n' + t('creditsB') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
+$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('version', {v:VERSION}) + '\n' + t('creditsB') + '\n' + t('voiceCredits') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
 $('#bPdf').onclick = () => exportPDF(false);
 $('#bPrint').onclick = doPrint;
 $('#bNext').onclick = () => cycle(selectedWord(), 1);
@@ -2094,7 +2337,9 @@ $('#bStudent').onclick = () => setStudent(!VS.student);
 $('#bVoice').onclick = openVoiceDialog;
 // Llegir i el mode alumne no treuen el cursor de l'editor: l'alumne pot continuar escrivint
 ['#bPlay', '#bPlayBig', '#bStudent'].forEach(s => $(s).addEventListener('pointerdown', e => e.preventDefault()));
-if(canSpeak()){ loadVoices(); const sy = synth();
+pvCheck().then(() => { const lang = S.lang === 'es' ? 'es' : 'ca', v = pickVoice(lang);
+  if(v && v.piper) setTimeout(() => pvSession(lang).catch(() => {}), 2500); });
+if(hasSynth()){ loadVoices(); const sy = synth();
   if(sy.addEventListener) sy.addEventListener('voiceschanged', loadVoices); else sy.onvoiceschanged = loadVoices;
   [400, 1500, 4000].forEach(ms => setTimeout(() => { if(!SP.voices.length) loadVoices(); }, ms)); }
 $('#bZoomIn').onclick = () => setZoom(zoomVal() + 0.1);

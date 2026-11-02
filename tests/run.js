@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const fs = require('fs'); const path = require('path');
+const fs = require('fs'); const path = require('path'); const crypto = require('crypto');
 const DIR = __dirname, FIX = path.join(DIR, 'fixtures'), APP = path.resolve(DIR, '../docs/index.html');
 const OUT = process.env.OUT || path.resolve(DIR, '../test-output'); fs.mkdirSync(OUT, {recursive:true});
 const K = (w,t)=>({keyword:w,type:t});
@@ -34,7 +34,7 @@ let offline = false; const hits = [];
       }, 5));
     };
     Object.defineProperties(sy, {speaking:{get:() => !!cur}, pending:{get:() => queue.length > 0}, paused:{get:() => false}});
-    Object.assign(sy, {getVoices:() => voices, speak:u => { queue.push(u); next(); }, resume(){}, pause(){},
+    Object.assign(sy, {getVoices:() => voices.filter(v => !(window.__ttsHide && v.lang.startsWith(window.__ttsHide))), speak:u => { queue.push(u); next(); }, resume(){}, pause(){},
       cancel(){ const c = cur, q = queue; queue = []; cur = null; timers.forEach(clearTimeout); timers = []; if(c && c.onerror) c.onerror({error:'interrupted'}); q.forEach(u => u.onerror && u.onerror({error:'canceled'})); }});
     Object.defineProperty(window, 'speechSynthesis', {value:sy, configurable:true});
     window.SpeechSynthesisUtterance = U;
@@ -509,6 +509,83 @@ let offline = false; const hits = [];
   await vp.screenshot({path: OUT + '/s-veu-alumne.png'});
   await vp.click('#bVoice'); await vp.waitForTimeout(100); await vp.screenshot({path: OUT + '/s-veu-finestra.png'});
   await vp.close();
+
+  // ================= Veus descarregables (Ona i Sharvard) =================
+  // El motor real no s'executa a les proves: se'n serveix un de simulat i se'n comprova el circuit (descàrrega, empremta, memòria, lectura i ressaltat)
+  const VF = path.join(FIX, 'veu'), vfile = n => fs.readFileSync(path.join(VF, n));
+  const VMAP = {'ort.wasm.min.js':'ort.js', 'ort-wasm-simd.wasm':'fals.bin', 'piper_phonemize.js':'piper_phonemize.js', 'piper_phonemize.wasm':'fals.bin', 'piper_phonemize.data':'fals.bin',
+    'ca_ES-upc_ona-medium.onnx':'fals.bin', 'ca_ES-upc_ona-medium.onnx.json':'ona.json', 'es_ES-sharvard-medium.onnx':'fals.bin', 'es_ES-sharvard-medium.onnx.json':'sharvard.json'};
+  const VSHA = {'ort.js':'ort.js', 'ort-wasm-simd.wasm':'fals.bin', 'piper_phonemize.js':'piper_phonemize.js', 'piper_phonemize.wasm':'fals.bin', 'piper_phonemize.data':'fals.bin'};
+  for(const k in VSHA) VSHA[k] = crypto.createHash('sha256').update(vfile(VSHA[k])).digest('base64');
+  let tamper = false, pvOffline = false; const pvHits = [];
+  await ctx.route(/cdn\.jsdelivr\.net|unpkg\.com|huggingface\.co/, route => {
+    const u = route.request().url(); pvHits.push(u);
+    if(pvOffline) return route.abort('internetdisconnected');
+    const name = decodeURIComponent(u.split('/').pop()), f = VMAP[name];
+    if(!f) return route.fulfill({status:404, body:''});
+    let body = vfile(f); if(tamper && name === 'ort.wasm.min.js') body = Buffer.concat([body, Buffer.from('\n/* canviat */')]);
+    return route.fulfill({status:200, headers:{'access-control-allow-origin':'*', 'content-type':'application/octet-stream'}, body});
+  });
+  const pp = await ctx.newPage(); pp.on('pageerror', e => errors.push('veu baixada ' + e));
+  pp.on('console', m => { if(m.type()==='error' && !/Failed to load resource|ERR_INTERNET_DISCONNECTED/.test(m.text())) errors.push('veu baixada ' + m.text()); });
+  await pp.goto('file://' + APP); await pp.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-veus-1'); }); await pp.reload(); await pp.waitForTimeout(500);
+  const ppQuiet = () => pp.waitForFunction(() => !SP.reading && !SP.active && !PV.src, null, {timeout:15000});
+  await pp.evaluate(() => { window.__ttsHide = 'ca'; loadVoices(); });
+  await pp.keyboard.type('la nena menja una poma. el gat ', {delay:15}); await pp.waitForFunction(() => !doc.blocks.some(b => b.status === 'loading'));
+  await pp.click('#bPlay'); await pp.waitForTimeout(300);
+  let T = await pp.textContent('#toasts');
+  ok('VEU BAIXADA Ordinador sense veu catalana: avís i botó «Baixar-la»', /no té veu en català/.test(T) && /Baixar-la/.test(T), T);
+  await pp.click('#toasts button:has-text("Baixar-la")'); await pp.waitForSelector('[data-pvdl="ca"]');
+  let V = await pp.evaluate(() => ({msg:document.querySelector('#vdMca').textContent, btn:document.querySelector('[data-pvdl="ca"]').textContent, focus:document.activeElement && document.activeElement.dataset.pvdl}));
+  ok('VEU BAIXADA La finestra «Veu» ofereix Ona, amb la mida', /Baixa aquí sota la veu gratuïta Ona/.test(V.msg) && /Ona \(uns 93 MB\)/.test(V.btn) && V.focus === 'ca', JSON.stringify(V));
+  tamper = true; await pp.click('[data-pvdl="ca"]'); await pp.waitForFunction(() => PV.st.ca === 'error', null, {timeout:15000});
+  V = await pp.evaluate(() => ({ort:!!window.ort, msg:document.querySelector('.pvrow.dl').textContent}));
+  ok('VEU BAIXADA Un fitxer modificat no s\'executa', !V.ort && /no era l'original/.test(V.msg), JSON.stringify(V));
+  tamper = false; await pp.evaluate(sha => PV.ENGINE.forEach(f => { f.sha = sha[f.k]; }), VSHA);
+  await pp.click('[data-pvdl="ca"]'); await pp.waitForFunction(() => PV.st.ca === 'ready', null, {timeout:15000}); await pp.waitForTimeout(150);
+  V = await pp.evaluate(async () => ({ready:document.querySelector('.pvrow.ok') && document.querySelector('.pvrow.ok').textContent, opts:[...document.querySelectorAll('#vdVca option')].map(o => o.textContent),
+    keys:(await (await caches.open('pictoescriu-veus-1')).keys()).length}));
+  ok('VEU BAIXADA Ona baixada i guardada al navegador', /Veu Ona baixada/.test(V.ready) && /^Automàtica: Ona$/.test(V.opts[0]) && V.opts.includes('Ona · baixada · sense internet') && V.keys === 7, JSON.stringify(V));
+  await pp.click('#vdClose');
+  await pp.evaluate(() => { window.__tts.length = 0; window.__hl = []; new MutationObserver(() => { const ids = [...document.querySelectorAll('.blk.speaking')].map(e => e.dataset.id).join(','); if(ids && window.__hl[window.__hl.length - 1] !== ids) window.__hl.push(ids); })
+    .observe(document.getElementById('stack'), {subtree:true, attributes:true, attributeFilter:['class']}); });
+  await pp.click('#bPlay'); await pp.waitForFunction(() => SP.reading); await ppQuiet();
+  V = await pp.evaluate(() => ({ph:window.__ph.join(' | '), runs:window.ort.__runs.length, paths:window.ort.__paths, sys:window.__tts.length, hl:window.__hl.map(ids => ids.split(',').map(id => find(id).text).join('+')).join(' ')}));
+  ok('VEU BAIXADA ▶ Llegir amb Ona: frase a frase, sense veus del sistema', V.ph === 'ca:la nena menja una poma. | ca:el gat' && V.runs === 2 && V.sys === 0, JSON.stringify(V));
+  ok('VEU BAIXADA Ressalta cada paraula en ordre', V.hl === 'la nena menja una poma. el gat', V.hl);
+  ok('VEU BAIXADA El motor fa servir la còpia guardada', /^ort-wasm-simd\.wasm blob:/.test(V.paths), V.paths);
+  // Sense internet: tornar a obrir l'aplicació
+  pvOffline = true; const pvBefore = pvHits.length;
+  await pp.reload(); await pp.waitForTimeout(600); await pp.evaluate(() => { window.__ttsHide = 'ca'; loadVoices(); });
+  await pp.waitForFunction(() => PV.st.ca === 'ready');
+  await pp.click('#bPlay'); await pp.waitForFunction(() => SP.reading); await ppQuiet();
+  V = await pp.evaluate(() => ({ph:(window.__ph || []).length, runs:window.ort ? window.ort.__runs.length : 0}));
+  ok('VEU BAIXADA Sense internet funciona igual en tornar a obrir', V.ph === 2 && V.runs === 2 && pvHits.length === pvBefore, JSON.stringify(V) + " peticions " + (pvHits.length - pvBefore));
+  // Mode alumne: nom de les lletres amb Ona
+  await pp.click('#bStudent'); await pp.click('#bVoice'); await pp.click('#vdProf [data-v="all"]'); await pp.click('#vdClose');
+  await pp.evaluate(() => { window.__ph.length = 0; startCompose(doc.blocks.length); });
+  await pp.keyboard.type('gat ', {delay:250}); await ppQuiet();
+  V = await pp.evaluate(() => window.__ph.join(' | '));
+  ok('VEU BAIXADA Mode alumne: lletres i paraula amb Ona', V === 'ca:ge | ca:a | ca:te | ca:gat', V);
+  // Castellà: Sharvard, de dona i d'home
+  pvOffline = false;
+  await pp.keyboard.press('Escape'); await pp.click('#bVoice');
+  await pp.click('[data-pvdl="es"]'); await pp.waitForFunction(() => PV.st.es === 'ready', null, {timeout:15000}); await pp.waitForTimeout(150);
+  V = await pp.evaluate(() => [...document.querySelectorAll('#vdVes option')].map(o => o.textContent));
+  ok('VEU BAIXADA Sharvard de dona i d\'home a la llista castellana', V.includes('Sharvard (dona) · baixada · sense internet') && V.includes('Sharvard (home) · baixada · sense internet'), V.join(' / '));
+  await pp.selectOption('#vdVes', 'piper:es:1'); await pp.click('#vdClose');
+  await pp.evaluate(() => { window.ort.__runs.length = 0; doc.blocks.filter(b => b.kind === 'word').forEach(b => { b.lang = 'es'; }); });
+  await pp.click('#bPlay'); await pp.waitForFunction(() => SP.reading); await ppQuiet();
+  V = await pp.evaluate(() => window.ort.__runs.map(r => r.sid).join(','));
+  ok('VEU BAIXADA Sharvard (home) fa servir la veu masculina', /^0(,0)*$/.test(V), V);
+  // Esborrar Ona: el motor es conserva perquè el fa servir Sharvard
+  await pp.click('#bVoice'); await pp.click('[data-pvrm="ca"]'); await pp.waitForFunction(() => PV.st.ca === 'none');
+  V = await pp.evaluate(async () => (await (await caches.open('pictoescriu-veus-1')).keys()).map(r => r.url.split('/').pop()).sort().join(','));
+  ok('VEU BAIXADA Esborrar Ona treu només la veu', !/ona/.test(V) && /ort\.js/.test(V) && /sharvard/.test(V), V);
+  await pp.click('#vdClose'); await pp.click('#bCredits');
+  ok('VEU BAIXADA Crèdits de les veus', /Ona \(Universitat Politècnica de Catalunya/.test(await pp.textContent('.overlay')));
+  await pp.click('.overlay .btn.primary');
+  await pp.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

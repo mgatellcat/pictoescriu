@@ -119,4 +119,17 @@ Decisions de la mestra:
 - **Dues maneres de llegir amb el botó ▶:** «Natural (frase sencera)», per defecte, i «Paraula a paraula». Algunes veus (sobretot les de Google a Chrome) no diuen quina paraula estan llegint: amb «Natural», l'aplicació ho detecta i ressalta la frase sencera. Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid. El botó «Provar» de la finestra «Veu» avisa de com es comporta cada veu.
 - **On es desa:** els ajustos de veu es desen **a cada ordinador** (cada ordinador té veus diferents), no dins el projecte.
 - **Barra superior:** per fer lloc als botons nous, per sota de 1600 px d'amplada Desfer, Refer, Crèdits i Veu només mostren la icona, i per sota de 1366 px també Nou, Obrir, Desar i el nom del programa. Per sota de 900 px, «Exportar PDF» i «Imprimir» també només mostren la icona. Totes les icones tenen el nom en passar-hi el ratolí.
-- Si l'ordinador no té veu en català o en castellà, l'aplicació ho avisa i explica com afegir-ne una (Edge té veus naturals; a Windows: Configuració → Hora i idioma → Veu → Afegir veus).
+- Si l'ordinador no té veu en català o en castellà, l'aplicació ho avisa amb el botó **«Baixar-la»**.
+
+### Veus gratuïtes descarregables (versió 0.7.0, decisió de la mestra: «vull que funcioni tot amb Chrome»)
+- Perquè **funcioni a qualsevol ordinador i amb Chrome**, encara que l'ordinador no tingui veu catalana, a la finestra «Veu» hi ha un botó per baixar:
+  - **Ona** (català central, dona). Uns **93 MB** la primera vegada: 63 MB de la veu i 30 MB del motor.
+  - **Sharvard** (castellà, amb veu de **dona** i d'**home**). Uns 77 MB, o 106 MB si el motor encara no s'havia baixat.
+- **Es baixa una sola vegada a cada ordinador i navegador** i queda guardada al navegador (Cache Storage), també obrint el fitxer amb doble clic. Després **funciona sense internet** i **el text no surt de l'ordinador**. Es pot esborrar des de la mateixa finestra.
+- Ordre de preferència automàtic: veus naturals d'Edge → **veus baixades** → veus de Google → veus de l'ordinador. Es pot triar a mà.
+- Amb la veu baixada, el ressaltat de la lectura «Natural» és **aproximat**: es calcula pel nombre de sons de cada paraula. Amb «Paraula a paraula» és exacte.
+- La primera vegada que es fa servir, la veu tarda uns segons a preparar-se («Preparant la veu…»). Mentre es prepara cada frase, la pantalla es pot aturar una fracció de segon.
+- **Seguretat:** el motor es baixa en versions fixes (ONNX Runtime 1.18.0 i piper-wasm 1.0.0, de jsDelivr o unpkg) i se'n comprova l'**empremta SHA-256** abans d'executar-lo. Les empremtes es van verificar amb la integritat oficial dels paquets npm. Si un fitxer no és l'original, no s'executa i surt un avís.
+- Les veus es baixen de Hugging Face (`rhasspy/piper-voices`, amb una còpia de reserva a `diffusionstudio/piper-voices`).
+- **Crèdits:** Ona (Universitat Politècnica de Catalunya, corpus FestCat; CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft, MIT) i eSpeak NG.
+- **Proves:** les proves automàtiques fan servir un motor simulat (`tests/fixtures/veu/`); l'entorn de desenvolupament no permet executar el motor real. **Cal provar la veu real a l'ordinador de l'escola.**

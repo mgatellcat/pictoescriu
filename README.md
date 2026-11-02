@@ -15,7 +15,7 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - 7 tipus de lletra, entre els quals Andika, Atkinson Hyperlegible, Lexend i OpenDyslexic.
 - 7 capçaleres per a primària, també en versió per pintar.
 - Fulls A4 reals, exportació a PDF amb text seleccionable, impressió, desar i obrir projectes, i desament automàtic.
-- **Lectura en veu alta** (botó ▶) amb la paraula ressaltada, i **mode alumne**: la veu diu la lletra, la paraula o la frase mentre s'escriu, i es pot tocar una paraula per escoltar-la. Fa servir les veus gratuïtes del navegador (les millors en català i castellà són les naturals d'Edge).
+- **Lectura en veu alta** (botó ▶) amb la paraula ressaltada, i **mode alumne**: la veu diu la lletra, la paraula o la frase mentre s'escriu, i es pot tocar una paraula per escoltar-la. Fa servir les veus del navegador o, a qualsevol ordinador i també amb Chrome, les **veus gratuïtes descarregables** Ona (català) i Sharvard (castellà), que després funcionen sense internet.
 - Interfície en català i castellà.
 
 ## Per a qui vulgui continuar el desenvolupament
@@ -28,3 +28,4 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - **Tipus de lletra:** Roboto (Apache 2.0); Andika, Atkinson Hyperlegible, Lexend, Comic Neue i OpenDyslexic (SIL Open Font License), via Fontsource.
 - **Icones:** Lucide (ISC).
 - **Generador de PDF:** jsPDF 2.5.1 (MIT, vegeu `vendor/jspdf-LICENSE`).
+- **Veus descarregables** (no van dins el fitxer; es baixen si la mestra ho demana): Ona (UPC, corpus FestCat; CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; CC BY), fetes amb Piper (Rhasspy). Motor: ONNX Runtime 1.18.0 (MIT) i piper-wasm 1.0.0 amb eSpeak NG.
