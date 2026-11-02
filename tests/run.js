@@ -254,6 +254,42 @@ let offline = false; const hits = [];
   B = await blocks(); ok('2 Canviar idioma no modifica el document', B.map(b=>b.text).join(' ')==='La niña come una manzana');
   await page.screenshot({path: OUT + '/s2-castella.png'});
 
+  // ================= Esborrar (Retrocés i Supr) =================
+  const pe = await ctx.newPage(); pe.on('pageerror', e => errors.push('esborrar ' + e));
+  await pe.goto('file://' + APP); await pe.evaluate(() => localStorage.clear()); await pe.reload(); await pe.waitForTimeout(500);
+  const eState = () => pe.evaluate(() => ({ed:S.editor ? S.editor.mode : null, sel:S.selectedId, selBox:document.querySelectorAll('.blk.sel').length,
+    words:doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.pictoId || '-')).join(' ')}));
+  const eIdle = () => pe.waitForFunction(() => !doc.blocks.some(b => b.status === 'loading'), null, {timeout:8000});
+  await pe.keyboard.type('la nena menja una poma ', {delay:20}); await eIdle(); await pe.waitForTimeout(300);
+  for(let i = 0; i < 4; i++) await pe.keyboard.press('Backspace');
+  let E = await eState();
+  ok('ESBORRAR Retrocés buida la paraula i conserva el pictograma', E.ed === 'edit' && E.words.endsWith('una:1002 :4001'), JSON.stringify(E));
+  await pe.keyboard.press('Backspace'); E = await eState();
+  ok('ESBORRAR Un altre Retrocés treu el requadre buit i el cursor no s\'encalla', E.ed === 'compose' && !E.sel && E.selBox === 0 && E.words === 'la:1001 nena:2001 menja:3001 una:1002', JSON.stringify(E));
+  await pe.keyboard.press('Control+z'); E = await eState();
+  ok('ESBORRAR Ctrl+Z recupera la paraula sencera amb el pictograma', E.words.endsWith('una:1002 poma:4001'), JSON.stringify(E));
+  // Mantenir la tecla premuda: esborra seguit i s'atura davant d'un pictograma
+  for(let i = 0; i < 8; i++) await pe.keyboard.down('Backspace');
+  await pe.keyboard.up('Backspace'); E = await eState();
+  ok('ESBORRAR Tecla premuda: s\'atura davant del pictograma', E.ed === 'edit' && E.words.endsWith('una:1002 :4001'), JSON.stringify(E));
+  await pe.keyboard.press('Backspace');
+  for(let i = 0; i < 11; i++) await pe.keyboard.down('Backspace');
+  await pe.keyboard.up('Backspace'); E = await eState();
+  ok('ESBORRAR Tecla premuda: passa per sobre de les paraules sense pictograma', E.ed === 'edit' && E.words === 'la:1001 nena:2001 :3001', JSON.stringify(E));
+  await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace'); E = await eState();
+  ok('ESBORRAR Es continua esborrant la paraula anterior', E.ed === 'edit' && E.words === 'la:1001 nen:2001', JSON.stringify(E));
+  // Supr (cap endavant)
+  await pe.evaluate(() => { commitEditor(true); S.selectedId = null; startCompose(doc.blocks.findIndex(b => b.text === 'nen')); });
+  await pe.keyboard.press('Delete'); E = await eState();
+  const caret = await pe.evaluate(() => edInput.selectionStart);
+  ok('ESBORRAR Supr esborra la primera lletra de la paraula següent', E.ed === 'edit' && E.words === 'la:1001 en:2001' && caret === 0, JSON.stringify(E) + ' cursor ' + caret);
+  for(let i = 0; i < 3; i++) await pe.keyboard.press('Delete');
+  E = await eState();
+  ok('ESBORRAR Supr amb la paraula buida treu el requadre', E.ed === 'compose' && E.selBox === 0 && E.words === 'la:1001', JSON.stringify(E));
+  await pe.keyboard.type('gat ', {delay:20}); await eIdle(); E = await eState();
+  ok('ESBORRAR Després es continua escrivint al mateix lloc', E.words === 'la:1001 gat:8001', JSON.stringify(E));
+  await pe.close();
+
   // ================= Veu: lectura en veu alta i mode alumne =================
   const i18nMiss = await page.evaluate(() => [...Object.keys(I18N.ca).filter(k => !(k in I18N.es)), ...Object.keys(I18N.es).filter(k => !(k in I18N.ca))]);
   ok('VEU Tots els textos en català i en castellà', i18nMiss.length === 0, i18nMiss.join(','));

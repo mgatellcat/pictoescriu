@@ -1491,7 +1491,7 @@ function onEdInput(e){
   if(typed) fbLetter(typed);
   if(S.editor.mode === 'edit'){
     if(!S.editPushed){ pushUndo(); S.editPushed = true; }
-    b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); return;
+    b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); updateToolbar(); return;
   }
   if(v.trim() && !S.composePushed){ pushUndo(); S.composePushed = true; }
   if(!SEP.test(v)){ b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); if(v) schedulePause(b); return; }
@@ -1508,6 +1508,13 @@ function onEdKey(e){
   if(mod) return;
   if(S.editor.mode === 'edit'){
     if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); if(e.key === 'Enter') fbWord(id); }
+    // Esborrar quan la paraula ja és buida: el bloc desapareix i el cursor continua en aquell lloc.
+    // Si es manté la tecla premuda, s'atura davant d'un pictograma: cal tornar a prémer per treure'l (Ctrl+Z el recupera).
+    if((e.key === 'Backspace' || e.key === 'Delete') && edInput.value === ''){
+      e.preventDefault();
+      const b = find(S.editor.id); if(!b || (e.repeat && hasPicto(b))) return;
+      removeEmptyWord(b);
+    }
     return;
   }
   const b = find(S.editor.id), v = edInput.value, i = doc.blocks.indexOf(b);
@@ -1524,12 +1531,32 @@ function onEdKey(e){
     if(prev.text){ pushUndo(); S.editPushed = true; prev.text = Array.from(prev.text).slice(0, -1).join(''); edInput.value = prev.text; paintBlock(prev, idxOf(prev.id)); sizeEditor(); schedulePaginate(); updatePanel(true); scheduleSave(); }
     return;
   }
-  if(e.key === 'Delete'){ e.preventDefault(); const nx = doc.blocks[i+1]; if(nx && nx.kind === 'br'){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); } return; }
+  if(e.key === 'Delete'){
+    e.preventDefault(); const nx = doc.blocks[i+1]; if(!nx) return;
+    if(nx.kind === 'br'){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); return; }
+    // Supr davant d'una paraula: s'esborra la primera lletra; el pictograma es conserva.
+    doc.blocks.splice(i, 1); S.editor = null;
+    startEdit(nx, true);
+    if(nx.text){ pushUndo(); S.editPushed = true; nx.text = Array.from(nx.text).slice(1).join(''); edInput.value = nx.text; paintBlock(nx, idxOf(nx.id)); sizeEditor(); schedulePaginate(); updatePanel(true); scheduleSave(); }
+    try{ edInput.setSelectionRange(0, 0); }catch(err){}
+    return;
+  }
   if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
     e.preventDefault(); const j = i + (e.key === 'ArrowLeft' ? -1 : 1);
     if(j < 0 || j >= doc.blocks.length) return;
     doc.blocks.splice(i, 1); doc.blocks.splice(j, 0, b); renderAll(); focusEditor(); return;
   }
+}
+const hasPicto = b => b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch;
+// Treu el bloc que s'està editant (ja sense text) i torna a l'escriptura contínua en el mateix lloc
+function removeEmptyWord(b){
+  const i = idxOf(b.id); if(i < 0) return;
+  if(!S.editPushed) pushUndo();   // si ja s'havien esborrat lletres, un sol Ctrl+Z recupera la paraula sencera
+  clearTimeout(pauseTimer);
+  S.editor = null; S.editPushed = false; S.selectedId = null;
+  if(edInput.parentNode) edInput.remove();
+  doc.blocks.splice(i, 1);
+  startCompose(i); scheduleSave();
 }
 function onEdPaste(e){
   const text = (e.clipboardData || window.clipboardData).getData('text'); if(!text) return;

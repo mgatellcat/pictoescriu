@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: versió 0.6 (2 de novembre de 2026), que afegeix la lectura en veu alta i el mode alumne (secció 11). La versió 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat i una veu simulada. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real ni amb les veus reals.
+Estat actual: versió 0.6.1 (2 de novembre de 2026). La 0.6 afegeix la lectura en veu alta i el mode alumne (secció 11); la 0.6.1 corregeix les tecles d'esborrar (secció 2). La versió 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat i una veu simulada. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real ni amb les veus reals.
 
 ## 1. Distribució
 - **Fitxer HTML autònom** (`docs/index.html`), d'uns 1,2 MB, amb tipus de lletra, icones i jsPDF incrustats.
@@ -14,6 +14,10 @@ Estat actual: versió 0.6 (2 de novembre de 2026), que afegeix la lectura en veu
 - **«Mateixa línia»:** la frase s'escriu en línia i només salta de línia al marge; els pictogrames queden alineats a sota de cada paraula.
 - **NOM / DATA i el peu d'atribució** segueixen l'idioma de la interfície.
 - **Retrocés després d'una paraula acabada:** entra a editar el text d'aquella paraula, sense tocar el pictograma. Si el text i el pictograma deixen de coincidir, el panell ofereix «Cercar «...»».
+- **Retrocés amb la paraula ja buida** (error corregit a la 0.6.1: el cursor quedava encallat dins un requadre blau buit): el requadre desapareix i el cursor continua en aquell lloc. Un altre Retrocés continua esborrant la paraula anterior, com en un processador de textos.
+  - Si la paraula buida té **pictograma** i es **manté la tecla premuda**, s'atura: així, buidar «menjar» per escriure «HE MENJAT» no fa perdre el pictograma per anar massa lluny. Cal tornar a prémer la tecla per treure el pictograma, i **Ctrl+Z** el recupera.
+  - Les paraules sense pictograma s'esborren seguit, encara que es mantingui la tecla premuda.
+- **Supr** fa el mateix cap endavant: davant d'una paraula n'esborra la primera lletra (el pictograma es conserva) i, amb la paraula buida, treu el requadre.
 - **Botó «Amb text»:** mostra o amaga la paraula escrita sobre tots els pictogrames.
 
 ## 3. Cerca a ARASAAC (verificada amb el servei real)
