@@ -18,11 +18,12 @@ Documentació a `documentacio/`, en aquest ordre:
 
 ## Estructura del codi
 - `src/app.html`: tot el codi de l'aplicació (HTML, CSS i JavaScript en un fitxer). Conté tres marcadors que omple el build: `/*__ICONS__*/{}`, `/*__FONTS_JSON__*/{}` i `/*__JSPDF__*/`.
+  - La veu (botó ▶, ressaltat, mode alumne i finestra «Veu») és a la secció «Veu» de `src/app.html`. Fa servir les veus del navegador (`speechSynthesis`); els ajustos es desen a `localStorage` (`pictoescriu.voice`), no al projecte.
 - `assets/fonts.json`: tipus de lletra incrustats (TTF en base64, subconjunt llatí): roboto, andika, atkinson, lexend, comic, dyslexic. Cada un amb `family` i `faces` (normal, bold, italic, bolditalic quan n'hi ha).
 - `assets/icons.json`: icones Lucide (contingut SVG).
 - `vendor/jspdf.umd.min.js`: jsPDF 2.5.1, per generar el PDF amb text seleccionable.
 - `docs/index.html`: **l'aplicació construïda**. No l'editis a mà: es regenera.
-- `tests/run.js`: proves d'acceptació amb Playwright i un ARASAAC simulat (`tests/fixtures/*.png`).
+- `tests/run.js`: proves d'acceptació amb Playwright, un ARASAAC simulat (`tests/fixtures/*.png`) i una veu simulada (el Chromium de proves no té veus).
 
 ## Ordres
 - Construir: `python3 scripts/build.py`
@@ -40,7 +41,7 @@ Documentació a `documentacio/`, en aquest ordre:
    - Imatges: `https://static.arasaac.org/pictograms/{id}/{id}_500.png` (CORS obert: es poden incrustar al PDF).
    - `keywords[].type`: 1 nom propi, 2 nom comú, 3 verb, 4 descriptiu, 5 contingut social, 6 miscel·lània.
 6. **Atribució obligatòria** (llicència CC BY-NC-SA): Sergio Palao, ARASAAC, Govern d'Aragó, als crèdits i al peu de cada pàgina.
-7. **Privacitat:** a ARASAAC només s'envien les paraules que cal cercar; mai el nom ni la data de la capçalera. Tot es desa localment.
+7. **Privacitat:** a ARASAAC només s'envien les paraules que cal cercar; mai el nom ni la data de la capçalera. Tot es desa localment. Excepció acceptada per la mestra: les veus «en línia» del navegador reben el text que es llegeix en veu alta; el nom i la data no es llegeixen mai (vegeu `02_CANVIS_ACORDATS.md`, secció 11).
 8. Les cadenes de la interfície són a l'objecte `I18N` (`ca` i `es`): qualsevol text nou ha de tenir les dues versions.
 9. **No es pot publicar com a artefacte de claude.ai**: aquell entorn bloqueja ARASAAC, la impressió i les descàrregues. Es distribueix com a fitxer HTML o via GitHub Pages.
 

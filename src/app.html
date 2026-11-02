@@ -160,6 +160,39 @@ body.panel-open .workspace{right:var(--panel-w)}
 .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .hl-search{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
 
+/* ---------- Veu: botó Llegir, mode alumne i ressaltat ---------- */
+.pi{display:inline-flex}
+.btn.play{border-color:var(--accent);color:var(--accent);font-weight:700}
+.btn.play .ic,.playfab .ic{fill:currentColor}
+.btn.play[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.play[aria-pressed="true"]:hover{background:#1C449A}
+body.student #bPlay{height:40px;padding:0 14px;font-size:14px}
+#bStudent[aria-pressed="true"]{background:#FFF4D6;border-color:#E9C46A;color:#6B5200}
+.playfab{position:fixed;right:24px;bottom:24px;z-index:24;width:84px;height:84px;border-radius:50%;border:0;background:var(--accent);color:#fff;box-shadow:0 8px 24px rgba(20,40,90,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.playfab .ic{width:40px;height:40px}
+.playfab[aria-pressed="true"]{background:var(--danger)}
+.playfab:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+body.panel-open .playfab{right:calc(var(--panel-w) + 24px)}
+/* El ressaltat no canvia cap mida: només el fons. No surt ni al PDF ni a la impressió. */
+.blk.speaking{background:var(--speak,#FFE36E);box-shadow:0 0 0 1.2mm var(--speak,#FFE36E)}
+.dialog.voice{max-width:620px;max-height:calc(100vh - 32px);overflow-y:auto;gap:10px}
+.vsec{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--soft)}
+.vsec h3{margin:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.dialog label.chk{color:var(--ink);font-size:13.5px;align-items:flex-start;line-height:1.35}
+.dialog label.chk input{margin:2px 0 0;flex:none;width:16px;height:16px;accent-color:var(--accent)}
+.dialog label.chk.big{font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.dialog label.chk.big:has(input:checked){background:#FFF4D6;border-color:#E9C46A}
+.vopts{display:flex;flex-direction:column;gap:8px}
+.vopts.off{opacity:.55}
+.vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dialog .vrow label{min-width:72px;color:var(--ink);font-weight:500}
+.vrow select{flex:1;min-width:180px;max-width:100%}
+.vrow input[type=range]{flex:1;min-width:140px;width:auto}
+.swatches{display:flex;gap:8px}
+.swatches button{width:34px;height:28px;border-radius:7px;border:2px solid var(--line);cursor:pointer}
+.swatches button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent-weak)}
+.dialog .msg{margin:0}
+
 /* ---------- Dialogs & toasts ---------- */
 .overlay{position:fixed;inset:0;background:rgba(20,26,40,.38);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
 .dialog{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px 22px 18px;box-shadow:0 20px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:12px}
@@ -182,15 +215,20 @@ body.panel-open .workspace{right:var(--panel-w)}
 .toast button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;font-weight:700;font-size:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
+/* La primera fila ha de cabre en una línia: a les pantalles més estretes, alguns botons només mostren la icona */
+@media (max-width:1599px){ #bUndo .t,#bRedo .t,#bCredits .t,#bVoice .t{display:none} }
+@media (max-width:1365px){ .brand span,#bNew .t,#bOpen .t,#bSave .t{display:none} }
 @media (max-width:1180px){
   .btn .t{display:none}
-  .btn.next .t,.btn.primary .t,#bApplyAll .t{display:inline}
+  .btn.next .t,.btn.primary .t,#bApplyAll .t,#bPlay .t{display:inline}
   .brand span{display:none}
 }
 @media (max-width:900px){
   .panel{top:auto;left:0;width:auto;height:46vh;border-left:0;border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.08)}
   body.panel-open .workspace{right:0;bottom:46vh}
   body.panel-open .zoombar{display:none}
+  body.panel-open .playfab{right:16px;bottom:calc(46vh + 16px)}
+  .btn.primary .t{display:none}
 }
 
 /* ---------- Print ---------- */
@@ -204,6 +242,8 @@ body.panel-open .workspace{right:var(--panel-w)}
   .page:last-child{break-after:auto;page-break-after:auto}
   .page-inner{bottom:14.6mm}
   .blk.sel{outline:none;background:none}
+  .blk.speaking{background:none!important;box-shadow:none!important}
+  .playfab{display:none!important}
   .blk.composing .lbl,.blk.editing .lbl{border-bottom:0}
   .pic.st-none,.pic.st-error,.pic.st-loading,.pic.st-idle{visibility:hidden}
   .blk.nores .pic .ph{display:none}
@@ -231,6 +271,11 @@ body.panel-open .workspace{right:var(--panel-w)}
     </div>
     <div class="grp">
       <button class="btn" id="bHead" data-tip="headerTip"><span data-icon="text-cursor-input"></span><span class="t" data-i18n="header"></span></button>
+    </div>
+    <div class="grp" id="gVoice">
+      <button class="btn play" id="bPlay" aria-pressed="false"><span class="pi"></span><span class="t" id="bPlayL"></span></button>
+      <button class="btn" id="bStudent" aria-pressed="false" data-tip="studentTip"><span data-icon="graduation-cap"></span><span class="t" data-i18n="student"></span></button>
+      <button class="btn icon-only" id="bVoice" data-tip="voiceTip"><span data-icon="sliders-horizontal"></span><span class="t" data-i18n="voiceBtn"></span></button>
     </div>
     <span class="busy" id="busy" hidden><span class="spin"></span><span id="busyTxt"></span></span>
     <span class="spacer"></span>
@@ -281,6 +326,7 @@ body.panel-open .workspace{right:var(--panel-w)}
   <button class="btn" id="bFitPage"><span data-i18n="zoomPage"></span></button>
   <button class="btn" id="bFitWidth"><span data-i18n="zoomWidth"></span></button>
 </div>
+<button class="playfab no-print" id="bPlayBig" aria-pressed="false" hidden><span class="pi"></span><span class="sr" id="bPlayBigL"></span></button>
 
 <main class="workspace" id="ws">
   <div class="stack" id="stack" tabindex="0" aria-label="Document"></div>
@@ -295,6 +341,7 @@ body.panel-open .workspace{right:var(--panel-w)}
     <div class="stack-btns">
       <button class="btn outline" id="pEdit"><span data-icon="pencil"></span><span data-i18n="editText"></span></button>
       <button class="btn outline" id="pClearText"><span data-icon="eraser"></span><span data-i18n="clearText"></span></button>
+      <button class="btn outline" id="pListen"><span data-icon="volume-2"></span><span data-i18n="listen"></span></button>
     </div>
   </div>
 
@@ -409,9 +456,27 @@ const I18N = {
     pdfAnyway:'Exportar sense aquests pictogrames', pdfDone:'PDF descarregat.', pdfLib:'No s\'ha pogut iniciar el generador de PDF.',
     netToast:'Algunes paraules no han pogut connectar amb ARASAAC. El text es conserva.', retryAll:'Reintentar',
     creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar; mai el nom ni la data.',
+    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar; mai el nom ni la data. Si tries una veu «en línia», el text que es llegeix s\'envia a Microsoft o Google per convertir-lo en veu; el nom i la data no es llegeixen mai.',
     attrib:'Pictogrames: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Llicència: CC BY-NC-SA. Propietat: Govern d\'Aragó.',
-    page:'Pàgina {n}', fileBase:'material'
+    page:'Pàgina {n}', fileBase:'material',
+    play:'Llegir', stop:'Aturar', playTip:'Llegir en veu alta (Ctrl+Retorn). Si hi ha una paraula seleccionada, comença per aquella.', stopTip:'Aturar la lectura (Esc)',
+    student:'Mode alumne', studentTip:'Mode alumne: la veu l\'ajuda mentre escriu', studentOn:'Mode alumne activat: la veu ajuda mentre s\'escriu.', studentOff:'Mode alumne desactivat.',
+    voiceBtn:'Veu', voiceTip:'Veu i lectura: veus, velocitat, ressaltat i ajuda mentre s\'escriu', voiceT:'Veu i lectura',
+    studentChk:'Mode alumne: la veu l\'ajuda mentre escriu', fbSec:'Mentre l\'alumne escriu', fbNote:'Aquestes opcions només funcionen en mode alumne.',
+    prof_none:'Només el botó ▶', prof_words:'Paraules', prof_ws:'Paraules i frases', prof_all:'Lletres, paraules i frases',
+    fbLetters:'Dir el nom de cada lletra en pitjar-la', fbWords:'Dir la paraula en pitjar l\'espai', fbSentences:'Llegir la frase en posar . ? ! o en pitjar Retorn', fbTouch:'Tocar una paraula per escoltar-la',
+    voicesSec:'Veus', voice_ca:'Català', voice_es:'Castellà', voiceAuto:'Automàtica: {v}', voiceNone:'Cap veu', test:'Provar',
+    tagNatural:'natural', tagOnline:'en línia', tagLocal:'de l\'ordinador',
+    onlineNote:'Les veus «en línia» sonen més naturals, però necessiten internet i envien el text que es llegeix a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s\'envien mai.',
+    noVoice_ca:'Aquest ordinador no té cap veu en català. El navegador Edge en té de naturals. A Windows també en pots afegir una: Configuració → Hora i idioma → Veu → Afegir veus → Català.',
+    noVoice_es:'Aquest ordinador no té cap veu en castellà. El navegador Edge en té de naturals. A Windows també en pots afegir una: Configuració → Hora i idioma → Veu → Afegir veus → Español (España).',
+    noSpeech:'Aquest navegador no pot llegir en veu alta. Fes servir Chrome o Edge.',
+    readSec:'Lectura', rate:'Velocitat', flowNatural:'Natural (frase sencera)', flowWord:'Paraula a paraula',
+    flowNote:'Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid.',
+    hlChk:'Ressaltar la paraula que es llegeix', hlc_0:'Groc', hlc_1:'Verd', hlc_2:'Blau', hlc_3:'Rosa',
+    bndYes:'Aquesta veu ressalta cada paraula.', bndNo:'Aquesta veu no diu quina paraula llegeix: amb «Natural» es ressaltarà la frase sencera. Per ressaltar paraula per paraula, tria «Paraula a paraula».',
+    noVoiceToast:'Aquest ordinador no té veu en {lang}.', langName_ca:'català', langName_es:'castellà',
+    nothingToRead:'Encara no hi ha res per llegir.', listen:'Escoltar'
   },
   es: {
     new:'Nuevo', open:'Abrir', save:'Guardar', undo:'Deshacer', redo:'Rehacer', pdf:'Exportar PDF', print:'Imprimir', credits:'Créditos', lang:'Idioma',
@@ -453,9 +518,27 @@ const I18N = {
     pdfAnyway:'Exportar sin estos pictogramas', pdfDone:'PDF descargado.', pdfLib:'No se ha podido iniciar el generador de PDF.',
     netToast:'Algunas palabras no han podido conectar con ARASAAC. El texto se conserva.', retryAll:'Reintentar',
     creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar; nunca el nombre ni la fecha.',
+    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar; nunca el nombre ni la fecha. Si eliges una voz «en línea», el texto que se lee se envía a Microsoft o Google para convertirlo en voz; el nombre y la fecha nunca se leen.',
     attrib:'Pictogramas: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Licencia: CC BY-NC-SA. Propiedad: Gobierno de Aragón.',
-    page:'Página {n}', fileBase:'material'
+    page:'Página {n}', fileBase:'material',
+    play:'Leer', stop:'Parar', playTip:'Leer en voz alta (Ctrl+Intro). Si hay una palabra seleccionada, empieza por ella.', stopTip:'Parar la lectura (Esc)',
+    student:'Modo alumno', studentTip:'Modo alumno: la voz le ayuda mientras escribe', studentOn:'Modo alumno activado: la voz ayuda mientras se escribe.', studentOff:'Modo alumno desactivado.',
+    voiceBtn:'Voz', voiceTip:'Voz y lectura: voces, velocidad, resaltado y ayuda mientras se escribe', voiceT:'Voz y lectura',
+    studentChk:'Modo alumno: la voz le ayuda mientras escribe', fbSec:'Mientras el alumno escribe', fbNote:'Estas opciones solo funcionan en modo alumno.',
+    prof_none:'Solo el botón ▶', prof_words:'Palabras', prof_ws:'Palabras y frases', prof_all:'Letras, palabras y frases',
+    fbLetters:'Decir el nombre de cada letra al pulsarla', fbWords:'Decir la palabra al pulsar el espacio', fbSentences:'Leer la frase al poner . ? ! o al pulsar Intro', fbTouch:'Tocar una palabra para escucharla',
+    voicesSec:'Voces', voice_ca:'Catalán', voice_es:'Castellano', voiceAuto:'Automática: {v}', voiceNone:'Ninguna voz', test:'Probar',
+    tagNatural:'natural', tagOnline:'en línea', tagLocal:'del ordenador',
+    onlineNote:'Las voces «en línea» suenan más naturales, pero necesitan internet y envían el texto que se lee a Microsoft o Google para convertirlo en voz. El nombre y la fecha nunca se leen ni se envían.',
+    noVoice_ca:'Este ordenador no tiene ninguna voz en catalán. El navegador Edge tiene voces naturales. En Windows también puedes añadir una: Configuración → Hora e idioma → Voz → Agregar voces → Català.',
+    noVoice_es:'Este ordenador no tiene ninguna voz en castellano. El navegador Edge tiene voces naturales. En Windows también puedes añadir una: Configuración → Hora e idioma → Voz → Agregar voces → Español (España).',
+    noSpeech:'Este navegador no puede leer en voz alta. Usa Chrome o Edge.',
+    readSec:'Lectura', rate:'Velocidad', flowNatural:'Natural (frase entera)', flowWord:'Palabra a palabra',
+    flowNote:'Con «Palabra a palabra» el resaltado siempre es exacto, pero suena menos fluido.',
+    hlChk:'Resaltar la palabra que se lee', hlc_0:'Amarillo', hlc_1:'Verde', hlc_2:'Azul', hlc_3:'Rosa',
+    bndYes:'Esta voz resalta cada palabra.', bndNo:'Esta voz no indica qué palabra lee: con «Natural» se resaltará la frase entera. Para resaltar palabra por palabra, elige «Palabra a palabra».',
+    noVoiceToast:'Este ordenador no tiene voz en {lang}.', langName_ca:'catalán', langName_es:'castellano',
+    nothingToRead:'Todavía no hay nada que leer.', listen:'Escuchar'
   }
 };
 const CATS = ['persones','verbs','descriptius','substantius','social','misc'];
@@ -841,7 +924,7 @@ function paintBlock(b, i){
   const noRes = b.status === 'none' && !b.composing && !b.picOff && !b.noSearch;
   const textOnly = b.picOff || b.noSearch || noRes;
   const f = eff(b);
-  el.className = 'blk' + (b.id === S.selectedId ? ' sel' : '') + (b.composing ? ' composing' : '') + (b.composing && !b.text ? ' empty' : '') + (editing && !b.composing ? ' editing' : '') + (textOnly ? ' textonly' : '') + (noRes ? ' nores' : '');
+  el.className = 'blk' + (b.id === S.selectedId ? ' sel' : '') + (b.composing ? ' composing' : '') + (b.composing && !b.text ? ' empty' : '') + (editing && !b.composing ? ' editing' : '') + (textOnly ? ' textonly' : '') + (noRes ? ' nores' : '') + (SP.hl.has(b.id) ? ' speaking' : '');
   el.style.setProperty('--fs', f.size + 'pt');
   el.title = noRes ? t('st_none', {q:b.searchedQuery || b.query}) : '';
   const lbl = el.firstChild, pic = lbl.nextSibling, img = pic.querySelector('img'), ph = pic.querySelector('.ph');
@@ -964,7 +1047,7 @@ function finalizeWord(b){
 // Converteix el text escrit en blocs. "consumed" acaba en separador; "rest" és la paraula a mitges.
 function applyComposeText(b, consumed, rest){
   const toks = tokenize(consumed);
-  if(!toks.length){ b.text = rest; edInput.value = rest; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); return; }
+  if(!toks.length){ b.text = rest; edInput.value = rest; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); return []; }
   if(!S.composePushed){ pushUndo(); S.composePushed = true; }
   clearTimeout(pauseTimer);
   const idx = doc.blocks.indexOf(b);
@@ -989,6 +1072,7 @@ function applyComposeText(b, consumed, rest){
   c.text = rest;
   renderAll(); focusEditor(); scheduleSave();
   if(rest) schedulePause(c);
+  return list;
 }
 let pauseTimer = null;
 function schedulePause(b){
@@ -1003,6 +1087,10 @@ function onEdInput(e){
   if(!S.editor) return;
   const b = find(S.editor.id); if(!b) return;
   const v = edInput.value;
+  // La tecla que s'acaba de pitjar (només escriptura normal: no enganxar ni dictar)
+  const typed = e && e.inputType === 'insertText' && e.data && Array.from(e.data).length === 1 ? e.data : null;
+  if(SP.reading) stopSpeech();
+  if(typed) fbLetter(typed);
   if(S.editor.mode === 'edit'){
     if(!S.editPushed){ pushUndo(); S.editPushed = true; }
     b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); return;
@@ -1010,21 +1098,24 @@ function onEdInput(e){
   if(v.trim() && !S.composePushed){ pushUndo(); S.composePushed = true; }
   if(!SEP.test(v)){ b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); if(v) schedulePause(b); return; }
   let last = -1; for(let i = v.length - 1; i >= 0; i--){ if(SEP.test(v[i])){ last = i; break; } }
-  applyComposeText(b, v.slice(0, last + 1), v.slice(last + 1));
+  const list = applyComposeText(b, v.slice(0, last + 1), v.slice(last + 1));
+  const sep = typed || (!e ? v[last] : null);   // sense esdeveniment: teclats de tauleta que acaben una composició
+  if(sep && SEP.test(sep)) fbAfter(sep, list);
 }
 function onEdKey(e){
   if(!S.editor) return;
+  if(e.key === 'Escape' && SP.reading){ e.preventDefault(); stopSpeech(); return; }
   const mod = e.ctrlKey || e.metaKey;
   if(mod && /^[zZyY]$/.test(e.key)){ e.preventDefault(); e.stopPropagation(); (e.key.toLowerCase() === 'y' || e.shiftKey) ? redo() : undo(); return; }
   if(mod) return;
   if(S.editor.mode === 'edit'){
-    if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); }
+    if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); if(e.key === 'Enter') fbWord(id); }
     return;
   }
   const b = find(S.editor.id), v = edInput.value, i = doc.blocks.indexOf(b);
-  if(e.key === 'Enter'){ e.preventDefault(); applyComposeText(b, v + '\n', ''); return; }
+  if(e.key === 'Enter'){ e.preventDefault(); if(SP.reading) stopSpeech(); fbAfter('\n', applyComposeText(b, v + '\n', '')); return; }
   if(e.key === 'Escape'){ e.preventDefault(); commitEditor(); stack.focus({preventScroll:true}); return; }
-  if(e.key === 'Tab'){ if(v){ e.preventDefault(); applyComposeText(b, v + ' ', ''); } return; }
+  if(e.key === 'Tab'){ if(v){ e.preventDefault(); fbAfter(' ', applyComposeText(b, v + ' ', '')); } return; }
   if(v !== '') return;
   if(e.key === 'Backspace'){
     e.preventDefault(); const prev = doc.blocks[i-1]; if(!prev) return;
@@ -1107,7 +1198,9 @@ function indexFromPoint(pg, x, y){
 stack.addEventListener('pointerdown', e => {
   const blk = e.target.closest('.blk');
   if(e.target === edInput) return;
-  if(blk && !blk.classList.contains('br') && !blk.classList.contains('composing')){ e.preventDefault(); select(blk.dataset.id); return; }
+  if(blk && !blk.classList.contains('br') && !blk.classList.contains('composing')){ e.preventDefault(); select(blk.dataset.id);
+    if(VS.student && VS.touch) speakBlocks([find(blk.dataset.id)]);
+    return; }
   const pageEl = e.target.closest('.page');
   if(!pageEl || e.target.closest('.sheet-head')) return;
   e.preventDefault();
@@ -1124,6 +1217,8 @@ $('#ws').addEventListener('pointerdown', e => { if(e.target === $('#ws') || e.ta
 /* ================= Keyboard ================= */
 document.addEventListener('keydown', e => {
   const tg = e.target, mod = e.ctrlKey || e.metaKey;
+  if(mod && !e.altKey && e.key === 'Enter'){ e.preventDefault(); togglePlay(); return; }
+  if(e.key === 'Escape' && SP.reading){ stopSpeech(); if(tg !== edInput) return; }
   if(tg === edInput) return;
   const inField = tg.matches && tg.matches('input, textarea, select');
   if(mod && !e.altKey){
@@ -1149,6 +1244,7 @@ document.addEventListener('keydown', e => {
   if(e.key.length === 1 && !e.altKey){
     e.preventDefault();
     startCompose(sel ? idxOf(sel.id) + 1 : doc.blocks.length, e.key === ' ' ? '' : e.key);
+    if(e.key !== ' ') fbLetter(e.key);
   }
 });
 document.addEventListener('paste', e => {
@@ -1287,6 +1383,7 @@ $('#pText').addEventListener('input', e => { const b = selectedWord(); if(!b) re
 $('#pText').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.target.blur(); } });
 $('#pEdit').onclick = () => { const b = selectedWord(); if(b) startEdit(b); };
 $('#pClearText').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.text = ''; }); };
+$('#pListen').onclick = () => { const b = selectedWord(); if(b) speakBlocks([b]); };
 $('#pPrevAlt').onclick = () => cycle(selectedWord(), -1);
 $('#pNextAlt').onclick = () => cycle(selectedWord(), 1);
 $('#pAltsToggle').onclick = () => { S.altsOpen = !S.altsOpen; updatePanel(); };
@@ -1344,9 +1441,296 @@ function dialog({title, body, actions, extra}){
   });
 }
 
+/* ================= Veu: lectura en veu alta i ajuda mentre s'escriu ================= */
+// Fa servir les veus del navegador i de l'ordinador (gratuïtes). Els ajustos es desen a cada ordinador,
+// perquè cada ordinador té veus diferents; no van dins el projecte. Mai es llegeix el nom ni la data.
+const DEF_VOICE = {student:false, letters:false, words:true, sentences:true, touch:true, flow:'natural', rate:1, highlight:true, hlColor:'#FFE36E', voice:{ca:'', es:''}};
+const VS = Object.assign({}, DEF_VOICE, LS.get('voice', {}));
+VS.voice = Object.assign({ca:'', es:''}, VS.voice);
+const saveVS = () => LS.set('voice', VS);
+const HL_COLORS = ['#FFE36E', '#B9F3B0', '#BFE3FF', '#FFC9E3'];
+const PROFILES = {none:[false, false, false], words:[false, true, false], ws:[false, true, true], all:[true, true, true]};
+// Nom de les lletres (no el so: el so es farà amb gravacions de la mestra o la logopeda)
+const LETTERS = {
+  ca:{a:'a', b:'be alta', c:'ce', d:'de', e:'e', f:'efa', g:'ge', h:'hac', i:'i', j:'jota', k:'ca', l:'ela', m:'ema', n:'ena', o:'o', p:'pe', q:'cu', r:'erra', s:'essa', t:'te', u:'u', v:'ve baixa', w:'doble ve', x:'ics', y:'i grega', z:'zeta',
+    'ç':'ce trencada', 'à':'a amb accent obert', 'è':'e amb accent obert', 'é':'e amb accent tancat', 'í':'i amb accent', 'ò':'o amb accent obert', 'ó':'o amb accent tancat', 'ú':'u amb accent',
+    'ï':'i amb dièresi', 'ü':'u amb dièresi', 'ñ':'enye', '·':'punt volat'},
+  es:{a:'a', b:'be', c:'ce', d:'de', e:'e', f:'efe', g:'ge', h:'hache', i:'i', j:'jota', k:'ka', l:'ele', m:'eme', n:'ene', 'ñ':'eñe', o:'o', p:'pe', q:'cu', r:'erre', s:'ese', t:'te', u:'u', v:'uve', w:'uve doble', x:'equis', y:'i griega', z:'zeta',
+    'á':'a con tilde', 'é':'e con tilde', 'í':'i con tilde', 'ó':'o con tilde', 'ú':'u con tilde', 'ü':'u con diéresis', 'ç':'ce cedilla'}
+};
+const SAMPLE = {ca:'Hola! Sóc la veu de PictoEscriu.', es:'¡Hola! Soy la voz de PictoEscriu.'};
+const ENDS = /[.!?…]["»”)\]]*$/;   // final de frase
+const SP = {seq:0, reading:false, active:0, hl:new Set(), voices:[], bnd:{}, warned:{}, live:new Set()};
+const synth = () => window.speechSynthesis;
+const canSpeak = () => !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const vLang = v => String(v.lang).toLowerCase().replace(/_/g, '-');
+function loadVoices(){
+  if(!canSpeak()) return;
+  try{ SP.voices = Array.from(synth().getVoices() || []).filter(v => v && v.name && v.name !== 'undefined' && v.lang); }catch(e){ SP.voices = []; }
+  if(voiceDlg) voiceDlg.refresh();
+}
+// Ordre de preferència: veus naturals (Edge), millorades (Apple), de Google, i la variant d'Espanya
+function voiceScore(v, lang){
+  const n = v.name; let s = 0;
+  if(/natural|neural/i.test(n)) s += 50;
+  if(/enhanced|premium|millorada|mejorada/i.test(n)) s += 30;
+  if(/google/i.test(n)) s += 25;
+  if(v.localService === false) s += 5;
+  if(vLang(v) === lang + '-es') s += 10;
+  if(/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i.test(n)) s -= 20;
+  return s;
+}
+function voicesFor(lang){ return SP.voices.filter(v => vLang(v).split('-')[0] === lang).sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang)); }
+function pickVoice(lang){ const list = voicesFor(lang), want = VS.voice[lang];
+  return (want && list.find(v => v.voiceURI === want || v.name === want)) || list[0] || null; }
+const voiceKey = v => v ? (v.voiceURI || v.name) : '-';
+function voiceTags(v){ return [/natural|neural/i.test(v.name) ? t('tagNatural') : '', v.localService === false ? t('tagOnline') : t('tagLocal')].filter(Boolean).join(' · '); }
+// El que diu la veu per a un bloc: el text en minúscules (perquè «HE» no es lletregi). Sense text, la paraula del pictograma.
+function spokenText(b){
+  if(!b || b.kind !== 'word') return '';
+  let s = (b.text || '').trim();
+  if(!s) s = (b.capText || '').trim();
+  if(!s && b.status === 'ok' && !b.picOff && !b.noSearch && b.pictos[b.idx] && b.pictos[b.idx].kw[0]) s = b.pictos[b.idx].kw[0][0];
+  return s.replace(/[’`´]/g, "'").toLocaleLowerCase(b.lang || S.lang);
+}
+// Agrupa els blocs en frases: es talla al punt, al salt de línia, en canviar d'idioma o si la frase és molt llarga
+function chunksOf(blocks){
+  const out = []; let cur = null;
+  const flush = () => { if(cur && cur.items.length) out.push(cur); cur = null; };
+  for(const b of blocks){
+    if(!b || b.kind === 'br'){ flush(); continue; }
+    const s = spokenText(b); if(!/[\p{L}\p{N}]/u.test(s)) continue;
+    const lang = (b.lang || S.lang) === 'es' ? 'es' : 'ca';
+    if(cur && cur.lang !== lang) flush();
+    if(!cur) cur = {lang, items:[]};
+    cur.items.push({id:b.id, s});
+    if(ENDS.test(b.text || '') || cur.items.length >= 30 || (cur.items.length >= 15 && /[,;:]$/.test(s))) flush();
+  }
+  flush(); return out;
+}
+// Diu un text. La promesa es resol quan acaba o quan s'interromp.
+function utter(text, lang, h = {}){
+  return new Promise(res => {
+    const u = new SpeechSynthesisUtterance(text), v = pickVoice(lang);
+    u.lang = v ? v.lang : (lang === 'es' ? 'es-ES' : 'ca-ES'); if(v) u.voice = v;
+    u.rate = VS.rate; u.pitch = 1; u.volume = 1;
+    let done = false;
+    const fin = () => { if(done) return; done = true; clearTimeout(dog); SP.live.delete(u); res(); };
+    u.onstart = () => { if(h.start) h.start(); };
+    u.onboundary = e => { if(h.boundary) h.boundary(e); };
+    u.onend = fin; u.onerror = fin;
+    SP.live.add(u);   // Chrome perd l'avís de final si l'objecte desapareix
+    const dog = setTimeout(fin, 6000 + text.length * 160 / VS.rate);
+    try{ synth().speak(u); }catch(e){ fin(); }
+  });
+}
+function setHL(ids){
+  const next = new Set(VS.highlight ? ids : []);
+  for(const id of SP.hl) if(!next.has(id)){ const el = els.get(id); if(el) el.classList.remove('speaking'); }
+  for(const id of next) if(!SP.hl.has(id)){ const el = els.get(id); if(el) el.classList.add('speaking'); }
+  SP.hl = next;
+  const el = SP.reading && ids.length && els.get(ids[0]);
+  if(el && el.isConnected){ const r = el.getBoundingClientRect(), w = $('#ws').getBoundingClientRect();
+    if(r.top < w.top + 8 || r.bottom > w.bottom - 8) el.scrollIntoView({block:'center', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }
+}
+function warnNoVoice(lang){
+  if(!SP.voices.length || voicesFor(lang).length || SP.warned[lang]) return;
+  SP.warned[lang] = true;
+  toast(t('noVoiceToast', {lang:t('langName_' + lang)}), {timeout:9000, action:{label:t('voiceBtn'), fn:openVoiceDialog}});
+}
+async function speakChunks(chunks, token){
+  for(let ci = 0; ci < chunks.length; ci++){
+    const ch = chunks[ci], ids = ch.items.map(x => x.id);
+    if(token !== SP.seq) return;
+    warnNoVoice(ch.lang);
+    if(VS.flow === 'word'){
+      // Paraula a paraula: el ressaltat sempre és exacte
+      for(const it of ch.items){
+        if(token !== SP.seq) return;
+        await utter(it.s, ch.lang, {start:() => { if(token === SP.seq) setHL([it.id]); }});
+        if(token !== SP.seq) return;
+        await wait(180 / VS.rate);
+      }
+    } else {
+      // Natural: tota la frase alhora; la veu avisa de cada paraula (si ho sap fer) i la ressaltem
+      let text = ''; const offs = [];
+      ch.items.forEach(it => { if(text) text += ' '; offs.push(text.length); text += it.s; });
+      const key = voiceKey(pickVoice(ch.lang)); let got = false, timer = null;
+      await utter(text, ch.lang, {
+        start:() => {
+          if(token !== SP.seq) return;
+          if(ids.length === 1 || SP.bnd[key] === false){ setHL(ids); return; }
+          setHL([ids[0]]);
+          if(SP.bnd[key] !== true) timer = setTimeout(() => { if(!got && token === SP.seq){ SP.bnd[key] = false; setHL(ids); } }, 1500 / VS.rate);
+        },
+        boundary:e => {
+          if(token !== SP.seq || (e.name && e.name !== 'word')) return;
+          got = true; SP.bnd[key] = true; clearTimeout(timer);
+          let k = 0; while(k + 1 < offs.length && offs[k + 1] <= e.charIndex) k++;
+          setHL([ids[k]]);
+        }
+      });
+      clearTimeout(timer);
+      if(!got && ids.length > 1 && SP.bnd[key] === undefined) SP.bnd[key] = false;
+    }
+    if(token !== SP.seq) return;
+    setHL([]);
+    if(ci < chunks.length - 1) await wait(250 / VS.rate);
+  }
+}
+function stopSpeech(){
+  SP.seq++; const was = SP.reading; SP.reading = false;
+  if(canSpeak()){ try{ synth().cancel(); }catch(e){} }
+  setHL([]); if(was) updatePlayBtn();
+}
+// Interromp el que s'estigui dient i en comença un de nou
+async function begin(){
+  const busy = canSpeak() && (synth().speaking || synth().pending);
+  stopSpeech(); const token = SP.seq;
+  try{ synth().resume(); }catch(e){}
+  if(busy) await wait(60);   // alguns navegadors perden la frase nova si es diu just després d'interrompre
+  return token;
+}
+async function speakBlocks(blocks, reading){
+  if(!canSpeak()){ toast(t('noSpeech'), {kind:'error'}); return; }
+  const chunks = chunksOf(blocks); if(!chunks.length) return;
+  SP.active++;
+  try{
+    const token = await begin(); if(token !== SP.seq) return;
+    SP.reading = !!reading; updatePlayBtn();
+    await speakChunks(chunks, token);
+    if(token === SP.seq){ SP.reading = false; setHL([]); updatePlayBtn(); }
+  } finally { SP.active--; }
+}
+async function sayText(text, lang){
+  if(!canSpeak() || !text) return;
+  SP.active++;
+  try{ const token = await begin(); if(token === SP.seq) await utter(text, lang); }
+  finally { SP.active--; }
+}
+// Botó ▶: tot el document, o des de la paraula seleccionada. Mai la capçalera.
+function togglePlay(){
+  if(SP.reading){ stopSpeech(); return; }
+  if(!canSpeak()){ toast(t('noSpeech'), {kind:'error'}); return; }
+  const sel = selectedWord(), list = doc.blocks.slice(sel ? idxOf(sel.id) : 0);
+  if(!chunksOf(list).length){ toast(t('nothingToRead')); return; }
+  speakBlocks(list, true);
+}
+function updatePlayBtn(){
+  const on = SP.reading, ic = on ? 'square' : 'play';
+  [['#bPlay', '#bPlayL'], ['#bPlayBig', '#bPlayBigL']].forEach(([bs, ls]) => {
+    const btn = $(bs), pi = btn.querySelector('.pi');
+    btn.setAttribute('aria-pressed', String(on)); btn.title = t(on ? 'stopTip' : 'playTip');
+    if(pi.dataset.k !== ic){ pi.dataset.k = ic; pi.innerHTML = icon(ic); }
+    $(ls).textContent = t(on ? 'stop' : 'play');
+  });
+}
+function applyVoiceUI(){
+  document.body.classList.toggle('student', !!VS.student);
+  $('#bStudent').setAttribute('aria-pressed', String(!!VS.student));
+  $('#bPlayBig').hidden = !VS.student;
+  stack.style.setProperty('--speak', VS.hlColor);
+  updatePlayBtn();
+}
+function setStudent(on){ VS.student = !!on; saveVS(); applyVoiceUI(); toast(t(on ? 'studentOn' : 'studentOff')); if(voiceDlg) voiceDlg.render(); }
+
+/* ---- Ajuda mentre l'alumne escriu (només en mode alumne) ---- */
+function fbLetter(ch){
+  if(!VS.student || !VS.letters || !ch) return;
+  const lang = S.lang === 'es' ? 'es' : 'ca', c = ch.toLocaleLowerCase(lang);
+  if(!/^[\p{L}\p{N}·]$/u.test(c)) return;
+  sayText(LETTERS[lang][c] || c, lang);
+}
+// La frase que acaba al bloc «li»: enrere fins al punt anterior, un salt de línia o el principi
+function sentenceAt(li){
+  const out = [];
+  for(let i = li; i >= 0; i--){ const b = doc.blocks[i]; if(b.kind === 'br' || (i !== li && ENDS.test(b.text || ''))) break; out.unshift(b); }
+  return out;
+}
+// Després d'un espai, un signe o un Retorn: diu la paraula acabada o llegeix la frase
+function fbAfter(sep, list){
+  if(!VS.student || !S.editor) return;
+  let li = idxOf(S.editor.id) - 1;
+  if(sep === '\n'){
+    li--; const w = doc.blocks[li]; if(!w || w.kind !== 'word') return;
+    if(VS.sentences){ if(!ENDS.test(w.text || '')) speakBlocks(sentenceAt(li)); return; }
+    if(VS.words && list.includes(w)) speakBlocks([w]);
+    return;
+  }
+  const w = doc.blocks[li]; if(!w || w.kind !== 'word') return;
+  if(VS.sentences && /[.!?…]/.test(sep) && ENDS.test(w.text || '')){ speakBlocks(sentenceAt(li)); return; }
+  if(VS.words && list.includes(w)) speakBlocks([w]);
+}
+function fbWord(id){ const b = find(id); if(VS.student && VS.words && b) speakBlocks([b]); }
+
+/* ---- Finestra «Veu i lectura» ---- */
+let voiceDlg = null;
+function openVoiceDialog(){
+  if(voiceDlg) return;
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  const msgs = {ca:'', es:''};
+  const profOf = () => Object.keys(PROFILES).find(k => PROFILES[k].join() === [VS.letters, VS.words, VS.sentences].map(Boolean).join());
+  const voiceSel = lang => {
+    const list = voicesFor(lang);
+    if(!list.length) return `<select id="vdV${lang}" class="sel-in" disabled><option>${esc(t('voiceNone'))}</option></select>`;
+    return `<select id="vdV${lang}" class="sel-in"><option value="">${esc(t('voiceAuto', {v:list[0].name}))}</option>${list.map(v => `<option value="${esc(v.voiceURI || v.name)}"${(VS.voice[lang] === v.voiceURI || VS.voice[lang] === v.name) ? ' selected' : ''}>${esc(v.name)} · ${esc(voiceTags(v))}</option>`).join('')}</select>`;
+  };
+  const voiceRow = lang => `<div class="vrow"><label for="vdV${lang}">${esc(t('voice_' + lang))}</label>${voiceSel(lang)}<button class="btn outline" data-test="${lang}"${voicesFor(lang).length ? '' : ' disabled'}>${icon('volume-2')}${esc(t('test'))}</button></div>
+    <p class="msg" id="vdM${lang}">${esc(voicesFor(lang).length ? msgs[lang] : t('noVoice_' + lang))}</p>`;
+  const chk = (id, on, key) => `<label class="chk"><input type="checkbox" id="${id}"${on ? ' checked' : ''}> ${esc(t(key))}</label>`;
+  const render = () => {
+    const a = document.activeElement, inside = a && ov.contains(a) && a !== ov;
+    const focusSel = !inside ? null : a.id ? '#' + a.id : a.parentElement && a.parentElement.id && (a.dataset.v || a.dataset.c) ? `#${a.parentElement.id} [data-${a.dataset.v ? 'v' : 'c'}="${a.dataset.v || a.dataset.c}"]` : null;
+    const prof = profOf();
+    ov.innerHTML = `<div class="dialog voice" role="dialog" aria-modal="true" aria-labelledby="vdT"><h2 id="vdT">${esc(t('voiceT'))}</h2>
+      <label class="chk big"><input type="checkbox" id="vdStudent"${VS.student ? ' checked' : ''}> <b>${esc(t('studentChk'))}</b></label>
+      <div class="vsec"><h3>${esc(t('fbSec'))}</h3><div class="vopts${VS.student ? '' : ' off'}">
+        <div class="seg" id="vdProf" role="group">${Object.keys(PROFILES).map(k => `<button data-v="${k}" aria-pressed="${prof === k}">${esc(t('prof_' + k))}</button>`).join('')}</div>
+        ${chk('vdLetters', VS.letters, 'fbLetters')}${chk('vdWords', VS.words, 'fbWords')}${chk('vdSent', VS.sentences, 'fbSentences')}${chk('vdTouch', VS.touch, 'fbTouch')}
+        ${VS.student ? '' : `<p class="msg">${esc(t('fbNote'))}</p>`}</div></div>
+      <div class="vsec"><h3>${esc(t('voicesSec'))}</h3>
+        ${canSpeak() ? voiceRow('ca') + voiceRow('es') + `<p class="msg">${esc(t('onlineNote'))}</p>` : `<p class="msg err">${esc(t('noSpeech'))}</p>`}</div>
+      <div class="vsec"><h3>${esc(t('readSec'))}</h3>
+        <div class="vrow"><label for="vdRate">${esc(t('rate'))}</label><input type="range" id="vdRate" min="0.5" max="1.5" step="0.1" value="${VS.rate}"><span class="val" id="vdRateV">${Math.round(VS.rate * 100)} %</span></div>
+        <div class="seg" id="vdFlow" role="group"><button data-v="natural" aria-pressed="${VS.flow !== 'word'}">${esc(t('flowNatural'))}</button><button data-v="word" aria-pressed="${VS.flow === 'word'}">${esc(t('flowWord'))}</button></div>
+        <p class="msg">${esc(t('flowNote'))}</p>
+        ${chk('vdHl', VS.highlight, 'hlChk')}
+        <div class="swatches" id="vdHlC" role="group" aria-label="${esc(t('hlChk'))}">${HL_COLORS.map((c, i) => `<button data-c="${c}" style="background:${c}" aria-pressed="${VS.hlColor === c}" title="${esc(t('hlc_' + i))}" aria-label="${esc(t('hlc_' + i))}"${VS.highlight ? '' : ' disabled'}></button>`).join('')}</div>
+      </div>
+      <div class="acts"><button class="btn primary" id="vdClose">${esc(t('ok'))}</button></div></div>`;
+    const $o = s => ov.querySelector(s), set = (k, v) => { VS[k] = v; saveVS(); };
+    $o('#vdClose').onclick = close;
+    $o('#vdStudent').onchange = e => setStudent(e.target.checked);
+    $o('#vdProf').onclick = e => { const b = e.target.closest('button[data-v]'); if(!b) return; [VS.letters, VS.words, VS.sentences] = PROFILES[b.dataset.v]; saveVS(); render(); };
+    [['#vdLetters', 'letters'], ['#vdWords', 'words'], ['#vdSent', 'sentences'], ['#vdTouch', 'touch'], ['#vdHl', 'highlight']].forEach(([s, k]) => { $o(s).onchange = e => { set(k, e.target.checked); render(); }; });
+    ['ca', 'es'].forEach(lang => { const s = $o('#vdV' + lang); if(s && !s.disabled) s.onchange = e => { VS.voice[lang] = e.target.value; saveVS(); msgs[lang] = ''; $o('#vdM' + lang).textContent = ''; }; });
+    ov.querySelectorAll('[data-test]').forEach(b => b.onclick = () => testVoice(b.dataset.test));
+    $o('#vdRate').oninput = e => { set('rate', +e.target.value); $o('#vdRateV').textContent = Math.round(VS.rate * 100) + ' %'; };
+    $o('#vdFlow').onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ set('flow', b.dataset.v); render(); } };
+    $o('#vdHlC').onclick = e => { const b = e.target.closest('button[data-c]'); if(b){ set('hlColor', b.dataset.c); applyVoiceUI(); render(); } };
+    const f = focusSel && $o(focusSel); if(f) f.focus();
+  };
+  // Prova la veu i explica si sap indicar cada paraula (per al ressaltat)
+  const testVoice = async lang => {
+    const token = await begin(); if(token !== SP.seq) return;
+    let got = false; const key = voiceKey(pickVoice(lang));
+    await utter(SAMPLE[lang], lang, {boundary:e => { if(!e.name || e.name === 'word'){ got = true; } }});
+    if(token !== SP.seq) return;
+    SP.bnd[key] = got; msgs[lang] = t(got ? 'bndYes' : 'bndNo');
+    const m = ov.querySelector('#vdM' + lang); if(m) m.textContent = msgs[lang];
+  };
+  const close = () => { ov.remove(); voiceDlg = null; };
+  voiceDlg = {render, refresh:render};
+  render();
+  ov.addEventListener('keydown', e => { if(e.key === 'Escape'){ e.stopPropagation(); close(); } });
+  ov.addEventListener('click', e => { if(e.target === ov) close(); });
+  document.body.appendChild(ov); ov.querySelector('#vdStudent').focus();
+}
+
 /* ================= Print ================= */
 async function doPrint(){
-  commitEditor(true); deselect(); paginate();
+  commitEditor(true); deselect(); paginate(); stopSpeech();
   if(!LS.get('printNoteOff', false)){
     const r = await dialog({title:t('printT'), body:t('printB'), extra:`<label><input type="checkbox"> ${esc(t('dontShow'))}</label>`,
       actions:[{label:t('cancel'), v:false}, {label:t('printGo'), v:true, primary:true}]});
@@ -1388,7 +1772,7 @@ let busyOv = null;
 function showBusy(msg){ busyOv = document.createElement('div'); busyOv.className = 'overlay'; busyOv.innerHTML = `<div class="dialog" style="max-width:340px;flex-direction:row;align-items:center"><span class="spin"></span><p>${esc(msg)}</p></div>`; document.body.appendChild(busyOv); }
 function hideBusy(){ if(busyOv){ busyOv.remove(); busyOv = null; } }
 async function exportPDF(force){
-  commitEditor(true); deselect(); paginate();
+  commitEditor(true); deselect(); paginate(); stopSpeech();
   if(!window.jspdf || !window.jspdf.jsPDF){ toast(t('pdfLib'), {kind:'error'}); return; }
   showBusy(t('pdfPrep'));
   try{
@@ -1476,7 +1860,8 @@ function applyI18n(){
   pages.forEach((pg, i) => { pg.foot.textContent = t('attrib'); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
   $('#sLang').value = S.lang; fillFonts();
   $('#pCats').dataset.k = '';
-  updateToolbar(); updatePanel();
+  updateToolbar(); updatePanel(); updatePlayBtn();
+  if(voiceDlg) voiceDlg.render();
 }
 
 /* ================= Wiring ================= */
@@ -1488,7 +1873,7 @@ $('#bNew').onclick = async () => {
   commitEditor(true);
   const r = await dialog({title:t('confirmNewT'), body:t('confirmNewB'), actions:[{label:t('cancel'), v:false}, {label:t('newDoc'), v:true, primary:true}]});
   if(!r.v) return;
-  pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText};
+  stopSpeech(); pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText};
   renderAll(); syncHeaderInputs(); scheduleSave(); startCompose(0);
 };
 $('#bOpen').onclick = () => $('#fileIn').click();
@@ -1515,6 +1900,15 @@ $('#bItalic').onclick = () => setFmt('italic', !eff(selectedWord()).italic);
 $('#bUpper').onclick = () => setCase('upper');
 $('#bLower').onclick = () => setCase('lower');
 $('#bApplyAll').onclick = applyAll;
+$('#bPlay').onclick = togglePlay;
+$('#bPlayBig').onclick = togglePlay;
+$('#bStudent').onclick = () => setStudent(!VS.student);
+$('#bVoice').onclick = openVoiceDialog;
+// Llegir i el mode alumne no treuen el cursor de l'editor: l'alumne pot continuar escrivint
+['#bPlay', '#bPlayBig', '#bStudent'].forEach(s => $(s).addEventListener('pointerdown', e => e.preventDefault()));
+if(canSpeak()){ loadVoices(); const sy = synth();
+  if(sy.addEventListener) sy.addEventListener('voiceschanged', loadVoices); else sy.onvoiceschanged = loadVoices;
+  [400, 1500, 4000].forEach(ms => setTimeout(() => { if(!SP.voices.length) loadVoices(); }, ms)); }
 $('#bZoomIn').onclick = () => setZoom(zoomVal() + 0.1);
 $('#bZoomOut').onclick = () => setZoom(zoomVal() - 0.1);
 $('#bFitPage').onclick = () => fit('page');
@@ -1528,7 +1922,7 @@ window.addEventListener('beforeprint', () => { commitEditor(true); });
 fontsReady.then(function boot(){
   const draft = LS.get('draft', null);
   makePage(0);
-  applyI18n();
+  applyI18n(); applyVoiceUI();
   if(draft && draft.app === 'PictoEscriu' && ((draft.blocks && draft.blocks.length) || (draft.header && (draft.header.name || draft.header.date)))){
     restore(draft);
     toast(t('restored'), {action:{label:t('newDoc'), fn:() => $('#bNew').click()}, timeout:6000});

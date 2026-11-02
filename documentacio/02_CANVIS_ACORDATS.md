@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: versió 0.5, construïda i provada al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real.
+Estat actual: versió 0.6 (2 de novembre de 2026), que afegeix la lectura en veu alta i el mode alumne (secció 11). La versió 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat i una veu simulada. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real ni amb les veus reals.
 
 ## 1. Distribució
 - **Fitxer HTML autònom** (`docs/index.html`), d'uns 1,2 MB, amb tipus de lletra, icones i jsPDF incrustats.
@@ -62,3 +62,30 @@ Ordre de cerca, a `findPictos()`:
 - Convertir-la en PWA instal·lable.
 - Lletra lligada.
 - Fotos pròpies en lloc de pictogrames (pendent de decidir: dubte 2).
+- **Veu, fase 2** (vegeu la secció 11):
+  - **Sons de les lletres gravats** per la mestra i la logopeda (també ny, ll, qu, gu, ix, tx, l·l…). Les veus sintètiques diuen el nom de la lletra, no el so.
+  - **Lectura fonema a fonema** de com s'ha escrit una paraula i, després, **lectura global**.
+  - **Veus descarregables que funcionen sense internet** i sense enviar el text: Ona (català, Piper, dades UPC/Festcat, CC BY-SA), veus castellanes de Piper i, potser, Matxa del Projecte Aina (accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
+- **Nova proposta de colors i de logo** («molt visual, fàcil i semblant a un Word o a OpenOffice», amb un logo amb més impacte en obrir el programa). **En espera:** la mestra ho vol fer més endavant i pot passar el logo de la seva associació per inspirar-s'hi.
+
+## 11. Veu: lectura en veu alta i mode alumne (versió 0.6, 2 de novembre de 2026)
+Decisions de la mestra:
+- **Botó ▶ Llegir**, sempre a la barra. Llegeix tot el document o, si hi ha una paraula seleccionada, des d'aquella. El mateix botó fa ■ Aturar. Dreceres: **Ctrl+Retorn** llegeix o atura; **Esc** atura.
+- **Ressalta la paraula que es llegeix** (text i pictograma junts, en groc per defecte; es pot triar el color o treure-ho). La pàgina es mou sola per seguir la lectura. El ressaltat **no canvia cap mida** i **no surt ni al PDF ni a la impressió**.
+- **Mai es llegeix el nom ni la data** de la capçalera.
+- El text s'envia a la veu en minúscules, perquè «HE MENJAT» es llegeixi com a paraules i no lletra per lletra. **La frase escrita no canvia.**
+- **Mode mestre (per defecte):** només el botó ▶. Escriure no fa parlar i tocar una paraula només la selecciona.
+- **Mode alumne:** s'activa amb **un sol clic** al botó «Mode alumne» de la barra (també des de la finestra «Veu»). Apareix un **botó ▶ gran** a baix a la dreta, pensat per a commutador i seguidor ocular. El botó ▶ de la barra no treu el cursor de l'editor: l'alumne pot continuar escrivint.
+- **Ajuda mentre escriu** (només en mode alumne), cada opció es pot activar per separat:
+  - **Lletra:** el nom de la lletra en pitjar-la («ema», «be alta», «ce trencada»; en castellà «eme», «eñe»…). **No** el so: els sons es gravaran amb la logopeda més endavant.
+  - **Paraula:** en pitjar l'espai, diu la paraula acabada i la ressalta.
+  - **Frase:** en posar . ? ! o en pitjar Retorn, llegeix la frase sencera.
+  - **Tocar una paraula** per escoltar-la.
+  - Perfils ràpids: «Només el botó ▶», «Paraules», «Paraules i frases» (**per defecte en mode alumne**) i «Lletres, paraules i frases».
+- **Panell del bloc:** botó **Escoltar** per sentir aquella paraula, en qualsevol mode.
+- **Veus:** les del navegador i de l'ordinador, gratuïtes. L'aplicació tria sola la millor: primer les veus naturals d'Edge (Microsoft, en línia), després les millorades d'Apple, les de Google i les de l'ordinador. A la finestra «Veu» es pot triar una altra veu per al català i per al castellà, provar-la i canviar la velocitat. Les veus amb el nom «undefined» (error conegut d'Edge) s'amaguen.
+- **Privacitat (acceptat per la mestra):** si es fa servir una veu «en línia», el text que es llegeix s'envia a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s'envien mai. Més endavant es descarregaran veus que funcionin sense internet (secció 10).
+- **Dues maneres de llegir amb el botó ▶:** «Natural (frase sencera)», per defecte, i «Paraula a paraula». Algunes veus (sobretot les de Google a Chrome) no diuen quina paraula estan llegint: amb «Natural», l'aplicació ho detecta i ressalta la frase sencera. Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid. El botó «Provar» de la finestra «Veu» avisa de com es comporta cada veu.
+- **On es desa:** els ajustos de veu es desen **a cada ordinador** (cada ordinador té veus diferents), no dins el projecte.
+- **Barra superior:** per fer lloc als botons nous, per sota de 1600 px d'amplada Desfer, Refer, Crèdits i Veu només mostren la icona, i per sota de 1366 px també Nou, Obrir, Desar i el nom del programa. Per sota de 900 px, «Exportar PDF» i «Imprimir» també només mostren la icona. Totes les icones tenen el nom en passar-hi el ratolí.
+- Si l'ordinador no té veu en català o en castellà, l'aplicació ho avisa i explica com afegir-ne una (Edge té veus naturals; a Windows: Configuració → Hora i idioma → Veu → Afegir veus).
