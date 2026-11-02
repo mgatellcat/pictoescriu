@@ -97,7 +97,7 @@ Ordre de cerca, a `findPictos()`:
   - **Lectura fonema a fonema** de com s'ha escrit una paraula i, després, **lectura global**.
   - ~~Veus descarregables~~: fet a la 0.7.0 (Ona i Sharvard). Més endavant, potser **Matxa** del Projecte Aina (més natural; accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
 - **Nova proposta de colors, de logo i de nom de l'eina** («molt visual, fàcil i semblant a un Word o a OpenOffice», amb un logo amb més impacte en obrir el programa). La mestra passarà el logo de la seva associació per inspirar-s'hi; la frase «50 anys» desapareixerà del logo al gener de 2027.
-- **Analitzar LECAA** (https://utacub.github.io/lecaa_docs/) per proposar millores. Pendent: l'entorn de treball no hi té accés.
+- **Propostes a partir de LECAA Docs** (UTAC, UB): vegeu `06_ANALISI_LECAA_DOCS.md`. Pendents de triar.
 
 ## 12. Veu: lectura en veu alta i mode alumne (versions 0.6 i 0.7.0, 2 de novembre de 2026)
 Decisions de la mestra:

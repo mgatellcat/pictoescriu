@@ -16,6 +16,7 @@ Documentació a `documentacio/`, en aquest ordre:
 3. `03_PROPOSTA_GENERADOR_ACTIVITATS.md`: proposta, basada en evidència, d'un generador d'activitats de lectoescriptura.
 4. `04_ACTIVITATS_LECTOESCRIPTURA_CAA.md`: document de referència de la mestra sobre activitats amb alumnat usuari de CAA.
 5. `05_ANALISI_I_DUBTES.md`: anàlisi del document 04 i set dubtes **pendents de resposta** abans d'implementar el generador.
+6. `06_ANALISI_LECAA_DOCS.md`: comparació amb LECAA Docs (UTAC, UB) i propostes de millora **pendents de triar**.
 
 ## Estructura del codi
 - `src/app.html`: tot el codi de l'aplicació (HTML, CSS i JavaScript en un fitxer). Conté tres marcadors que omple el build: `/*__ICONS__*/{}`, `/*__FONTS_JSON__*/{}` i `/*__JSPDF__*/`.
