@@ -8,7 +8,8 @@ const DB = { ca:{ la:[[1001,'la',6]], nena:[[2001,'nena',2],[2002,'nena',2],[200
   es:{ la:[[1001,'la',6]], 'niña':[[5001,'niña',2]], comer:[[6001,'comer',3]], una:[[1002,'una',6]], manzana:[[7001,'manzana',2]] } };
 let offline = false; const hits = [];
 (async () => {
-  const browser = await chromium.launch();
+  // Micròfon simulat (un xiulet) per provar la gravació dels sons
+  const browser = await chromium.launch({args:['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream']});
   const ctx = await browser.newContext({ viewport:{width:1440, height:900}, acceptDownloads:true });
   // Veu simulada: el Chromium de proves no té veus. Registra què es diu i avisa de cada paraula com fan les veus reals.
   await ctx.addInitScript(() => {
@@ -349,12 +350,13 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.7\.0/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.8\.0/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
   const pe = await ctx.newPage(); pe.on('pageerror', e => errors.push('esborrar ' + e));
   await pe.goto('file://' + APP); await pe.evaluate(() => localStorage.clear()); await pe.reload(); await pe.waitForTimeout(500);
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);   // sempre amb un document nou (una altra pàgina pot haver desat un esborrany)
   const eState = () => pe.evaluate(() => ({ed:S.editor ? S.editor.mode : null, sel:S.selectedId, selBox:document.querySelectorAll('.blk.sel').length,
     words:doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.pictoId || '-')).join(' ')}));
   const eIdle = () => pe.waitForFunction(() => !doc.blocks.some(b => b.status === 'loading'), null, {timeout:8000});
@@ -586,6 +588,78 @@ let offline = false; const hits = [];
   ok('VEU BAIXADA Crèdits de les veus', /Ona \(Universitat Politècnica de Catalunya/.test(await pp.textContent('.overlay')));
   await pp.click('.overlay .btn.primary');
   await pp.close();
+
+  // ================= Sons de les lletres, «Lletrejar» i bloqueig de pantalla =================
+  const ps = await ctx.newPage(); ps.on('pageerror', e => errors.push('sons ' + e));
+  ps.on('console', m => { if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errors.push('sons ' + m.text()); });
+  await ps.goto('file://' + APP); await ps.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-sons-1'); }); await ps.reload(); await ps.waitForTimeout(500);
+  const psQuiet = () => ps.waitForFunction(() => !SP.reading && !SP.active && !SND.src && !speechSynthesis.speaking, null, {timeout:15000});
+  const UN = await ps.evaluate(() => { const f = (w, l) => spellUnits(w, l).filter(u => u.letter).map(u => u.txt + '=' + (u.snd || '·')).join(' ');
+    return [f('guerra','ca'), f('quilo','ca'), f('caixa','ca'), f('hola','ca'), f('col·legi','ca'), f('cotxe','ca'), f('cinc','ca'), f('rosa','ca'), f('platja','ca'), f("l'aigua",'ca'),
+      f('chico','es'), f('guerra','es'), f('cielo','es'), f('jamón','es'), f('llave','es'), f('hoy','es'), f('niño','es')]; });
+  const UNX = ['gu=g e=e rr=rr a=a', 'qu=k i=i l=l o=o', 'c=k a=a ix=sh a=a', 'h=· o=o l=l a=a', 'c=k o=o l·l=l e=e g=zh i=i', 'c=k o=o tx=tsh e=e', 'c=s i=i n=n c=k', 'r=rr o=o s=s a=a', 'p=p l=l a=a tj=dzh a=a', 'l=l a=a i=i g=g u=u a=a',
+    'ch=ch i=i c=k o=o', 'gu=g e=e rr=rr a=a', 'c=th i=i e=e l=l o=o', 'j=x a=a m=m ó=o n=n', 'll=y a=a v=b e=e', 'h=· o=o y=i', 'n=n i=i ñ=ny o=o'];
+  const unBad = UN.map((x, i) => x === UNX[i] ? '' : x + ' ≠ ' + UNX[i]).filter(Boolean);
+  ok('SONS Taula lletra → so (dígrafs, c/g suaus, h muda, r inicial)', unBad.length === 0, unBad.join(' | '));
+  // Gravar amb el micròfon
+  await ps.click('#bVoice'); await ps.click('#vdSnd'); await ps.click('[data-rec="m"]');
+  await ps.waitForFunction(() => SND.have.ca.has('m'), null, {timeout:10000}); await ps.waitForTimeout(200);
+  let SV = await ps.evaluate(() => ({row:document.querySelector('[data-rec="m"]').closest('.sndrow').className, btn:document.querySelector('[data-rec="m"]').textContent}));
+  ok('SONS Gravar un so amb el micròfon', /has/.test(SV.row) && /Tornar a gravar/.test(SV.btn), JSON.stringify(SV));
+  // Obrir un fitxer de sons
+  const wav = (hz, ms) => { const sr = 16000, pad = Math.round(sr * 0.15), n = Math.round(sr * ms / 1000), tot = n + 2 * pad, b = Buffer.alloc(44 + tot * 2);
+    b.write('RIFF', 0); b.writeUInt32LE(36 + tot * 2, 4); b.write('WAVEfmt ', 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(sr, 24); b.writeUInt32LE(sr * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(tot * 2, 40);
+    for(let i = 0; i < n; i++) b.writeInt16LE(Math.round(Math.sin(2 * Math.PI * hz * i / sr) * 12000), 44 + (pad + i) * 2);
+    return 'data:audio/wav;base64,' + b.toString('base64'); };
+  const sndFile = OUT + '/sons-prova.json';
+  fs.writeFileSync(sndFile, JSON.stringify({app:'PictoEscriu', kind:'sons', format:1, sons:{ca:{a:wav(440, 200), r:wav(330, 200), zz:wav(200, 100)}, es:{ny:wav(500, 200)}}}));
+  await ps.setInputFiles('#sndIn', sndFile); await ps.waitForFunction(() => SND.have.ca.has('a') && SND.have.ca.has('r') && SND.have.es.has('ny'), null, {timeout:8000});
+  SV = await ps.evaluate(() => ({msg:document.querySelector('#sdMsg').textContent, ca:[...SND.have.ca].sort().join(','), es:[...SND.have.es].join(',')}));
+  ok('SONS Obrir un fitxer de sons (i ignorar els desconeguts)', /S'han afegit 3 sons/.test(SV.msg) && SV.ca === 'a,m,r' && SV.es === 'ny', JSON.stringify(SV));
+  const [dls] = await Promise.all([ps.waitForEvent('download'), ps.click('#sdExport')]);
+  const sndOut = OUT + '/sons-desats.json'; await dls.saveAs(sndOut);
+  const sj = JSON.parse(fs.readFileSync(sndOut, 'utf8'));
+  ok('SONS Desar els sons en un fitxer per a un altre ordinador', dls.suggestedFilename() === 'sons-pictoescriu.json' && /^data:audio\//.test(sj.sons.ca.m) && /^data:audio\/wav/.test(sj.sons.ca.a) && !!sj.sons.es.ny, Object.keys(sj.sons.ca).join(','));
+  await ps.click('#sdClose'); await ps.click('#vdClose');
+  // «Lletrejar» des del panell
+  await ps.evaluate(() => startCompose(doc.blocks.length)); await ps.keyboard.type('mare ', {delay:20}); await ps.waitForTimeout(300);
+  await ps.evaluate(() => { window.__played = []; const o = sndPlay; window.sndPlay = (l, k) => { window.__played.push(k); return o(l, k); };
+    window.__marks = []; new MutationObserver(() => { const m = document.querySelector('.lbl .spell-on'); if(m && window.__marks[window.__marks.length - 1] !== m.textContent) window.__marks.push(m.textContent); })
+      .observe(document.getElementById('stack'), {subtree:true, childList:true, characterData:true}); window.__tts.length = 0; });
+  const mareId = await ps.evaluate(() => doc.blocks.find(b => b.text === 'mare').id);
+  await ps.click(`.blk[data-id="${mareId}"] .lbl`); await ps.click('#pSpell'); await ps.waitForFunction(() => SP.reading); await psQuiet();
+  SV = await ps.evaluate(() => ({played:window.__played.join(','), marks:window.__marks.join(','), tts:window.__tts.map(x => x.text).join('|'), lbl:document.querySelector('.lbl .spell-on') ? 'queda' : 'net', text:doc.blocks.find(b => b.text === 'mare') ? 'mare' : '?'}));
+  ok('SONS Lletrejar: cada lletra amb el seu so i marcada, i després la paraula', SV.played === 'm,a,r' && SV.marks === 'm,a,r,e' && SV.tts === 'e|mare' && SV.lbl === 'net' && SV.text === 'mare', JSON.stringify(SV));
+  // Mode alumne: so de la lletra en pitjar-la, i tocar una paraula per lletrejar-la
+  await ps.keyboard.press('Escape'); await ps.click('#bVoice'); await ps.click('#vdStudent'); await ps.click('#vdLetters'); await ps.click('#vdLK [data-v="sound"]'); await ps.click('#vdTK [data-v="spell"]'); await ps.click('#vdClose');
+  await ps.evaluate(() => { window.__played.length = 0; window.__tts.length = 0; startCompose(doc.blocks.length); });
+  await ps.keyboard.type('ma', {delay:300}); await psQuiet();
+  SV = await ps.evaluate(() => window.__played.join(','));
+  ok('SONS Mode alumne: el so gravat de cada lletra en pitjar-la', SV === 'm,a', SV);
+  await ps.keyboard.press('Escape'); await ps.evaluate(() => { window.__played.length = 0; });
+  await ps.click(`.blk[data-id="${mareId}"] .lbl`); await ps.waitForFunction(() => SP.reading); await psQuiet();
+  SV = await ps.evaluate(() => window.__played.join(','));
+  ok('SONS Mode alumne: tocar una paraula la lletreja', SV === 'm,a,r', SV);
+  // Bloqueig de pantalla
+  await ps.keyboard.press('Escape'); await ps.click('#bLock'); await ps.waitForTimeout(150);
+  SV = await ps.evaluate(() => ({locked:document.body.classList.contains('locked'), bar:getComputedStyle(document.querySelector('.topbar')).display, lockbar:!document.querySelector('#lockBar').hidden, ls:localStorage.getItem('pictoescriu.locked'), ed:S.editor && S.editor.mode}));
+  ok('BLOQUEIG Amaga la barra i deixa escriure', SV.locked && SV.bar === 'none' && SV.lockbar && SV.ls === 'true' && SV.ed === 'compose', JSON.stringify(SV));
+  const noDl = ps.waitForEvent('download', {timeout:800}).then(() => true, () => false);
+  await ps.keyboard.press('Control+s');
+  ok('BLOQUEIG Les dreceres de la barra no funcionen (Ctrl+S)', !(await noDl));
+  await ps.click(`.blk[data-id="${mareId}"] .lbl`); await ps.waitForTimeout(150);
+  ok('BLOQUEIG El panell de la paraula no surt', await ps.evaluate(() => getComputedStyle(document.querySelector('.panel')).display === 'none'));
+  for(let i = 0; i < 3; i++) await ps.click('#bUnlock');
+  const dots = await ps.textContent('#lockDots');
+  await ps.waitForTimeout(1900);
+  SV = await ps.evaluate(() => ({locked:document.body.classList.contains('locked'), dots:document.querySelector('#lockDots').textContent}));
+  ok('BLOQUEIG Tres tocs només mostren el compte, i es reinicia', dots === '●●●○○○○' && SV.locked && SV.dots === '', dots + ' ' + JSON.stringify(SV));
+  await ps.reload(); await ps.waitForTimeout(700);
+  ok('BLOQUEIG Continua bloquejat en tornar a obrir', await ps.evaluate(() => document.body.classList.contains('locked') && !document.querySelector('#lockBar').hidden && getComputedStyle(document.querySelector('.topbar')).display === 'none'));
+  for(let i = 0; i < 7; i++) await ps.click('#bUnlock');
+  SV = await ps.evaluate(() => ({locked:document.body.classList.contains('locked'), bar:getComputedStyle(document.querySelector('.topbar')).display, ls:localStorage.getItem('pictoescriu.locked')}));
+  ok('BLOQUEIG Set tocs seguits al cadenat el desbloquegen', !SV.locked && SV.bar !== 'none' && SV.ls === 'false', JSON.stringify(SV));
+  await ps.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

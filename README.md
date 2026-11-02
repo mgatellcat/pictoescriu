@@ -16,6 +16,8 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - 7 capçaleres per a primària, també en versió per pintar.
 - Fulls A4 reals, exportació a PDF amb text seleccionable, impressió, desar i obrir projectes, i desament automàtic.
 - **Lectura en veu alta** (botó ▶) amb la paraula ressaltada, i **mode alumne**: la veu diu la lletra, la paraula o la frase mentre s'escriu, i es pot tocar una paraula per escoltar-la. Fa servir les veus del navegador o, a qualsevol ordinador i també amb Chrome, les **veus gratuïtes descarregables** Ona (català) i Sharvard (castellà), que després funcionen sense internet.
+- **Sons de les lletres** gravats per la mestra o la logopeda (es poden passar a un altre ordinador amb un fitxer) i botó **«Lletrejar»**: cada lletra amb el seu so, marcada, i després la paraula sencera.
+- **Bloqueig de pantalla** per a l'alumne: pantalla completa sense la barra de botons; es desbloqueja prement el cadenat 7 vegades seguides.
 - Interfície en català i castellà.
 
 ## Per a qui vulgui continuar el desenvolupament

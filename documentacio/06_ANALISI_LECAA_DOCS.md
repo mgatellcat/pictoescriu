@@ -1,6 +1,6 @@
 # Anàlisi de LECAA Docs i propostes per a PictoEscriu
 
-Escrit el 2/11/2026, a petició de la mestra. **Cap proposta s'ha implementat encara:** cal triar-les abans.
+Escrit el 2/11/2026, a petició de la mestra. **Fetes a la 0.8.0:** la proposta 1 («Lletrejar», amb sons gravats per nosaltres) i la 3 (bloqueig de pantalla, desbloquejant amb 7 tocs al cadenat en lloc de contrasenya). La resta, pendents de triar.
 
 ## Què és LECAA Docs
 - Processador de textos senzill de la **UTAC** (Unitat de Tècniques Augmentatives de Comunicació, Universitat de Barcelona). Té lectura en veu alta i pictogrames ARASAAC i està pensat per ajudar els usuaris de CAA a aprendre a escriure.

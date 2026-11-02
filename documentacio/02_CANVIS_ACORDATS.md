@@ -2,12 +2,13 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.7.0** (2 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.8.0** (2 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
   - Una «0.6» i «0.6.1» del 2/11/2026: lectura en veu alta i mode alumne (apartat 12) i el cursor encallat en esborrar.
 - La 0.7.0 hi afegeix les veus descarregables (apartat 12), la selecció sense requadre de línies discontínues (apartat 10) i el doble clic que editava una altra paraula.
+- La 0.8.0 hi afegeix els sons de les lletres gravats, «Lletrejar» i el bloqueig de pantalla (apartats 13 i 14), triats de les propostes de `06_ANALISI_LECAA_DOCS.md`.
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -133,3 +134,31 @@ Decisions de la mestra:
 - Les veus es baixen de Hugging Face (`rhasspy/piper-voices`, amb una còpia de reserva a `diffusionstudio/piper-voices`).
 - **Crèdits:** Ona (Universitat Politècnica de Catalunya, corpus FestCat; CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft, MIT) i eSpeak NG.
 - **Proves:** les proves automàtiques fan servir un motor simulat (`tests/fixtures/veu/`); l'entorn de desenvolupament no permet executar el motor real. **Cal provar la veu real a l'ordinador de l'escola.**
+
+## 13. Sons de les lletres gravats i «Lletrejar» (versió 0.8.0, 2/11/2026)
+Decisions de la mestra: **els sons els gravem nosaltres** (no es fan servir els de LECAA). El que demanava era «fonema a fonema i després lectura global».
+- **Gravar:** «Veu» → «Sons de les lletres» → «Gravar els sons…». Hi ha una fila per a cada so, en català i en castellà, amb les lletres que el fan i una paraula d'exemple. «Gravar» fa servir el micròfon, s'atura sol als 2,5 segons i després sona perquè es pugui comprovar. També es pot escoltar, tornar a gravar o esborrar.
+- Es guarden al navegador (Cache Storage). **«Desar en un fitxer»** crea `sons-pictoescriu.json`, i **«Obrir un fitxer de sons»** el carrega en un altre ordinador. Així només cal gravar-los una vegada.
+- En reproduir-los, es retalla el silenci del principi i del final.
+- **«Lletrejar»** (panell de la paraula; en mode alumne, també en tocar una paraula si es tria «La lletreja i després la diu»):
+  - Marca en taronja cada lletra o grup de lletres mentre en sona el so gravat.
+  - Si un so encara no està gravat, en diu el nom.
+  - La h no sona.
+  - Al final llegeix la paraula sencera.
+  - La marca només surt a la pantalla, no canvia cap mida i no surt al PDF ni a la impressió.
+- **Mode alumne, lletra en pitjar-la:** es pot triar **el nom** («ema») o **el so gravat** (/m/). Si el so no està gravat, en diu el nom.
+- **Taula lletra → so:** el so més habitual de cada lletra o grup.
+  - En català: ny, ll, l·l, rr, ss, qu i gu (davant e, i), tx, ix (darrere vocal), tj/tg; c i g suaus davant e, i; ç; j; x; r inicial forta; v = b; y = i.
+  - En castellà: ch, ll = y, rr, qu, gu; c/z = /θ/; g/j = /x/; ñ; x = /ks/; r inicial forta; y final = i.
+  - **Pendent de validar amb la logopeda** (`spellUnits()` i `SOUNDS` de `src/app.html`). No té en compte les vocals neutres ni altres canvis segons la posició.
+
+## 14. Bloqueig de pantalla per a l'alumne (versió 0.8.0, 2/11/2026)
+Decisió de la mestra: **sense contrasenya**; es desbloqueja prement un cadenat **7 vegades seguides**.
+- Botó **«Bloquejar»** (cadenat) a la barra:
+  - Posa la pantalla completa i amaga la barra de botons, el panell de la paraula i el zoom.
+  - L'alumne pot escriure i, en mode alumne, fer servir el botó ▶ gran.
+  - Les dreceres de desar, obrir i imprimir (Ctrl+S, Ctrl+O, Ctrl+P) no funcionen.
+- **Desbloquejar:** cadenat petit a la cantonada de dalt a la dreta. Cal prémer-lo 7 vegades seguides, amb menys d'1,5 segons entre toc i toc. Des del tercer toc es veuen uns puntets amb els que falten; si s'atura, es torna a començar.
+- Es manté després de tornar a obrir el fitxer. Si es surt de la pantalla completa (Esc), la barra continua amagada i apareix un botó per tornar-hi.
+- És una protecció per a l'aula, no una barrera de seguretat.
+
