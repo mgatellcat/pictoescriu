@@ -5,6 +5,7 @@
 - **No és programador.** Explica-ho tot en català planer, sense jerga. Abans d'un canvi gran, explica què faràs i espera la confirmació.
 - **Respon sempre en català.** Tota la interfície de l'aplicació és en català i castellà.
 - Prefereix resultats **acabats i a punt per fer servir**: quan acabis un canvi, construeix l'aplicació, passa les proves i digues com provar-ho.
+- **Cada vegada que facis una modificació, envia-li l'aplicació construïda perquè la baixi directament** (no l'enviïs a GitHub a buscar-la): copia `docs/index.html` al directori temporal amb el nom `PictoEscriu-<versió>.html` (per exemple, `PictoEscriu-0.6.html`) i envia-l'hi com a fitxer per descarregar.
 
 ## Què és PictoEscriu
 Aplicació web per escriure frases i textos amb pictogrames d'ARASAAC (estil AraWord), per preparar materials en DIN A4 per a l'alumnat. Funciona amb un sol fitxer HTML autònom: es pot obrir amb doble clic a Chrome o Edge, o publicar a GitHub Pages.
