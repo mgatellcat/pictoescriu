@@ -87,7 +87,9 @@ body.panel-open .workspace{right:var(--panel-w)}
 .blk.empty .pic{width:0;padding:0;border:0}
 .blk.br{flex-basis:100%;min-width:0;max-width:none;height:0;padding:0}
 .blk.br.blank{height:7mm}
-.blk.sel{outline:0.7mm dashed var(--accent);outline-offset:1.2mm;background:rgba(36,83,184,.05)}
+/* Paraula seleccionada: només un fons blau suau, sense cap requadre de línies. Mentre s'escriu o s'esborra, res: només el cursor. */
+.blk.sel{background:rgba(36,83,184,.10);box-shadow:0 0 0 1.2mm rgba(36,83,184,.10)}
+.blk.sel.editing{background:none;box-shadow:none}
 .lbl{flex:none;text-align:center;line-height:1.2;font-synthesis:none;overflow-wrap:break-word;max-width:100%;color:#000;margin-bottom:1.4mm;white-space:pre-wrap;cursor:default}
 .lbl:empty::before{content:"\00a0"}
 .blk.composing .lbl,.blk.editing .lbl{border-bottom:0.5mm solid var(--accent)}
@@ -241,7 +243,7 @@ body.panel-open .playfab{right:calc(var(--panel-w) + 24px)}
   .page{box-shadow:none;margin:0;height:296.6mm;overflow:hidden;break-after:page;page-break-after:always}
   .page:last-child{break-after:auto;page-break-after:auto}
   .page-inner{bottom:14.6mm}
-  .blk.sel{outline:none;background:none}
+  .blk.sel{outline:none;background:none;box-shadow:none}
   .blk.speaking{background:none!important;box-shadow:none!important}
   .playfab{display:none!important}
   .blk.composing .lbl,.blk.editing .lbl{border-bottom:0}
