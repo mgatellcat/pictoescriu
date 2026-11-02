@@ -57,6 +57,19 @@ let offline = false; const hits = [];
     if(!fs.existsSync(f)) return route.fulfill({status:404, body:''});
     return route.fulfill({status:200, headers:{'content-type':'image/png','access-control-allow-origin':'*'}, body:fs.readFileSync(f)});
   });
+  // Wikimedia Commons simulat (cerca d'imatges a la web)
+  const commonsHits = [];
+  await ctx.route(/commons\.wikimedia\.org\/w\/api\.php/, async route => {
+    const q = new URL(route.request().url()).searchParams.get('gsrsearch'); commonsHits.push(q);
+    if(offline) return route.abort('internetdisconnected');
+    const pages = /^barça /.test(q) ? {
+      11:{index:1, title:'File:Escut del Barça.png', imageinfo:[{thumburl:'https://upload.wikimedia.org/thumb/escut.png', mime:'image/png', descriptionurl:'https://commons.wikimedia.org/wiki/File:Escut.png',
+        extmetadata:{ObjectName:{value:'Escut del Barça'}, Artist:{value:'<a href="x">Joan Autor</a>'}, LicenseShortName:{value:'CC BY-SA 4.0'}}}]},
+      12:{index:2, title:'File:Camp Nou.jpg', imageinfo:[{thumburl:'https://upload.wikimedia.org/thumb/camp.png', mime:'image/jpeg', extmetadata:{Artist:{value:'Maria'}, LicenseShortName:{value:'CC BY 2.0'}}}]},
+      13:{index:3, title:'File:So.ogg', imageinfo:[{url:'x', mime:'audio/ogg'}]} } : null;
+    return route.fulfill({status:200, headers:{'content-type':'application/json','access-control-allow-origin':'*'}, body:JSON.stringify(pages ? {query:{pages}} : {batchcomplete:''})});
+  });
+  await ctx.route(/upload\.wikimedia\.org/, route => route.fulfill({status:200, headers:{'content-type':'image/png','access-control-allow-origin':'*'}, body:fs.readFileSync(path.join(FIX, '4001.png'))}));
   const page = await ctx.newPage();
   const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
   let fails = 0; const ok = (name, cond, info='') => { if(!cond) fails++; console.log(`${cond?'PASS':'FAIL'}  ${name}${info?'  ['+info+']':''}`); };
@@ -254,6 +267,91 @@ let offline = false; const hits = [];
   B = await blocks(); ok('2 Canviar idioma no modifica el document', B.map(b=>b.text).join(' ')==='La niña come una manzana');
   await page.screenshot({path: OUT + '/s2-castella.png'});
 
+  // Tecles d'esborrar (Retrocés i Suprimir)
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('la nena menja ', {delay:20}); await idle();
+  const txt = () => page.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.text + (b.pictoId ? '*' : '')).join(' '));
+  for(let k = 0; k < 5; k++) await page.keyboard.press('Backspace');
+  ok('Retrocés: esborra lletres i conserva el pictograma amb el text buit', (await txt())==='la* nena* *', await txt());
+  await page.keyboard.press('Backspace');
+  ok('Retrocés: un cop buit, elimina el bloc', (await txt())==='la* nena*', await txt());
+  await page.keyboard.press('Backspace');
+  ok('Retrocés: continua a la paraula anterior', (await txt())==='la* nen*', await txt());
+  await page.keyboard.press('Escape');
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('la nena menja ', {delay:20}); await idle();
+  await clickBlock('nena'); await page.keyboard.press('Delete');
+  const ed = await page.evaluate(() => ({sel:S.selectedId, mode:S.editor && S.editor.mode}));
+  ok('Suprimir amb paraula seleccionada: l\'esborra i no en selecciona cap altra', (await txt())==='la* menja*' && !ed.sel && ed.mode==='compose', (await txt()) + ' ' + JSON.stringify(ed));
+  await page.keyboard.press('Delete');
+  ok('Suprimir amb el cursor: esborra la paraula següent', (await txt())==='la*', await txt());
+  await page.keyboard.press('Control+z');
+  ok('Suprimir es pot desfer', (await txt())==='la* menja*', await txt());
+
+  // Verbs auxiliars i paraules funcionals sense pictograma: només text, sense «?»
+  await page.keyboard.press('Escape');
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('HA vaig els xyzzy ', {delay:20}); await idle();
+  const aux = await page.evaluate(() => doc.blocks.filter(b => !b.composing && b.kind==='word').map(b => b.text + ':' + (document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores') ? '?' : 'text')).join(' '));
+  ok('Auxiliars («ha», «vaig») i articles sense resultats: només text, sense «?»', aux==='HA:text vaig:text els:text xyzzy:?', aux);
+  await clickBlock('HA'); await page.click('#pTogglePic'); await idle();
+  ok('Auxiliar: «Afegir pictograma» torna a cercar i mostra el «?» si no n\'hi ha', await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='HA'); return !b.picOff && document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores'); }));
+
+  // Imatges de la web (Wikimedia Commons) i pròpies
+  await page.keyboard.press('Escape');
+  await page.click('#bNew'); await page.click('.overlay .btn.primary');
+  await page.keyboard.type('visca el barça ', {delay:20}); await idle();
+  const hitsArasaac = hits.length;
+  await clickBlock('barça');
+  ok('Web: el camp de cerca proposa la paraula', (await page.inputValue('#pWebQ'))==='barça');
+  await page.click('#pWebSearch');
+  await page.waitForSelector('#pWeb:not([hidden]) button');
+  const nWeb = await page.$$eval('#pWeb button', x => x.length);
+  ok('Web: resultats de Wikimedia Commons (sense àudio)', nWeb===2 && commonsHits.length===1 && /^barça /.test(commonsHits[0]), nWeb + ' ' + commonsHits.join());
+  ok('Web: a Wikimedia només s\'envia la paraula', !commonsHits.some(h => /Pau/.test(h)));
+  await page.click('#pWeb button[data-w="0"]');
+  await page.waitForFunction(() => doc.blocks.some(b => b.own && b.own.src));
+  let ob = await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='barça'); const el = document.querySelector(`.blk[data-id="${b.id}"]`);
+    return {text:b.text, from:b.own.from, author:b.own.author, src:el.querySelector('img').getAttribute('src').slice(0, 15), cls:el.querySelector('.pic').className, foot:document.querySelector('.attrib').textContent, msg:document.querySelector('#pMsg').textContent}; });
+  ok('Web: la imatge es posa al lloc del pictograma', ob.src.startsWith('data:image/') && /st-ok/.test(ob.cls) && ob.text==='barça' && ob.from==='commons', JSON.stringify(ob).slice(0, 200));
+  ok('Web: crèdits al peu de pàgina i al panell', /ARASAAC/.test(ob.foot) && /Wikimedia Commons.*Escut del Barça.*Joan Autor.*CC BY-SA 4\.0/.test(ob.foot) && /Joan Autor/.test(ob.msg), ob.foot);
+  ok('Web: no es fa cap cerca nova a ARASAAC', hits.length===hitsArasaac);
+  await page.keyboard.press('Control+z');
+  ok('Web: es pot desfer', await page.evaluate(() => !doc.blocks.find(x => x.text==='barça').own));
+  await page.keyboard.press('Control+y');
+  // Pujar una imatge pròpia
+  await clickBlock('visca');
+  await page.setInputFiles('#imgIn', path.join(FIX, '8001.png'));
+  await page.waitForFunction(() => { const b = doc.blocks.find(x => x.text==='visca'); return b.own && b.own.src; });
+  ob = await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='visca'); return {from:b.own.from, foot:document.querySelector('.attrib').textContent, off:document.querySelector('#pOwnOff').hidden}; });
+  ok('Pròpia: imatge pujada de l\'ordinador', ob.from==='file' && !ob.off, JSON.stringify(ob));
+  // Desar i reobrir conserva les imatges
+  const [dl3] = await Promise.all([page.waitForEvent('download'), page.click('#bSave')]);
+  const projOwn = OUT + '/imatges.pictoescriu.json'; await dl3.saveAs(projOwn);
+  const pg4 = await ctx.newPage(); pg4.on('pageerror', e => errors.push('p4 '+e));
+  await pg4.goto('file://' + APP); await pg4.waitForTimeout(400); await pg4.setInputFiles('#fileIn', projOwn); await pg4.waitForTimeout(600);
+  const re = await pg4.evaluate(() => doc.blocks.filter(b => b.own).map(b => b.text + ':' + b.own.from + ':' + (document.querySelector(`.blk[data-id="${b.id}"] img`).getAttribute('src')||'').slice(0, 11)).join(' '));
+  ok('Pròpia: es conserva en desar i reobrir', re==='visca:file:data:image/ barça:commons:data:image/', re);
+  await pg4.close();
+  // PDF amb les imatges
+  const [dl4] = await Promise.all([page.waitForEvent('download', {timeout:20000}), page.click('#bPdf')]);
+  const pdfOwn = OUT + '/imatges.pdf'; await dl4.saveAs(pdfOwn);
+  const nImg = (fs.readFileSync(pdfOwn, 'latin1').match(/\/Subtype \/Image/g) || []).length;
+  ok('Pròpia: les imatges surten al PDF', nImg >= 3, 'imatges: ' + nImg);
+  // Treure la imatge
+  await clickBlock('visca'); await page.click('#pOwnOff');
+  ob = await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='visca'); return {own:!!b.own, foot:document.querySelector('.attrib').textContent}; });
+  ok('Pròpia: «Treure la imatge» torna al pictograma i el text es conserva', !ob.own && /Joan Autor/.test(ob.foot), JSON.stringify(ob));
+  // Sense connexió amb Wikimedia
+  offline = true; await page.fill('#pWebQ', 'gat'); await page.click('#pWebSearch'); await page.waitForTimeout(300);
+  ok('Web: avís si no hi ha connexió', /Wikimedia/.test(await page.textContent('#pWebMsg')));
+  offline = false;
+  await page.screenshot({path: OUT + '/s-imatges.png'});
+
+  await page.click('#bCredits');
+  ok('La versió surt als crèdits', /versió 0\.7\.0/.test(await page.textContent('.overlay')));
+  await page.click('.overlay .btn.primary');
+
   // ================= Esborrar (Retrocés i Supr) =================
   const pe = await ctx.newPage(); pe.on('pageerror', e => errors.push('esborrar ' + e));
   await pe.goto('file://' + APP); await pe.evaluate(() => localStorage.clear()); await pe.reload(); await pe.waitForTimeout(500);
@@ -278,16 +376,23 @@ let offline = false; const hits = [];
   ok('ESBORRAR Tecla premuda: passa per sobre de les paraules sense pictograma', E.ed === 'edit' && E.words === 'la:1001 nena:2001 :3001', JSON.stringify(E));
   await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace'); E = await eState();
   ok('ESBORRAR Es continua esborrant la paraula anterior', E.ed === 'edit' && E.words === 'la:1001 nen:2001', JSON.stringify(E));
-  // Supr (cap endavant)
+  // Supr amb el cursor d'escriptura: esborra la paraula sencera de la dreta (acordat el 31/10/2026)
   await pe.evaluate(() => { commitEditor(true); S.selectedId = null; startCompose(doc.blocks.findIndex(b => b.text === 'nen')); });
   await pe.keyboard.press('Delete'); E = await eState();
-  const caret = await pe.evaluate(() => edInput.selectionStart);
-  ok('ESBORRAR Supr esborra la primera lletra de la paraula següent', E.ed === 'edit' && E.words === 'la:1001 en:2001' && caret === 0, JSON.stringify(E) + ' cursor ' + caret);
-  for(let i = 0; i < 3; i++) await pe.keyboard.press('Delete');
-  E = await eState();
-  ok('ESBORRAR Supr amb la paraula buida treu el requadre', E.ed === 'compose' && E.selBox === 0 && E.words === 'la:1001', JSON.stringify(E));
+  ok('ESBORRAR Supr esborra la paraula de la dreta, sense requadre', E.ed === 'compose' && E.selBox === 0 && E.words === 'la:1001', JSON.stringify(E));
   await pe.keyboard.type('gat ', {delay:20}); await eIdle(); E = await eState();
   ok('ESBORRAR Després es continua escrivint al mateix lloc', E.words === 'la:1001 gat:8001', JSON.stringify(E));
+  // Text buidat amb doble clic: el pictograma es conserva (regla 1); sense pictograma, el requadre buit desapareix
+  const gid = await pe.evaluate(() => doc.blocks.find(b => b.text === 'gat').id);
+  await pe.dblclick(`.blk[data-id="${gid}"] .lbl`); await pe.keyboard.press('Control+A'); await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace');
+  E = await eState();
+  ok('ESBORRAR Doble clic i text buidat: Retrocés no treu el pictograma', E.ed === 'edit' && E.words === 'la:1001 :8001', JSON.stringify(E));
+  await pe.keyboard.type('GAT'); await pe.keyboard.press('Enter'); await pe.keyboard.press('Escape');
+  await pe.evaluate(() => startCompose(doc.blocks.length)); await pe.keyboard.type('xyzzy ', {delay:20}); await eIdle();
+  const xid = await pe.evaluate(() => doc.blocks.find(b => b.text === 'xyzzy').id);
+  await pe.click(`.blk[data-id="${xid}"] .lbl`); await pe.waitForTimeout(150); await pe.dblclick(`.blk[data-id="${xid}"] .lbl`); await pe.keyboard.press('Control+A'); await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace');
+  E = await eState();
+  ok('ESBORRAR Paraula sense pictograma buidada: el requadre buit desapareix', E.ed === 'compose' && E.selBox === 0 && E.words === 'la:1001 GAT:8001', JSON.stringify(E));
   await pe.close();
 
   // ================= Veu: lectura en veu alta i mode alumne =================

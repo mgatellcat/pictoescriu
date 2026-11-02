@@ -2,7 +2,13 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: versió 0.6.1 (2 de novembre de 2026). La 0.6 afegeix la lectura en veu alta i el mode alumne (secció 11); la 0.6.1 corregeix les tecles d'esborrar (secció 2). La versió 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026. Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC simulat i una veu simulada. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb ARASAAC real ni amb les veus reals.
+Estat actual: **versió 0.7.0** (2 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+- La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
+- Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
+  - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
+  - Una «0.6» i «0.6.1» del 2/11/2026: lectura en veu alta i mode alumne (apartat 12) i el cursor encallat en esborrar.
+- La 0.7.0 hi afegeix les veus descarregables (apartat 12), la selecció sense requadre de línies discontínues (apartat 10) i el doble clic que editava una altra paraula.
+- Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
 - **Fitxer HTML autònom** (`docs/index.html`), d'uns 1,2 MB, amb tipus de lletra, icones i jsPDF incrustats.
@@ -14,10 +20,14 @@ Estat actual: versió 0.6.1 (2 de novembre de 2026). La 0.6 afegeix la lectura e
 - **«Mateixa línia»:** la frase s'escriu en línia i només salta de línia al marge; els pictogrames queden alineats a sota de cada paraula.
 - **NOM / DATA i el peu d'atribució** segueixen l'idioma de la interfície.
 - **Retrocés després d'una paraula acabada:** entra a editar el text d'aquella paraula, sense tocar el pictograma. Si el text i el pictograma deixen de coincidir, el panell ofereix «Cercar «...»».
-- **Retrocés amb la paraula ja buida** (error corregit a la 0.6.1: el cursor quedava encallat dins un requadre blau buit): el requadre desapareix i el cursor continua en aquell lloc. Un altre Retrocés continua esborrant la paraula anterior, com en un processador de textos.
-  - Si la paraula buida té **pictograma** i es **manté la tecla premuda**, s'atura: així, buidar «menjar» per escriure «HE MENJAT» no fa perdre el pictograma per anar massa lluny. Cal tornar a prémer la tecla per treure el pictograma, i **Ctrl+Z** el recupera.
-  - Les paraules sense pictograma s'esborren seguit, encara que es mantingui la tecla premuda.
-- **Supr** fa el mateix cap endavant: davant d'una paraula n'esborra la primera lletra (el pictograma es conserva) i, amb la paraula buida, treu el requadre.
+- **Tecles d'esborrar (corregit el 31/10/2026, a petició de la mestra):**
+  - **Retrocés** mentre s'escriu: esborra les lletres de la paraula anterior, i el pictograma es conserva mentre hi queden lletres. Quan el text ja és buit, un retrocés més elimina el bloc i es continua amb la paraula d'abans. Abans, en aquest punt, el retrocés no feia res.
+  - **Suprimir** amb el cursor d'escriptura: esborra la paraula o el salt de línia que hi ha a la dreta. Abans només esborrava salts de línia.
+  - **Suprimir o Retrocés amb una paraula seleccionada:** l'esborra i hi deixa el cursor d'escriptura. Ja no se selecciona la paraula anterior, que quedava amb el marc blau ratllat.
+  - Si el text es buida amb doble clic o amb «Editar text», el pictograma es conserva igual que abans (regla 1).
+  - **Afegit a la 0.6.1 / 0.7.0:** si es **manté la tecla premuda**, el retrocés s'atura quan una paraula amb pictograma queda buida (així no es perd el pictograma per anar massa lluny); cal tornar a prémer la tecla per treure-la, i **Ctrl+Z** recupera la paraula sencera. Les paraules sense pictograma s'esborren seguit.
+  - Una paraula **sense pictograma** que es buida amb doble clic o «Editar text» desapareix amb un retrocés més: ja no es queda el cursor encallat dins un requadre buit.
+  - **Doble clic** (corregit a la 0.7.0): si el primer clic obria el panell i el full es desplaçava, el doble clic editava una altra paraula. Ara s'edita sempre la paraula del primer clic.
 - **Botó «Amb text»:** mostra o amaga la paraula escrita sobre tots els pictogrames.
 
 ## 3. Cerca a ARASAAC (verificada amb el servei real)
@@ -32,6 +42,8 @@ Ordre de cerca, a `findPictos()`:
 - Reben pictograma automàtic: **substantius, verbs i adjectius** (tipus ARASAAC 2, 3 i 4).
 - Queden només amb text: **articles, preposicions, conjuncions, pronoms personals, noms propis i expressions socials**. La mestra els pot posar pictograma després, amb un clic.
 - El panell mostra el pictograma que tindrien, esvaït, amb el botó **«Afegir pictograma»**.
+- **Verbs auxiliars (31/10/2026, a petició de la mestra):** *he, has, ha, hem, heu, han, havia…, vaig, vam, van…* (i en castellà *he, has, ha, hemos, han, había…*) també queden només amb text. «vas» no hi és, perquè també és un nom.
+- Aquestes paraules (articles, preposicions, pronoms i auxiliars) **ja no mostren el «?»** encara que ARASAAC no en tingui cap pictograma. El «?» queda només per a les paraules amb contingut que no tenen pictograma. Amb «Afegir pictograma» es torna a cercar.
 - Flags del bloc: `picOff` (sense pictograma), `autoOff` (tret automàticament), `userPic` (la mestra ha decidit, i la cerca no ho tornarà a canviar).
 
 ## 5. Separació entre paraules
@@ -57,22 +69,37 @@ Ordre de cerca, a `findPictos()`:
 - També hi ha «Sense capçalera» i l'opció **«Versió per pintar (blanc i negre)»**.
 - Són dibuixos SVG propis, en mm, generats per `headSVG()`. Al PDF es rasteritzen a 300 ppp i el text NOM/DATA s'hi escriu a sobre en format vectorial.
 
-## 9. Altres
+## 9. Imatges de la web o pròpies (acordat el 31/10/2026)
+- Si una paraula no té pictograma (per exemple, «barça»), o si se'n vol un altre, el panell té l'apartat **«Imatge de la web o pròpia»**, sota «Cercar un altre pictograma». Hi ha tres maneres de posar una imatge:
+  1. **Cercar a la web**, a **Wikimedia Commons**: imatges de lliure ús, que es poden posar dins el PDF. No es fa servir Google Imatges, perquè demana un compte de pagament i no deixa posar les imatges dins el PDF.
+  2. **Pujar una imatge** de l'ordinador.
+  3. **Enganxar una imatge** copiada (botó o Ctrl+V amb la paraula seleccionada).
+- La imatge ocupa el requadre del pictograma, amb el mateix marc de color, la mateixa mida i la mateixa paraula dins el pictograma. El text de la frase no canvia mai.
+- Es converteix en un quadrat de 360 px, sense retallar-la, i es desa dins el projecte (`own` del bloc). Funciona sense connexió i surt igual a la pantalla, al PDF i en imprimir.
+- Triar després un pictograma d'ARASAAC, o prémer «Treure la imatge», torna al pictograma.
+- **Privacitat:** a Wikimedia Commons només s'envia la paraula que es cerca. Mai el nom ni la data.
+- **Crèdits:** les imatges de Wikimedia surten al peu de pàgina, sota el text d'ARASAAC: «Altres imatges: Wikimedia Commons («títol», autor, llicència)». Les imatges pujades o enganxades no porten crèdit: la mestra n'és responsable.
+- Si el document és massa gran per desar-lo automàticament al navegador, surt un avís per desar-lo amb «Desar».
+- La cerca a Wikimedia s'ha provat amb un servei simulat. **Encara cal provar-la amb el servei real.**
+
+## 10. Altres
 - Zoom en una barreta flotant a baix a l'esquerra.
 - Barra superior compacta en tauletes (menys de 1180 px).
+- **Selecció sense requadre de línies blaves discontínues** (0.7.0, a petició de la mestra): la paraula seleccionada només es marca amb un fons blau suau; mentre s'escriu o s'esborra no hi ha cap requadre, només la ratlla del cursor.
 
-## 10. Pendent / idees
+## 11. Pendent / idees
 - **Generador d'activitats de lectoescriptura:** vegeu `03_PROPOSTA_GENERADOR_ACTIVITATS.md` i, **sobretot**, els dubtes de `05_ANALISI_I_DUBTES.md`, que s'han de resoldre amb la mestra abans d'implementar-lo.
 - Convertir-la en PWA instal·lable.
 - Lletra lligada.
-- Fotos pròpies en lloc de pictogrames (pendent de decidir: dubte 2).
-- **Veu, fase 2** (vegeu la secció 11):
+- ~~Fotos pròpies en lloc de pictogrames~~: fet (apartat 9).
+- **Veu, fase 2** (vegeu l'apartat 12):
   - **Sons de les lletres gravats** per la mestra i la logopeda (també ny, ll, qu, gu, ix, tx, l·l…). Les veus sintètiques diuen el nom de la lletra, no el so.
   - **Lectura fonema a fonema** de com s'ha escrit una paraula i, després, **lectura global**.
-  - **Veus descarregables que funcionen sense internet** i sense enviar el text: Ona (català, Piper, dades UPC/Festcat, CC BY-SA), veus castellanes de Piper i, potser, Matxa del Projecte Aina (accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
-- **Nova proposta de colors i de logo** («molt visual, fàcil i semblant a un Word o a OpenOffice», amb un logo amb més impacte en obrir el programa). **En espera:** la mestra ho vol fer més endavant i pot passar el logo de la seva associació per inspirar-s'hi.
+  - ~~Veus descarregables~~: fet a la 0.7.0 (Ona i Sharvard). Més endavant, potser **Matxa** del Projecte Aina (més natural; accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
+- **Nova proposta de colors, de logo i de nom de l'eina** («molt visual, fàcil i semblant a un Word o a OpenOffice», amb un logo amb més impacte en obrir el programa). La mestra passarà el logo de la seva associació per inspirar-s'hi; la frase «50 anys» desapareixerà del logo al gener de 2027.
+- **Analitzar LECAA** (https://utacub.github.io/lecaa_docs/) per proposar millores. Pendent: l'entorn de treball no hi té accés.
 
-## 11. Veu: lectura en veu alta i mode alumne (versió 0.6, 2 de novembre de 2026)
+## 12. Veu: lectura en veu alta i mode alumne (versions 0.6 i 0.7.0, 2 de novembre de 2026)
 Decisions de la mestra:
 - **Botó ▶ Llegir**, sempre a la barra. Llegeix tot el document o, si hi ha una paraula seleccionada, des d'aquella. El mateix botó fa ■ Aturar. Dreceres: **Ctrl+Retorn** llegeix o atura; **Esc** atura.
 - **Ressalta la paraula que es llegeix** (text i pictograma junts, en groc per defecte; es pot triar el color o treure-ho). La pàgina es mou sola per seguir la lectura. El ressaltat **no canvia cap mida** i **no surt ni al PDF ni a la impressió**.
@@ -88,7 +115,7 @@ Decisions de la mestra:
   - Perfils ràpids: «Només el botó ▶», «Paraules», «Paraules i frases» (**per defecte en mode alumne**) i «Lletres, paraules i frases».
 - **Panell del bloc:** botó **Escoltar** per sentir aquella paraula, en qualsevol mode.
 - **Veus:** les del navegador i de l'ordinador, gratuïtes. L'aplicació tria sola la millor: primer les veus naturals d'Edge (Microsoft, en línia), després les millorades d'Apple, les de Google i les de l'ordinador. A la finestra «Veu» es pot triar una altra veu per al català i per al castellà, provar-la i canviar la velocitat. Les veus amb el nom «undefined» (error conegut d'Edge) s'amaguen.
-- **Privacitat (acceptat per la mestra):** si es fa servir una veu «en línia», el text que es llegeix s'envia a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s'envien mai. Més endavant es descarregaran veus que funcionin sense internet (secció 10).
+- **Privacitat (acceptat per la mestra):** si es fa servir una veu «en línia», el text que es llegeix s'envia a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s'envien mai. Les veus descarregables no envien res (vegeu més avall).
 - **Dues maneres de llegir amb el botó ▶:** «Natural (frase sencera)», per defecte, i «Paraula a paraula». Algunes veus (sobretot les de Google a Chrome) no diuen quina paraula estan llegint: amb «Natural», l'aplicació ho detecta i ressalta la frase sencera. Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid. El botó «Provar» de la finestra «Veu» avisa de com es comporta cada veu.
 - **On es desa:** els ajustos de veu es desen **a cada ordinador** (cada ordinador té veus diferents), no dins el projecte.
 - **Barra superior:** per fer lloc als botons nous, per sota de 1600 px d'amplada Desfer, Refer, Crèdits i Veu només mostren la icona, i per sota de 1366 px també Nou, Obrir, Desar i el nom del programa. Per sota de 900 px, «Exportar PDF» i «Imprimir» també només mostren la icona. Totes les icones tenen el nom en passar-hi el ratolí.

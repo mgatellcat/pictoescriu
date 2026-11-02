@@ -36,7 +36,7 @@ Escrit el 31/10/2026, a partir de `04_ACTIVITATS_LECTOESCRIPTURA_CAA.md`. **Cap 
 
 ## Dubtes pendents (preguntar a la mestra)
 1. **Paper o pantalla primer?** La proposta és començar en paper amb targeta per a l'adult. Si l'aula treballa sobretot amb ordinador i seguidor ocular: el seguidor fa clic per fixació (com Tobii en mode ratolí)? Quants commutadors hi ha i quina tecla envien?
-2. **Fotos pròpies?** El document demana fotos del conte i d'objectes, persones i llocs propers (B3). Ara només hi ha ARASAAC. Afegim la possibilitat de posar una foto pròpia a qualsevol paraula?
+2. **[RESOLT el 31/10/2026: sí, vegeu l'apartat 9 de `02_CANVIS_ACORDATS.md`]** **Fotos pròpies?** El document demana fotos del conte i d'objectes, persones i llocs propers (B3). Ara només hi ha ARASAAC. Afegim la possibilitat de posar una foto pròpia a qualsevol paraula?
 3. **Banc de paraules senzilles:** n'incloem un, revisable per la mestra, o només s'usa el vocabulari que ella escriu?
 4. **Varietat dialectal** de l'alumnat (central, nord-occidental...). Afecta les vocals àtones i quines paraules es consideren fàcils.
 5. **A1: so o significat?** La graella ha de tenir les paraules importants del conte, o 4 paraules que comencin pel mateix so (completant-les amb el banc)?
