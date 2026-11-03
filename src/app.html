@@ -8,8 +8,8 @@
 
 /* Layout: fixed two-row toolbar · grey workspace with real A4 sheets · contextual panel on the right (bottom sheet on tablets) */
 :root{
-  --ws:#E3E7ED; --bar:#FFFFFF; --ink:#1B2232; --muted:#5A6476; --line:#D3D9E2; --soft:#F1F4F8;
-  --accent:#2453B8; --accent-weak:#E6EDFB; --accent-line:#B8C8EE; --danger:#B3261E; --danger-weak:#FBEAE9;
+  --ws:#E9EBF0; --bar:#FFFFFF; --ink:#1B2232; --muted:#5A6476; --line:#D3D9E2; --soft:#F1F4F8;
+  --accent:#24386A; --accent-weak:#E6EAF3; --accent-line:#AFBAD3; --orange:#EB6B24; --orange-dark:#D25A16; --danger:#B3261E; --danger-weak:#FBEAE9;
   --head-fill:#F3F7FF;
   --c-persones:#F5C400; --c-verbs:#2E9E44; --c-descriptius:#1F6FD1; --c-substantius:#F07C00; --c-social:#E5559A; --c-misc:#FFFFFF;
   --font:"Roboto","Helvetica Neue",Arial,sans-serif;
@@ -37,8 +37,8 @@ button,input,select{font-family:inherit}
 .btn:focus-visible,.sel-in:focus-visible,.fld:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .btn[aria-pressed="true"]{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{background:var(--accent);color:#fff;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
-.btn.primary:hover:not(:disabled){background:#1C449A}
+.btn.primary{background:var(--orange);color:#fff;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
+.btn.primary:hover:not(:disabled){background:var(--orange-dark)}
 .btn.outline{border-color:var(--line)}
 .btn.next{border-color:var(--accent);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .btn.next:hover:not(:disabled){background:var(--accent-weak)}
@@ -58,6 +58,29 @@ input[type=range]{width:96px;accent-color:var(--accent)}
 .spin{width:12px;height:12px;border:2px solid var(--accent-line);border-top-color:var(--accent);border-radius:50%;animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+/* Primera fila: blau marí d'AREMI amb línia taronja; segona fila: cinta clara */
+.topbar .row:first-child{background:var(--accent);border-bottom:3px solid var(--orange)}
+.topbar .row+.row{background:#F6F7FA;border-top:0}
+.topbar .row:first-child .brand,.topbar .row:first-child > .grp > svg.ic{color:#fff}
+.topbar .row:first-child .grp{border-right-color:rgba(255,255,255,.22)}
+.topbar .row:first-child .btn:not(.primary):not(.play){color:#fff}
+.topbar .row:first-child .btn:not(.primary):not(.play):hover:not(:disabled){background:rgba(255,255,255,.14)}
+.topbar .row:first-child .btn:focus-visible{outline-color:#fff}
+.topbar .row:first-child .busy{color:#DCE3F2}
+.topbar .row:first-child .sel-in{border-color:transparent}
+.brand svg{width:30px;height:30px}
+
+/* ---------- Pantalla d'inici ---------- */
+.splash{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#24386A 0%,#2F4682 60%,#24386A 100%);cursor:pointer;transition:opacity .45s}
+.splash.out{opacity:0;pointer-events:none}
+.splash .card{background:#fff;border-radius:28px;padding:40px 60px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);border-bottom:8px solid var(--orange);max-width:calc(100vw - 32px)}
+.splash svg{width:140px;height:140px}
+.splash h1{margin:12px 0 4px;font-size:44px;color:var(--accent);letter-spacing:.01em}
+.splash h1 span{color:var(--orange)}
+.splash p{margin:0;color:var(--muted);font-size:18px}
+.splash .v{margin-top:16px;font-size:13px;color:#8A93A3}
+@media (prefers-reduced-motion:reduce){.splash{transition:none}}
+
 /* ---------- Workspace & sheets ---------- */
 .zoombar{position:fixed;left:16px;bottom:16px;z-index:24;display:flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;box-shadow:0 4px 14px rgba(27,34,50,.12)}
 .zoombar .btn{height:30px;font-size:12px}
@@ -68,7 +91,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 .page{width:210mm;height:297mm;background:#fff;position:relative;flex:none;box-shadow:0 1px 2px rgba(20,30,50,.12),0 6px 20px rgba(20,30,50,.10)}
 .page-inner{position:absolute;inset:15mm;display:flex;flex-direction:column}
 .flow{flex:1;min-height:0;position:relative;display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-end;gap:5mm 0;overflow:hidden;cursor:text}
-.attrib{flex:none;height:6mm;display:flex;align-items:flex-end;justify-content:center;text-align:center;font-size:6.5pt;line-height:1.2;color:#707070}
+.attrib{flex:none;min-height:6mm;white-space:pre-line;display:flex;align-items:flex-end;justify-content:center;text-align:center;font-size:6.5pt;line-height:1.2;color:#707070}
 .pnum{position:absolute;right:15mm;bottom:6mm;font-size:7pt;color:#9aa1ad}
 .hint{position:absolute;left:0;right:0;top:40mm;text-align:center;color:#9AA3B2;font-size:15pt;pointer-events:none}
 
@@ -87,7 +110,9 @@ body.panel-open .workspace{right:var(--panel-w)}
 .blk.empty .pic{width:0;padding:0;border:0}
 .blk.br{flex-basis:100%;min-width:0;max-width:none;height:0;padding:0}
 .blk.br.blank{height:7mm}
-.blk.sel{outline:0.7mm dashed var(--accent);outline-offset:1.2mm;background:rgba(36,83,184,.05)}
+/* Paraula seleccionada: només un fons blau suau, sense cap requadre de línies. Mentre s'escriu o s'esborra, res: només el cursor. */
+.blk.sel{background:rgba(36,83,184,.10);box-shadow:0 0 0 1.2mm rgba(36,83,184,.10)}
+.blk.sel.editing{background:none;box-shadow:none}
 .lbl{flex:none;text-align:center;line-height:1.2;font-synthesis:none;overflow-wrap:break-word;max-width:100%;color:#000;margin-bottom:1.4mm;white-space:pre-wrap;cursor:default}
 .lbl:empty::before{content:"\00a0"}
 .blk.composing .lbl,.blk.editing .lbl{border-bottom:0.5mm solid var(--accent)}
@@ -153,12 +178,73 @@ body.panel-open .workspace{right:var(--panel-w)}
 .danger{color:var(--danger);border-color:#E9B7B3}
 .danger:hover:not(:disabled){background:var(--danger-weak)!important}
 .stack-btns{display:flex;flex-wrap:wrap;gap:6px}
+.alts.web button{position:relative}
+.alts.web button.busy{opacity:.45;cursor:progress}
 .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{flex:1;border:0;border-right:1px solid var(--line);background:#fff;padding:8px 4px;font-size:12.5px;cursor:pointer;color:var(--ink)}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--accent-weak);color:var(--accent);font-weight:700}
 .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .hl-search{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
+
+/* ---------- Veu: botó Llegir, mode alumne i ressaltat ---------- */
+.pi{display:inline-flex}
+.btn.play{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700}
+.btn.play:hover:not(:disabled){background:var(--orange-dark)}
+.btn.play .ic,.playfab .ic{fill:currentColor}
+.btn.play[aria-pressed="true"]{background:#fff;border-color:var(--orange);color:var(--accent)}
+.btn.play[aria-pressed="true"]:hover{background:#FFF1E8}
+body.student #bPlay{height:40px;padding:0 14px;font-size:14px}
+#bStudent[aria-pressed="true"]{background:#FFF4D6;border-color:#E9C46A;color:#6B5200}
+.playfab{position:fixed;right:24px;bottom:24px;z-index:24;width:84px;height:84px;border-radius:50%;border:0;background:var(--orange);color:#fff;box-shadow:0 8px 24px rgba(20,40,90,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.playfab .ic{width:40px;height:40px}
+.playfab[aria-pressed="true"]{background:var(--danger)}
+.playfab:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+body.panel-open .playfab{right:calc(var(--panel-w) + 24px)}
+/* El ressaltat no canvia cap mida: només el fons. No surt ni al PDF ni a la impressió. */
+.blk.speaking{background:var(--speak,#FFE36E);box-shadow:0 0 0 1.2mm var(--speak,#FFE36E)}
+.lbl .spell-on{background:#FF9F43;border-radius:1mm;box-shadow:0 0 0 0.5mm #FF9F43}
+.dialog.voice{max-width:620px;max-height:calc(100vh - 32px);overflow-y:auto;gap:10px}
+.vsec{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--soft)}
+.vsec h3{margin:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.dialog label.chk{color:var(--ink);font-size:13.5px;align-items:flex-start;line-height:1.35}
+.dialog label.chk input{margin:2px 0 0;flex:none;width:16px;height:16px;accent-color:var(--accent)}
+.dialog label.chk.big{font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.dialog label.chk.big:has(input:checked){background:#FFF4D6;border-color:#E9C46A}
+.vopts{display:flex;flex-direction:column;gap:8px}
+.vopts.off{opacity:.55}
+.vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dialog .vrow label{min-width:72px;color:var(--ink);font-weight:500}
+.vrow select{flex:1;min-width:180px;max-width:100%}
+.vrow input[type=range]{flex:1;min-width:140px;width:auto}
+.swatches{display:flex;gap:8px}
+.swatches button{width:34px;height:28px;border-radius:7px;border:2px solid var(--line);cursor:pointer}
+.swatches button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent-weak)}
+.dialog .msg{margin:0}
+.seg.sub{margin-left:24px}
+.dialog.snd{max-width:660px}
+.sndlist{display:flex;flex-direction:column;gap:4px;max-height:50vh;overflow:auto;padding-right:4px}
+.sndrow{display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:8px}
+.sndrow.has{background:#EAF6EC;border-color:#B9DFC0}
+.sndl{flex:1;min-width:0;font-size:14px}
+.btn.rec{background:var(--danger);color:#fff;border-color:var(--danger)}
+/* Pantalla bloquejada per a l'alumne: sense barres ni panell; es desbloqueja prement el cadenat 7 vegades seguides */
+body.locked .topbar,body.locked .panel,body.locked .zoombar{display:none!important}
+body.locked .workspace{top:0;right:0;bottom:0}
+body.locked .playfab{right:24px;bottom:24px}
+.lockbar{position:fixed;top:10px;right:12px;z-index:40;display:flex;align-items:center;gap:6px}
+.lockbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.lockbtn .ic{width:18px;height:18px}
+.lockdots{font-size:13px;color:var(--muted);letter-spacing:2px;min-width:0}
+body.is-full #bFull{display:none}
+.pvrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.pvrow.ok{background:#EAF6EC;border-color:#B9DFC0;color:#1E5B2B}
+.pvrow.ok span{flex:1;font-size:13px}
+.pvrow.dl{flex-direction:column;align-items:flex-start}
+.btn.pvdl{background:var(--accent);color:#fff;height:auto;min-height:38px;padding:6px 12px;white-space:normal;text-align:left}
+.btn.pvdl:hover:not(:disabled){background:#1A2A52}
+.pvbar{flex:1;min-width:160px;height:12px;border-radius:6px;background:#fff;border:1px solid var(--line);overflow:hidden}
+.pvbar span{display:block;height:100%;background:var(--accent);transition:width .2s}
 
 /* ---------- Dialogs & toasts ---------- */
 .overlay{position:fixed;inset:0;background:rgba(20,26,40,.38);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
@@ -182,15 +268,31 @@ body.panel-open .workspace{right:var(--panel-w)}
 .toast button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;font-weight:700;font-size:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
+/* Mòbils i tauletes: cap botó pot quedar fora de la pantalla; als mòbils, la segona fila (format) s'obre amb el botó «Format» */
+#gTools{display:none}
+@media (max-width:900px){ .grp{flex-wrap:wrap;row-gap:4px} }
+@media (max-width:640px){
+  #gTools{display:flex}
+  body:not(.tools-open) .topbar .row+.row{display:none}
+  .row{padding:4px 8px}
+  .grp{padding-right:4px;margin-right:0}
+  #bTools .t{display:inline}
+}
+/* La primera fila ha de cabre en una línia: a les pantalles més estretes, alguns botons només mostren la icona */
+@media (max-width:1599px){ #bUndo .t,#bRedo .t,#bCredits .t,#bVoice .t,#bLock .t{display:none} }
+@media (max-width:1365px){ .brand span,#bNew .t,#bOpen .t,#bSave .t{display:none} }
 @media (max-width:1180px){
   .btn .t{display:none}
-  .btn.next .t,.btn.primary .t,#bApplyAll .t{display:inline}
+  .btn.next .t,.btn.primary .t,#bApplyAll .t,#bPlay .t{display:inline}
   .brand span{display:none}
 }
 @media (max-width:900px){
   .panel{top:auto;left:0;width:auto;height:46vh;border-left:0;border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.08)}
   body.panel-open .workspace{right:0;bottom:46vh}
   body.panel-open .zoombar{display:none}
+  body.panel-open .playfab{right:16px;bottom:calc(46vh + 16px)}
+  .btn.primary .t{display:none}
+  .topbar .grp > svg.ic{display:none}
 }
 
 /* ---------- Print ---------- */
@@ -203,7 +305,9 @@ body.panel-open .workspace{right:var(--panel-w)}
   .page{box-shadow:none;margin:0;height:296.6mm;overflow:hidden;break-after:page;page-break-after:always}
   .page:last-child{break-after:auto;page-break-after:auto}
   .page-inner{bottom:14.6mm}
-  .blk.sel{outline:none;background:none}
+  .blk.sel{outline:none;background:none;box-shadow:none}
+  .blk.speaking,.lbl .spell-on{background:none!important;box-shadow:none!important}
+  .playfab,.lockbar,.splash{display:none!important}
   .blk.composing .lbl,.blk.editing .lbl{border-bottom:0}
   .pic.st-none,.pic.st-error,.pic.st-loading,.pic.st-idle{visibility:hidden}
   .blk.nores .pic .ph{display:none}
@@ -217,7 +321,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 <header class="topbar" id="topbar">
   <div class="row">
     <div class="brand" aria-label="PictoEscriu">
-      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="6" fill="#2453B8"/><rect x="6" y="5" width="14" height="2.6" rx="1.3" fill="#fff"/><rect x="6" y="10.5" width="14" height="10.5" rx="2" fill="#fff"/><rect x="7.8" y="12.3" width="10.4" height="6.9" rx="1" fill="#F5C400"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#EB6B24"/><rect x="10.5" y="12.5" width="27" height="23" rx="4.5" fill="#fff"/><circle cx="18.5" cy="21.5" r="4.2" fill="#24386A"/><rect x="25.5" y="17.8" width="8.5" height="2.8" rx="1.4" fill="#24386A"/><rect x="25.5" y="23" width="6.2" height="2.8" rx="1.4" fill="#24386A"/><rect x="14" y="29" width="20" height="2.8" rx="1.4" fill="#EB6B24"/></svg>
       <span>PictoEscriu</span>
     </div>
     <div class="grp">
@@ -231,6 +335,13 @@ body.panel-open .workspace{right:var(--panel-w)}
     </div>
     <div class="grp">
       <button class="btn" id="bHead" data-tip="headerTip"><span data-icon="text-cursor-input"></span><span class="t" data-i18n="header"></span></button>
+    </div>
+    <div class="grp" id="gTools"><button class="btn" id="bTools" aria-expanded="false" data-tip="toolsTip"><span data-icon="type"></span><span class="t" data-i18n="tools"></span></button></div>
+    <div class="grp" id="gVoice">
+      <button class="btn play" id="bPlay" aria-pressed="false"><span class="pi"></span><span class="t" id="bPlayL"></span></button>
+      <button class="btn" id="bStudent" aria-pressed="false" data-tip="studentTip"><span data-icon="graduation-cap"></span><span class="t" data-i18n="student"></span></button>
+      <button class="btn icon-only" id="bVoice" data-tip="voiceTip"><span data-icon="sliders-horizontal"></span><span class="t" data-i18n="voiceBtn"></span></button>
+      <button class="btn icon-only" id="bLock" data-tip="lockTip"><span data-icon="lock"></span><span class="t" data-i18n="lock"></span></button>
     </div>
     <span class="busy" id="busy" hidden><span class="spin"></span><span id="busyTxt"></span></span>
     <span class="spacer"></span>
@@ -281,6 +392,12 @@ body.panel-open .workspace{right:var(--panel-w)}
   <button class="btn" id="bFitPage"><span data-i18n="zoomPage"></span></button>
   <button class="btn" id="bFitWidth"><span data-i18n="zoomWidth"></span></button>
 </div>
+<button class="playfab no-print" id="bPlayBig" aria-pressed="false" hidden><span class="pi"></span><span class="sr" id="bPlayBigL"></span></button>
+<div class="lockbar no-print" id="lockBar" hidden>
+  <button class="lockbtn" id="bFull" data-tip="fullTip"><span data-icon="maximize"></span></button>
+  <button class="lockbtn" id="bUnlock" data-tip="unlockTip"><span data-icon="lock"></span></button>
+  <span class="lockdots" id="lockDots" aria-live="polite"></span>
+</div>
 
 <main class="workspace" id="ws">
   <div class="stack" id="stack" tabindex="0" aria-label="Document"></div>
@@ -295,6 +412,8 @@ body.panel-open .workspace{right:var(--panel-w)}
     <div class="stack-btns">
       <button class="btn outline" id="pEdit"><span data-icon="pencil"></span><span data-i18n="editText"></span></button>
       <button class="btn outline" id="pClearText"><span data-icon="eraser"></span><span data-i18n="clearText"></span></button>
+      <button class="btn outline" id="pListen"><span data-icon="volume-2"></span><span data-i18n="listen"></span></button>
+      <button class="btn outline" id="pSpell" data-tip="spellTip"><span data-icon="type"></span><span data-i18n="spell"></span></button>
     </div>
   </div>
 
@@ -319,6 +438,22 @@ body.panel-open .workspace{right:var(--panel-w)}
     <div class="stack-btns">
       <button class="btn outline" id="pByText"><span data-icon="refresh-cw"></span><span id="pByTextLbl"></span></button>
       <button class="btn outline" id="pTogglePic"><span id="pTogglePicIc"></span><span id="pTogglePicLbl"></span></button>
+    </div>
+  </div>
+
+  <div class="sec" id="secOwn">
+    <h3 data-i18n="ownSec"></h3>
+    <label class="msg" for="pWebQ" data-i18n="webLabel"></label>
+    <div class="fld-row">
+      <input class="fld" id="pWebQ" autocomplete="off" spellcheck="false">
+      <button class="btn outline" id="pWebSearch"><span data-icon="globe"></span><span data-i18n="search"></span></button>
+    </div>
+    <div class="msg" id="pWebMsg"></div>
+    <div class="alts web" id="pWeb" hidden></div>
+    <div class="stack-btns">
+      <button class="btn outline" id="pUpload"><span data-icon="upload"></span><span data-i18n="upload"></span></button>
+      <button class="btn outline" id="pPaste"><span data-icon="clipboard-paste"></span><span data-i18n="paste"></span></button>
+      <button class="btn outline" id="pOwnOff" hidden><span data-icon="x"></span><span data-i18n="ownOff"></span></button>
     </div>
   </div>
 
@@ -349,13 +484,17 @@ body.panel-open .workspace{right:var(--panel-w)}
 </aside>
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="splash no-print" id="splash" aria-hidden="true"><div class="card"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#EB6B24"/><rect x="10.5" y="12.5" width="27" height="23" rx="4.5" fill="#fff"/><circle cx="18.5" cy="21.5" r="4.2" fill="#24386A"/><rect x="25.5" y="17.8" width="8.5" height="2.8" rx="1.4" fill="#24386A"/><rect x="25.5" y="23" width="6.2" height="2.8" rx="1.4" fill="#24386A"/><rect x="14" y="29" width="20" height="2.8" rx="1.4" fill="#EB6B24"/></svg><h1>Picto<span>Escriu</span></h1><p data-i18n="tagline"></p><p class="v" id="splashV"></p></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="sndIn" accept=".json,application/json" hidden>
+<input type="file" id="imgIn" accept="image/*" hidden>
 
 <script>
 /*__JSPDF__*/
 </script>
 <script>
 'use strict';
+const VERSION = '0.9.2';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -376,7 +515,7 @@ const I18N = {
     head_space:'Viatge a l\'espai', head_cork:'Suro amb notes', head_flags:'Festa amb banderoles', head_garden:'Jardí', head_none:'Sense capçalera',
     wordSec:'Paraula dins el pictograma', capNone:'Sense paraula', capTop:'A dalt', capBottom:'A baix', capUpper:'MAJÚSCULES', capLower:'minúscules',
     capTextLabel:'Paraula que surt dins el pictograma (la frase no canvia)',
-    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula sense pictograma automàtic (article, preposició, conjunció, pronom, nom propi o expressió). Pots afegir-n\'hi un.',
+    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula gramatical sense pictograma automàtic (article, preposició, conjunció o nexe, pronom feble o verb auxiliar com «ha» o «vaig»). Pots afegir-n\'hi un.',
     next:'Següent pictograma', nextTip:'Canvia la imatge del bloc seleccionat per la següent alternativa',
     nextNoSel:'Selecciona una paraula per canviar-ne el pictograma', nextOne:'Aquesta paraula només té una alternativa',
     alts:'Veure alternatives', withText:'Amb text', textTip:'Mostrar o amagar la paraula escrita sobre els pictogrames',
@@ -408,10 +547,61 @@ const I18N = {
     pdfPrep:'Preparant el PDF…', pdfFailT:'Falten pictogrames', pdfFailB:'No s\'han pogut carregar {n} pictogrames ({list}). El PDF quedaria incomplet.',
     pdfAnyway:'Exportar sense aquests pictogrames', pdfDone:'PDF descarregat.', pdfLib:'No s\'ha pogut iniciar el generador de PDF.',
     netToast:'Algunes paraules no han pogut connectar amb ARASAAC. El text es conserva.', retryAll:'Reintentar',
-    creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar; mai el nom ni la data.',
+    version:'PictoEscriu, versió {v}.', creditsT:'Crèdits', creditsB:'Els símbols pictogràfics són propietat del Govern d\'Aragó i han estat creats per Sergio Palao per a ARASAAC (https://arasaac.org), que els distribueix sota llicència Creative Commons BY-NC-SA.',
+    privacy:'PictoEscriu desa els materials al teu navegador i als fitxers que tu descarreguis. A ARASAAC només s\'envien les paraules que cal cercar, i a Wikimedia Commons només les paraules que cerquis com a imatge; mai el nom ni la data. Si tries una veu «en línia», el text que es llegeix s\'envia a Microsoft o Google per convertir-lo en veu; les veus descarregades funcionen dins l\'ordinador i no envien res. El nom i la data no es llegeixen mai.',
     attrib:'Pictogrames: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Llicència: CC BY-NC-SA. Propietat: Govern d\'Aragó.',
-    page:'Pàgina {n}', fileBase:'material'
+    page:'Pàgina {n}', fileBase:'material',
+    ownSec:'Imatge de la web o pròpia', webLabel:'Cercar imatges a la web (Wikimedia Commons)', webSearching:'Cercant imatges…',
+    webNone:'No hi ha imatges per a «{q}». Prova una altra paraula o puja una imatge.', webError:'No s\'ha pogut connectar amb Wikimedia Commons. Torna-ho a provar.',
+    webPick:'Tria una imatge:', upload:'Pujar una imatge', paste:'Enganxar una imatge', ownOff:'Treure la imatge',
+    pasteHint:'No hi ha cap imatge copiada. Copia una imatge i, amb la paraula seleccionada, prem Ctrl+V.',
+    ownErr:'No s\'ha pogut carregar aquesta imatge. Prova\'n una altra.', ownAdded:'Imatge afegida.',
+    st_own:'Imatge pròpia (no és d\'ARASAAC). El text no canvia.', st_web:'Imatge de Wikimedia Commons: «{t}», {a} ({l}).',
+    ownAttrib:'Altres imatges: Wikimedia Commons ({list}).', unknownAuthor:'autor desconegut',
+    saveFull:'El document és massa gran per desar-lo automàticament al navegador. Desa\'l amb el botó «Desar».',
+    play:'Llegir', stop:'Aturar', playTip:'Llegir en veu alta (Ctrl+Retorn). Si hi ha una paraula seleccionada, comença per aquella.', stopTip:'Aturar la lectura (Esc)',
+    student:'Mode alumne', studentTip:'Mode alumne: la veu l\'ajuda mentre escriu', studentOn:'Mode alumne activat: la veu ajuda mentre s\'escriu.', studentOff:'Mode alumne desactivat.',
+    voiceBtn:'Veu', voiceTip:'Veu i lectura: veus, velocitat, ressaltat i ajuda mentre s\'escriu', voiceT:'Veu i lectura',
+    studentChk:'Mode alumne: la veu l\'ajuda mentre escriu', fbSec:'Mentre l\'alumne escriu', fbNote:'Aquestes opcions només funcionen en mode alumne.',
+    prof_none:'Només el botó ▶', prof_words:'Paraules', prof_ws:'Paraules i frases', prof_all:'Lletres, paraules i frases',
+    fbLetters:'Dir cada lletra en pitjar-la', fbWords:'Dir la paraula en pitjar l\'espai', fbSentences:'Llegir la frase en posar . ? ! o en pitjar Retorn', fbTouch:'Tocar una paraula per escoltar-la',
+    voicesSec:'Veus', voice_ca:'Català', voice_es:'Castellà', voiceAuto:'Automàtica: {v}', voiceNone:'Cap veu', test:'Provar',
+    tagNatural:'natural', tagOnline:'en línia', tagLocal:'de l\'ordinador',
+    onlineNote:'Les veus «en línia» sonen més naturals, però necessiten internet i envien el text que es llegeix a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s\'envien mai.',
+    noVoice_ca:'Aquest aparell no té cap veu en català. Se\'n pot afegir una al sistema: a Windows, Configuració → Hora i idioma → Veu → Afegir veus; al Mac, l\'iPad i l\'iPhone, Configuració → Accessibilitat → Contingut parlat → Veus → Català; a Android, Configuració → Text a veu → Motor de Google → Instal·lar dades de veu. El navegador Edge ja en té de naturals.',
+    noVoice_es:'Aquest aparell no té cap veu en castellà. Se\'n pot afegir una al sistema: a Windows, Configuració → Hora i idioma → Veu → Afegir veus; al Mac, l\'iPad i l\'iPhone, Configuració → Accessibilitat → Contingut parlat → Veus → Espanyol; a Android, Configuració → Text a veu → Motor de Google → Instal·lar dades de veu. El navegador Edge ja en té de naturals.',
+    noSpeech:'Aquest navegador no pot llegir en veu alta. Fes servir Chrome o Edge.',
+    readSec:'Lectura', rate:'Velocitat', flowNatural:'Natural (frase sencera)', flowWord:'Paraula a paraula',
+    flowNote:'Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid.',
+    hlChk:'Ressaltar la paraula que es llegeix', hlc_0:'Groc', hlc_1:'Verd', hlc_2:'Blau', hlc_3:'Rosa',
+    bndYes:'Aquesta veu ressalta cada paraula.', bndNo:'Aquesta veu no diu quina paraula llegeix: amb «Natural» es ressaltarà la frase sencera. Per ressaltar paraula per paraula, tria «Paraula a paraula».',
+    noVoiceToast:'Aquest aparell no té veu en {lang}.', langName_ca:'català', langName_es:'castellà',
+    nothingToRead:'Encara no hi ha res per llegir.', listen:'Escoltar',
+    lkName:'El nom («ema»)', lkSound:'El so gravat (/m/)', tkSay:'La diu', tkSpell:'La lletreja i després la diu',
+    spell:'Lletrejar', spellTip:'Diu el so de cada lletra, ressaltant-la, i després la paraula sencera',
+    sndSec:'Sons de les lletres', sndIntro:'Per dir el so de les lletres (/m/, /s/…) i per a «Lletrejar». Els graveu vosaltres una sola vegada. Es poden desar en un fitxer per passar-los a un altre ordinador.',
+    sndCount:'Gravats: {ca} de {nca} en català i {es} de {nes} en castellà.', sndOpen:'Gravar els sons…', sndTitle:'Sons de les lletres',
+    sndHow:'Prem «Gravar» i digues només el so, curt i clar (per exemple /mmm/, no «ema»). La gravació s\'atura sola al cap de 2,5 segons i després sona perquè la comprovis.',
+    sndAsIn:'com a «{w}»', sndRec:'Gravar', sndAgain:'Tornar a gravar', sndStop:'Aturar', sndDel:'Esborrar el so', sndRecording:'Gravant… Digues el so.',
+    sndExport:'Desar en un fitxer', sndImport:'Obrir un fitxer de sons', sndExported:'Sons desats al fitxer «sons-pictoescriu.json».',
+    sndImported:'S\'han afegit {n} sons.', sndBadFile:'Aquest fitxer no és de sons de PictoEscriu.',
+    sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
+    sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
+    tagline:'Escriure i llegir amb pictogrames',
+    tools:'Format', toolsTip:'Mostrar o amagar les eines de format i de pictogrames',
+    lock:'Bloquejar', lockTip:'Bloquejar la pantalla per a l\'alumne: pantalla completa i sense la barra de botons. Per desbloquejar, prem el cadenat 7 vegades seguides.',
+    unlockTip:'Per desbloquejar, prem el cadenat 7 vegades seguides', fullTip:'Pantalla completa', unlocked:'Pantalla desbloquejada.',
+    tagDownloaded:'baixada · sense internet', dlNow:'Baixar-la',
+    noVoiceDl_ca:'Aquest aparell no té cap veu en català. Baixa aquí sota la veu gratuïta Ona: només cal fer-ho una vegada.',
+    noVoiceDl_es:'Aquest aparell no té cap veu en castellà. Baixa aquí sota la veu gratuïta Sharvard: només cal fer-ho una vegada.',
+    pvGet_ca:'Baixar la veu catalana gratuïta Ona (uns {mb} MB)', pvGet_es:'Baixar la veu castellana gratuïta Sharvard, de dona i d\'home (uns {mb} MB)',
+    pvNote:'Només cal fer-ho una vegada en aquest ordinador i navegador. Després funciona sense internet i el text no surt de l\'ordinador.',
+    pvProgress:'Baixant… {a} MB de {b} MB', pvReady:'Veu {v} baixada: funciona sense internet.', pvRemove:'Esborrar-la',
+    pvDone:'Veu {v} baixada. Ja es pot fer servir.', pvNet:'No s\'ha pogut baixar la veu. Comprova la connexió a internet i torna-ho a provar.',
+    pvBad:'Un fitxer baixat no era l\'original i no s\'ha fet servir. Torna-ho a provar més tard.',
+    pvFail:'No s\'ha pogut fer servir la veu baixada. Obre «Veu», esborra-la i torna-la a baixar.', pvPreparing:'Preparant la veu…',
+    pvBnd:'Aquesta veu ressalta les paraules de manera aproximada. Amb «Paraula a paraula» el ressaltat és exacte.', pvF:'dona', pvM:'home',
+    voiceCredits:'Veus descarregables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; llicència CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; llicència CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft) i eSpeak NG.'
   },
   es: {
     new:'Nuevo', open:'Abrir', save:'Guardar', undo:'Deshacer', redo:'Rehacer', pdf:'Exportar PDF', print:'Imprimir', credits:'Créditos', lang:'Idioma',
@@ -420,7 +610,7 @@ const I18N = {
     head_space:'Viaje al espacio', head_cork:'Corcho con notas', head_flags:'Fiesta con banderines', head_garden:'Jardín', head_none:'Sin cabecera',
     wordSec:'Palabra dentro del pictograma', capNone:'Sin palabra', capTop:'Arriba', capBottom:'Abajo', capUpper:'MAYÚSCULAS', capLower:'minúsculas',
     capTextLabel:'Palabra que aparece dentro del pictograma (la frase no cambia)',
-    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra sin pictograma automático (artículo, preposición, conjunción, pronombre, nombre propio o expresión). Puedes añadirle uno.',
+    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra gramatical sin pictograma automático (artículo, preposición, conjunción o nexo, pronombre átono o verbo auxiliar como «ha»). Puedes añadirle uno.',
     next:'Siguiente pictograma', nextTip:'Cambia la imagen del bloque seleccionado por la siguiente alternativa',
     nextNoSel:'Selecciona una palabra para cambiar su pictograma', nextOne:'Esta palabra solo tiene una alternativa',
     alts:'Ver alternativas', withText:'Con texto', textTip:'Mostrar u ocultar la palabra escrita sobre los pictogramas',
@@ -452,10 +642,61 @@ const I18N = {
     pdfPrep:'Preparando el PDF…', pdfFailT:'Faltan pictogramas', pdfFailB:'No se han podido cargar {n} pictogramas ({list}). El PDF quedaría incompleto.',
     pdfAnyway:'Exportar sin estos pictogramas', pdfDone:'PDF descargado.', pdfLib:'No se ha podido iniciar el generador de PDF.',
     netToast:'Algunas palabras no han podido conectar con ARASAAC. El texto se conserva.', retryAll:'Reintentar',
-    creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
-    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar; nunca el nombre ni la fecha.',
+    version:'PictoEscriu, versión {v}.', creditsT:'Créditos', creditsB:'Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para ARASAAC (https://arasaac.org), que los distribuye bajo licencia Creative Commons BY-NC-SA.',
+    privacy:'PictoEscriu guarda los materiales en tu navegador y en los archivos que descargues. A ARASAAC solo se envían las palabras que hay que buscar, y a Wikimedia Commons solo las palabras que busques como imagen; nunca el nombre ni la fecha. Si eliges una voz «en línea», el texto que se lee se envía a Microsoft o Google para convertirlo en voz; las voces descargadas funcionan dentro del ordenador y no envían nada. El nombre y la fecha nunca se leen.',
     attrib:'Pictogramas: Sergio Palao. Origen: ARASAAC (https://arasaac.org). Licencia: CC BY-NC-SA. Propiedad: Gobierno de Aragón.',
-    page:'Página {n}', fileBase:'material'
+    page:'Página {n}', fileBase:'material',
+    ownSec:'Imagen de la web o propia', webLabel:'Buscar imágenes en la web (Wikimedia Commons)', webSearching:'Buscando imágenes…',
+    webNone:'No hay imágenes para «{q}». Prueba otra palabra o sube una imagen.', webError:'No se ha podido conectar con Wikimedia Commons. Vuelve a intentarlo.',
+    webPick:'Elige una imagen:', upload:'Subir una imagen', paste:'Pegar una imagen', ownOff:'Quitar la imagen',
+    pasteHint:'No hay ninguna imagen copiada. Copia una imagen y, con la palabra seleccionada, pulsa Ctrl+V.',
+    ownErr:'No se ha podido cargar esta imagen. Prueba con otra.', ownAdded:'Imagen añadida.',
+    st_own:'Imagen propia (no es de ARASAAC). El texto no cambia.', st_web:'Imagen de Wikimedia Commons: «{t}», {a} ({l}).',
+    ownAttrib:'Otras imágenes: Wikimedia Commons ({list}).', unknownAuthor:'autor desconocido',
+    saveFull:'El documento es demasiado grande para guardarlo automáticamente en el navegador. Guárdalo con el botón «Guardar».',
+    play:'Leer', stop:'Parar', playTip:'Leer en voz alta (Ctrl+Intro). Si hay una palabra seleccionada, empieza por ella.', stopTip:'Parar la lectura (Esc)',
+    student:'Modo alumno', studentTip:'Modo alumno: la voz le ayuda mientras escribe', studentOn:'Modo alumno activado: la voz ayuda mientras se escribe.', studentOff:'Modo alumno desactivado.',
+    voiceBtn:'Voz', voiceTip:'Voz y lectura: voces, velocidad, resaltado y ayuda mientras se escribe', voiceT:'Voz y lectura',
+    studentChk:'Modo alumno: la voz le ayuda mientras escribe', fbSec:'Mientras el alumno escribe', fbNote:'Estas opciones solo funcionan en modo alumno.',
+    prof_none:'Solo el botón ▶', prof_words:'Palabras', prof_ws:'Palabras y frases', prof_all:'Letras, palabras y frases',
+    fbLetters:'Decir cada letra al pulsarla', fbWords:'Decir la palabra al pulsar el espacio', fbSentences:'Leer la frase al poner . ? ! o al pulsar Intro', fbTouch:'Tocar una palabra para escucharla',
+    voicesSec:'Voces', voice_ca:'Catalán', voice_es:'Castellano', voiceAuto:'Automática: {v}', voiceNone:'Ninguna voz', test:'Probar',
+    tagNatural:'natural', tagOnline:'en línea', tagLocal:'del ordenador',
+    onlineNote:'Las voces «en línea» suenan más naturales, pero necesitan internet y envían el texto que se lee a Microsoft o Google para convertirlo en voz. El nombre y la fecha nunca se leen ni se envían.',
+    noVoice_ca:'Este aparato no tiene ninguna voz en catalán. Se puede añadir una al sistema: en Windows, Configuración → Hora e idioma → Voz → Agregar voces; en el Mac, el iPad y el iPhone, Ajustes → Accesibilidad → Contenido leído → Voces → Catalán; en Android, Ajustes → Texto a voz → Motor de Google → Instalar datos de voz. El navegador Edge ya tiene voces naturales.',
+    noVoice_es:'Este aparato no tiene ninguna voz en castellano. Se puede añadir una al sistema: en Windows, Configuración → Hora e idioma → Voz → Agregar voces; en el Mac, el iPad y el iPhone, Ajustes → Accesibilidad → Contenido leído → Voces → Español; en Android, Ajustes → Texto a voz → Motor de Google → Instalar datos de voz. El navegador Edge ya tiene voces naturales.',
+    noSpeech:'Este navegador no puede leer en voz alta. Usa Chrome o Edge.',
+    readSec:'Lectura', rate:'Velocidad', flowNatural:'Natural (frase entera)', flowWord:'Palabra a palabra',
+    flowNote:'Con «Palabra a palabra» el resaltado siempre es exacto, pero suena menos fluido.',
+    hlChk:'Resaltar la palabra que se lee', hlc_0:'Amarillo', hlc_1:'Verde', hlc_2:'Azul', hlc_3:'Rosa',
+    bndYes:'Esta voz resalta cada palabra.', bndNo:'Esta voz no indica qué palabra lee: con «Natural» se resaltará la frase entera. Para resaltar palabra por palabra, elige «Palabra a palabra».',
+    noVoiceToast:'Este aparato no tiene voz en {lang}.', langName_ca:'catalán', langName_es:'castellano',
+    nothingToRead:'Todavía no hay nada que leer.', listen:'Escuchar',
+    lkName:'El nombre («eme»)', lkSound:'El sonido grabado (/m/)', tkSay:'La dice', tkSpell:'La deletrea y después la dice',
+    spell:'Deletrear', spellTip:'Dice el sonido de cada letra, resaltándola, y después la palabra entera',
+    sndSec:'Sonidos de las letras', sndIntro:'Para decir el sonido de las letras (/m/, /s/…) y para «Deletrear». Los grabáis vosotros una sola vez. Se pueden guardar en un archivo para pasarlos a otro ordenador.',
+    sndCount:'Grabados: {ca} de {nca} en catalán y {es} de {nes} en castellano.', sndOpen:'Grabar los sonidos…', sndTitle:'Sonidos de las letras',
+    sndHow:'Pulsa «Grabar» y di solo el sonido, corto y claro (por ejemplo /mmm/, no «eme»). La grabación se para sola a los 2,5 segundos y después suena para que la compruebes.',
+    sndAsIn:'como en «{w}»', sndRec:'Grabar', sndAgain:'Volver a grabar', sndStop:'Parar', sndDel:'Borrar el sonido', sndRecording:'Grabando… Di el sonido.',
+    sndExport:'Guardar en un archivo', sndImport:'Abrir un archivo de sonidos', sndExported:'Sonidos guardados en el archivo «sons-pictoescriu.json».',
+    sndImported:'Se han añadido {n} sonidos.', sndBadFile:'Este archivo no es de sonidos de PictoEscriu.',
+    sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
+    sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
+    tagline:'Escribir y leer con pictogramas',
+    tools:'Formato', toolsTip:'Mostrar u ocultar las herramientas de formato y de pictogramas',
+    lock:'Bloquear', lockTip:'Bloquear la pantalla para el alumno: pantalla completa y sin la barra de botones. Para desbloquear, pulsa el candado 7 veces seguidas.',
+    unlockTip:'Para desbloquear, pulsa el candado 7 veces seguidas', fullTip:'Pantalla completa', unlocked:'Pantalla desbloqueada.',
+    tagDownloaded:'descargada · sin internet', dlNow:'Descargarla',
+    noVoiceDl_ca:'Este aparato no tiene ninguna voz en catalán. Descarga aquí debajo la voz gratuita Ona: solo hay que hacerlo una vez.',
+    noVoiceDl_es:'Este aparato no tiene ninguna voz en castellano. Descarga aquí debajo la voz gratuita Sharvard: solo hay que hacerlo una vez.',
+    pvGet_ca:'Descargar la voz catalana gratuita Ona (unos {mb} MB)', pvGet_es:'Descargar la voz castellana gratuita Sharvard, de mujer y de hombre (unos {mb} MB)',
+    pvNote:'Solo hay que hacerlo una vez en este ordenador y navegador. Después funciona sin internet y el texto no sale del ordenador.',
+    pvProgress:'Descargando… {a} MB de {b} MB', pvReady:'Voz {v} descargada: funciona sin internet.', pvRemove:'Borrarla',
+    pvDone:'Voz {v} descargada. Ya se puede usar.', pvNet:'No se ha podido descargar la voz. Comprueba la conexión a internet y vuelve a intentarlo.',
+    pvBad:'Un archivo descargado no era el original y no se ha usado. Vuelve a intentarlo más tarde.',
+    pvFail:'No se ha podido usar la voz descargada. Abre «Voz», bórrala y vuelve a descargarla.', pvPreparing:'Preparando la voz…',
+    pvBnd:'Esta voz resalta las palabras de forma aproximada. Con «Palabra a palabra» el resaltado es exacto.', pvF:'mujer', pvM:'hombre',
+    voiceCredits:'Voces descargables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; licencia CC BY-SA) y Sharvard (corpus de V. Aubanel, M. L. García Lecumberri y M. Cooke; licencia CC BY), hechas con Piper (Rhasspy). Funcionan con ONNX Runtime (Microsoft) y eSpeak NG.'
   }
 };
 const CATS = ['persones','verbs','descriptius','substantius','social','misc'];
@@ -466,17 +707,28 @@ const PRON = {
   ca:new Set('jo tu ell ella nosaltres vosaltres ells elles vostè vostès mi nosaltres'.split(' ')),
   es:new Set('yo tú él ella nosotros nosotras vosotros vosotras ellos ellas usted ustedes mí ti'.split(' '))
 };
+// Paraules gramaticals: articles, preposicions, conjuncions i nexes, pronoms febles i verbs auxiliars.
+// Són les úniques que NO porten pictograma automàtic (decisió de la mestra, 3/11/2026). Es comparen amb accents: «és» no és «es», «sí» no és «si».
 const FUNC = {
-  ca:new Set("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap".split(' ')),
-  es:new Set('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde'.split(' '))
+  ca:new Set(("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap contra segons durant vers" +
+    " sinó doncs perquè" +
+    // pronoms febles
+    " em et es ens us li hi ho" +
+    // verbs auxiliars (haver i passat perifràstic): només text, sense «?» ("vas" no hi és perquè també és un nom)
+    " he has ha hem heu han havia havies havíem havíeu havien hagi hagis hàgim hàgiu hagin hauria vaig vam vau van vàrem vàreu varen").split(' ')),
+  es:new Set(('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde ante contra durante mediante según tras' +
+    ' sino pues porque aunque' +
+    // pronombres átonos
+    ' me te se nos os le les lo' +
+    // verbos auxiliares (haber): solo texto, sin «?»
+    ' he has ha hemos habéis han había habías habíamos habíais habían haya hayas hayamos hayáis hayan hube hubo habría').split(' '))
 };
-const AUTO_PIC = new Set(['substantius','verbs','descriptius']);
 const SIZES = [12,14,16,18,20,22,24,28,32,36,40,48,56,64,72];
 
 /* ================= State ================= */
 const LS = {
   get(k, d){ try{ const v = localStorage.getItem('pictoescriu.'+k); return v===null? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('pictoescriu.'+k, JSON.stringify(v)); }catch(e){} }
+  set(k, v){ try{ localStorage.setItem('pictoescriu.'+k, JSON.stringify(v)); return true; }catch(e){ return false; } }
 };
 const DEF_SETTINGS = {cap:'none', capCase:'upper', font:'roboto', size:20, color:'#000000', bold:false, italic:false, caseMode:null, showText:true, pictoSize:26, fitz:'frame'};
 function newDoc(){ return {header:{name:'', date:'', show:true, style:'classic', bw:false}, settings:{...DEF_SETTINGS}, blocks:[]}; }
@@ -499,6 +751,9 @@ const find = id => doc.blocks.find(b => b.id === id);
 const idxOf = id => doc.blocks.findIndex(b => b.id === id);
 const IMG = (id, s=500) => `https://static.arasaac.org/pictograms/${id}/${id}_${s}.png`;
 const API = 'https://api.arasaac.org/api/pictograms';
+// Imatge pròpia o de la web (b.own = {src:dataURL, from:'commons'|'file'|'paste', title, author, license, page}); té prioritat sobre ARASAAC
+const hasOwn = b => !!(b && b.own && b.own.src) && !b.picOff;
+const showsArasaac = b => !hasOwn(b) && b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch;
 
 function mkWord(text){ return {id:uid(), kind:'word', text, query:'', usedQuery:null, lang:S.lang, pictos:[], idx:0, pictoId:null,
   status:'idle', cat:null, catManual:false, fmt:{}, picOff:false, noSearch:false, searchSeq:0, searchedQuery:null}; }
@@ -581,12 +836,13 @@ async function findPictos(q, lang){
   }
   return {list:[], used:q};
 }
+// Paraula gramatical? Es mira la paraula escrita (en minúscules i amb els accents), no la paraula de cerca.
+function isFuncWord(used, lang, text){ return (FUNC[lang] || FUNC.ca).has(lower(stripPunct(text), lang)); }
 function categorize(p, used, lang, text){
-  const w = norm(stripPunct(text)), q = norm(used);
+  const w = lower(stripPunct(text), lang), q = lower(used, lang);
   const P = PRON[lang] || PRON.ca, F = FUNC[lang] || FUNC.ca;
-  const nP = new Set([...P].map(norm)), nF = new Set([...F].map(norm));
-  if(nP.has(w) || nP.has(q)) return 'persones';
-  if(nF.has(w) || nF.has(q)) return 'misc';
+  if(P.has(w) || P.has(q)) return 'persones';
+  if(F.has(w)) return 'misc';
   if(!p) return 'misc';
   const k = p.kw.find(k => norm(k[0]) === q) || p.kw.find(k => norm(k[0]) === w) || p.kw[0];
   return TYPE_CAT[k && k[1]] || 'misc';
@@ -604,8 +860,10 @@ async function startSearch(b, q){
       usedQuery:used, approx: norm(used) !== norm(q)});
     const autoCat = categorize(list[0], used, lang, cur.text);
     if(!cur.catManual) cur.cat = autoCat;
-    // Només substantius, verbs i adjectius/adverbis porten pictograma automàtic; la resta es pot afegir després
-    if(!cur.userPic){ cur.picOff = !!list.length && !AUTO_PIC.has(autoCat); cur.autoOff = cur.picOff; }
+    // Totes les paraules porten pictograma automàtic (també pronoms personals, noms propis i expressions com «hola» o «gràcies»),
+    // menys les gramaticals: articles, preposicions, conjuncions i nexes, pronoms febles i auxiliars. Aquestes queden només amb text,
+    // sense «?» encara que ARASAAC no en tingui, i se'ls pot afegir després amb «Afegir pictograma».
+    if(!cur.userPic){ cur.picOff = isFuncWord(used, lang, cur.text); cur.autoOff = cur.picOff; }
   }catch(e){
     const cur = find(b.id); if(!cur || cur.searchSeq !== seq) return;
     cur.status = 'error'; noteNetError();
@@ -634,7 +892,7 @@ function packBlock(b){
   if(b.kind === 'br') return {id:b.id, kind:'br'};
   const st = (b.status === 'loading' || b.status === 'idle' || b.status === 'error') ? 'pending' : b.status;
   return {id:b.id, kind:'word', text:b.text, query:b.query, usedQuery:b.usedQuery, lang:b.lang, pictos:b.pictos, idx:b.idx, pictoId:b.pictoId,
-    status:st, cat:b.cat, catManual:b.catManual, fmt:b.fmt, capText:b.capText, picOff:b.picOff, autoOff:b.autoOff, userPic:b.userPic, noSearch:b.noSearch, searchedQuery:b.searchedQuery};
+    status:st, cat:b.cat, catManual:b.catManual, fmt:b.fmt, capText:b.capText, picOff:b.picOff, autoOff:b.autoOff, userPic:b.userPic, noSearch:b.noSearch, searchedQuery:b.searchedQuery, own:b.own || null};
 }
 function snapshot(){ return {header:{...doc.header}, settings:{...doc.settings}, blocks:doc.blocks.filter(b => !b.composing).map(packBlock)}; }
 function hydrate(o){
@@ -669,7 +927,11 @@ function redo(){
   updateToolbar();
 }
 let saveTimer = null;
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => LS.set('draft', {app:'PictoEscriu', format:1, ...snapshot()}), 700); }
+let saveFullShown = false;
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => {
+  const okSave = LS.set('draft', {app:'PictoEscriu', format:1, ...snapshot()});
+  if(!okSave && !saveFullShown){ saveFullShown = true; toast(t('saveFull'), {kind:'error', timeout:9000}); } else if(okSave) saveFullShown = false;
+}, 700); }
 function projectData(){ return {app:'PictoEscriu', format:1, savedAt:new Date().toISOString(), ...snapshot()}; }
 function fileBase(){
   const n = (doc.header.name || t('fileBase')).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40) || 'material';
@@ -816,7 +1078,7 @@ function makePage(i){
   const el = document.createElement('section'); el.className = 'page';
   el.innerHTML = '<div class="page-inner"><div class="flow"></div><footer class="attrib"></footer></div><div class="pnum no-print"></div>';
   const pg = {el, inner:el.firstChild, flow:el.querySelector('.flow'), foot:el.querySelector('.attrib'), num:el.querySelector('.pnum'), count:null};
-  pg.foot.textContent = t('attrib'); pg.num.textContent = t('page', {n:i+1});
+  pg.foot.textContent = footText(); pg.num.textContent = t('page', {n:i+1});
   if(i === 0){ pg.inner.insertBefore(headEl, pg.flow); const h = document.createElement('div'); h.className = 'hint no-print'; pg.hint = h; pg.inner.appendChild(h); h.textContent = t('hint'); }
   stack.appendChild(el); pages.push(pg); return pg;
 }
@@ -838,10 +1100,11 @@ function paintBlock(b, i){
     return el;
   }
   const editing = S.editor && S.editor.id === b.id;
-  const noRes = b.status === 'none' && !b.composing && !b.picOff && !b.noSearch;
-  const textOnly = b.picOff || b.noSearch || noRes;
+  const own = hasOwn(b);
+  const noRes = !own && b.status === 'none' && !b.composing && !b.picOff && !b.noSearch;
+  const textOnly = !own && (b.picOff || b.noSearch || noRes);
   const f = eff(b);
-  el.className = 'blk' + (b.id === S.selectedId ? ' sel' : '') + (b.composing ? ' composing' : '') + (b.composing && !b.text ? ' empty' : '') + (editing && !b.composing ? ' editing' : '') + (textOnly ? ' textonly' : '') + (noRes ? ' nores' : '');
+  el.className = 'blk' + (b.id === S.selectedId ? ' sel' : '') + (b.composing ? ' composing' : '') + (b.composing && !b.text ? ' empty' : '') + (editing && !b.composing ? ' editing' : '') + (textOnly ? ' textonly' : '') + (noRes ? ' nores' : '') + (SP.hl.has(b.id) ? ' speaking' : '');
   el.style.setProperty('--fs', f.size + 'pt');
   el.title = noRes ? t('st_none', {q:b.searchedQuery || b.query}) : '';
   const lbl = el.firstChild, pic = lbl.nextSibling, img = pic.querySelector('img'), ph = pic.querySelector('.ph');
@@ -852,13 +1115,16 @@ function paintBlock(b, i){
   lbl.style.fontFamily = fontStack(f.font);
   lbl.style.fontWeight = f.bold ? '700' : '400'; lbl.style.fontStyle = f.italic && hasItalic(f.font) ? 'italic' : 'normal';
   const realPic = !textOnly && !(b.composing && !b.text);
-  const st = b.imgErr ? 'error' : b.status;
+  const st = own ? 'ok' : b.imgErr ? 'error' : b.status;
   lbl.classList.toggle('hasp', realPic && st === 'ok');
   const ct = realPic && st === 'ok' && f.cap !== 'none' ? capText(b, f) : '';
   pic.className = 'pic ' + (realPic ? 'st-' + st + ' cat-' + (b.cat || 'misc') : 'spacer') + (ct ? ' cap-' + f.cap : '');
   if(ct){ const pt = capSize(ct, f); cap.textContent = ct; cap.style.fontFamily = fontStack(f.font); cap.style.fontSize = pt + 'pt'; }
   else if(cap.textContent) cap.textContent = '';
-  if(realPic && b.status === 'ok' && b.pictoId != null){
+  if(realPic && own){
+    if(img.dataset.base !== 'own:' + b.own.src.length + b.own.src.slice(-40)){ img.dataset.base = 'own:' + b.own.src.length + b.own.src.slice(-40); img.src = b.own.src; }
+    img.hidden = false; img.alt = b.text;
+  } else if(realPic && b.status === 'ok' && b.pictoId != null){
     const src = IMG(b.pictoId); if(img.getAttribute('src') !== src && !(b.imgErr && img.dataset.base === src)){ img.dataset.base = src; img.src = src; }
     img.hidden = !!b.imgErr; img.alt = b.text;
   } else { img.hidden = true; if(img.getAttribute('src')){ img.removeAttribute('src'); img.dataset.base = ''; } }
@@ -896,6 +1162,7 @@ function paginate(){
   const hadFocus = document.activeElement === edInput; const pos = edInput.selectionStart;
   S.suppressBlur = true;
   if(!pages.length) makePage(0);
+  const ft = footText(); pages.forEach(pg => { if(pg.foot.textContent !== ft) pg.foot.textContent = ft; });
   const items = doc.blocks.map(b => els.get(b.id));
   const bottom = el => el.offsetTop + el.offsetHeight;
   let start = 0, p = 0;
@@ -964,7 +1231,7 @@ function finalizeWord(b){
 // Converteix el text escrit en blocs. "consumed" acaba en separador; "rest" és la paraula a mitges.
 function applyComposeText(b, consumed, rest){
   const toks = tokenize(consumed);
-  if(!toks.length){ b.text = rest; edInput.value = rest; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); return; }
+  if(!toks.length){ b.text = rest; edInput.value = rest; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); return []; }
   if(!S.composePushed){ pushUndo(); S.composePushed = true; }
   clearTimeout(pauseTimer);
   const idx = doc.blocks.indexOf(b);
@@ -989,6 +1256,7 @@ function applyComposeText(b, consumed, rest){
   c.text = rest;
   renderAll(); focusEditor(); scheduleSave();
   if(rest) schedulePause(c);
+  return list;
 }
 let pauseTimer = null;
 function schedulePause(b){
@@ -1003,44 +1271,83 @@ function onEdInput(e){
   if(!S.editor) return;
   const b = find(S.editor.id); if(!b) return;
   const v = edInput.value;
+  // La tecla que s'acaba de pitjar (només escriptura normal: no enganxar ni dictar)
+  const typed = e && e.inputType === 'insertText' && e.data && Array.from(e.data).length === 1 ? e.data : null;
+  if(SP.reading) stopSpeech();
+  if(typed) fbLetter(typed);
   if(S.editor.mode === 'edit'){
+    if(S.editor.flow && typed && SEP.test(typed) && v.endsWith(typed) && edInput.selectionStart === v.length){ flowFinish(b, /\s/.test(typed) ? v.slice(0, -1) : v, typed); return; }
     if(!S.editPushed){ pushUndo(); S.editPushed = true; }
-    b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); return;
+    b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); updateToolbar(); return;
   }
   if(v.trim() && !S.composePushed){ pushUndo(); S.composePushed = true; }
   if(!SEP.test(v)){ b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); if(v) schedulePause(b); return; }
   let last = -1; for(let i = v.length - 1; i >= 0; i--){ if(SEP.test(v[i])){ last = i; break; } }
-  applyComposeText(b, v.slice(0, last + 1), v.slice(last + 1));
+  const list = applyComposeText(b, v.slice(0, last + 1), v.slice(last + 1));
+  const sep = typed || (!e ? v[last] : null);   // sense esdeveniment: teclats de tauleta que acaben una composició
+  if(sep && SEP.test(sep)) fbAfter(sep, list);
 }
 function onEdKey(e){
   if(!S.editor) return;
+  if(e.key === 'Escape' && SP.reading){ e.preventDefault(); stopSpeech(); return; }
   const mod = e.ctrlKey || e.metaKey;
   if(mod && /^[zZyY]$/.test(e.key)){ e.preventDefault(); e.stopPropagation(); (e.key.toLowerCase() === 'y' || e.shiftKey) ? redo() : undo(); return; }
   if(mod) return;
   if(S.editor.mode === 'edit'){
-    if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); }
+    if(S.editor.flow && (e.key === 'Enter' || e.key === 'Tab')){ e.preventDefault(); flowFinish(find(S.editor.id), edInput.value, e.key === 'Enter' ? '\n' : ' '); return; }
+    if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); if(e.key === 'Enter') fbWord(id); return; }
+    // Retrocés o Supr amb la paraula ja buida: el bloc desapareix i el cursor continua en aquell lloc.
+    // Es conserva el pictograma (regla 1) si el text s'ha buidat amb doble clic o «Editar text», o si es manté la tecla premuda.
+    if((e.key === 'Backspace' || e.key === 'Delete') && edInput.value === ''){
+      const b = find(S.editor.id); if(!b) return;
+      e.preventDefault();
+      if(hasPicto(b) && (!S.editor.flow || e.repeat)) return;
+      removeEmptyWord(b);
+    }
     return;
   }
   const b = find(S.editor.id), v = edInput.value, i = doc.blocks.indexOf(b);
-  if(e.key === 'Enter'){ e.preventDefault(); applyComposeText(b, v + '\n', ''); return; }
+  if(e.key === 'Enter'){ e.preventDefault(); if(SP.reading) stopSpeech(); fbAfter('\n', applyComposeText(b, v + '\n', '')); return; }
   if(e.key === 'Escape'){ e.preventDefault(); commitEditor(); stack.focus({preventScroll:true}); return; }
-  if(e.key === 'Tab'){ if(v){ e.preventDefault(); applyComposeText(b, v + ' ', ''); } return; }
+  if(e.key === 'Tab'){ if(v){ e.preventDefault(); fbAfter(' ', applyComposeText(b, v + ' ', '')); } return; }
   if(v !== '') return;
   if(e.key === 'Backspace'){
     e.preventDefault(); const prev = doc.blocks[i-1]; if(!prev) return;
     if(prev.kind === 'br'){ pushUndo(); doc.blocks.splice(i-1, 1); renderAll(); focusEditor(); scheduleSave(); return; }
     // Retrocés sobre la paraula anterior: s'editen les lletres, el pictograma es conserva.
     doc.blocks.splice(i, 1); S.editor = null;
-    startEdit(prev, true);
+    startEdit(prev, true, true);
     if(prev.text){ pushUndo(); S.editPushed = true; prev.text = Array.from(prev.text).slice(0, -1).join(''); edInput.value = prev.text; paintBlock(prev, idxOf(prev.id)); sizeEditor(); schedulePaginate(); updatePanel(true); scheduleSave(); }
     return;
   }
-  if(e.key === 'Delete'){ e.preventDefault(); const nx = doc.blocks[i+1]; if(nx && nx.kind === 'br'){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); } return; }
+  if(e.key === 'Delete'){ e.preventDefault(); const nx = doc.blocks[i+1]; if(nx){ pushUndo(); doc.blocks.splice(i+1, 1); renderAll(); focusEditor(); scheduleSave(); } return; }
   if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
     e.preventDefault(); const j = i + (e.key === 'ArrowLeft' ? -1 : 1);
     if(j < 0 || j >= doc.blocks.length) return;
     doc.blocks.splice(i, 1); doc.blocks.splice(j, 0, b); renderAll(); focusEditor(); return;
   }
+}
+const hasPicto = b => b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch;
+// Acaba la paraula que s'estava corregint després d'esborrar i continua l'escriptura just al darrere (com en un processador de textos).
+// El pictograma es conserva (regla 1); si la paraula ha quedat buida i no té pictograma, desapareix.
+function flowFinish(b, text, sep){
+  if(!b) return;
+  if(!S.editPushed){ pushUndo(); S.editPushed = true; }
+  b.text = text;
+  if(!text.trim() && !hasPicto(b)){ S.editPushed = true; removeEmptyWord(b); }
+  else { const at = idxOf(b.id) + 1; commitEditor(true); startCompose(at); }
+  if(sep === '\n'){ const c = S.editor && find(S.editor.id); if(c) fbAfter('\n', applyComposeText(c, '\n', '')); }
+  else if(text.trim()) fbAfter(sep, [b]);
+}
+// Treu el bloc que s'està editant (ja sense text) i torna a l'escriptura contínua en el mateix lloc
+function removeEmptyWord(b){
+  const i = idxOf(b.id); if(i < 0) return;
+  if(!S.editPushed) pushUndo();   // si ja s'havien esborrat lletres, un sol Ctrl+Z recupera la paraula sencera
+  clearTimeout(pauseTimer);
+  S.editor = null; S.editPushed = false; S.selectedId = null;
+  if(edInput.parentNode) edInput.remove();
+  doc.blocks.splice(i, 1);
+  startCompose(i); scheduleSave();
 }
 function onEdPaste(e){
   const text = (e.clipboardData || window.clipboardData).getData('text'); if(!text) return;
@@ -1051,9 +1358,10 @@ function pasteText(text){
   const b = find(S.editor.id);
   applyComposeText(b, edInput.value + text.replace(/\s+$/,'') + ' ', '');
 }
-function startEdit(b, keepNoPush){
+function startEdit(b, keepNoPush, flow){
   commitEditor(true);
-  S.selectedId = b.id; S.editor = {id:b.id, mode:'edit'}; S.editPushed = false;
+  // «flow»: s'hi ha entrat esborrant mentre s'escriu. No se selecciona: el panell de la dreta només s'obre quan la mestra fa clic en una paraula.
+  S.selectedId = flow ? null : b.id; S.editor = {id:b.id, mode:'edit', flow:!!flow}; S.editPushed = false;
   edInput.value = b.text;
   renderAll(); focusEditor();
 }
@@ -1107,7 +1415,9 @@ function indexFromPoint(pg, x, y){
 stack.addEventListener('pointerdown', e => {
   const blk = e.target.closest('.blk');
   if(e.target === edInput) return;
-  if(blk && !blk.classList.contains('br') && !blk.classList.contains('composing')){ e.preventDefault(); select(blk.dataset.id); return; }
+  if(blk && !blk.classList.contains('br') && !blk.classList.contains('composing')){ e.preventDefault(); S.lastPick = {id:blk.dataset.id, t:performance.now()}; select(blk.dataset.id);
+    if(VS.student && VS.touch){ const tb = find(blk.dataset.id); if(VS.touchSpell) spellBlock(tb); else speakBlocks([tb]); }
+    return; }
   const pageEl = e.target.closest('.page');
   if(!pageEl || e.target.closest('.sheet-head')) return;
   e.preventDefault();
@@ -1116,18 +1426,23 @@ stack.addEventListener('pointerdown', e => {
   startCompose(indexFromPoint(pg, e.clientX, e.clientY));
 });
 stack.addEventListener('dblclick', e => {
-  const blk = e.target.closest('.blk'); if(!blk || blk.classList.contains('br')) return;
-  const b = find(blk.dataset.id); if(b && b.kind === 'word' && !b.composing) startEdit(b);
+  // El primer clic pot obrir el panell i desplaçar el full: s'edita la paraula del primer clic, no la que hagi quedat sota el ratolí
+  const pick = S.lastPick && performance.now() - S.lastPick.t < 800 ? S.lastPick.id : null;
+  const blk = e.target.closest('.blk'); if(!pick && (!blk || blk.classList.contains('br'))) return;
+  const b = find(pick || blk.dataset.id); if(b && b.kind === 'word' && !b.composing) startEdit(b);
 });
 $('#ws').addEventListener('pointerdown', e => { if(e.target === $('#ws') || e.target === stack){ commitEditor(true); deselect(); } });
 
 /* ================= Keyboard ================= */
 document.addEventListener('keydown', e => {
   const tg = e.target, mod = e.ctrlKey || e.metaKey;
+  if(mod && !e.altKey && e.key === 'Enter'){ e.preventDefault(); togglePlay(); return; }
+  if(e.key === 'Escape' && SP.reading){ stopSpeech(); if(tg !== edInput) return; }
   if(tg === edInput) return;
   const inField = tg.matches && tg.matches('input, textarea, select');
   if(mod && !e.altKey){
     const k = e.key.toLowerCase();
+    if(isLocked() && (k === 's' || k === 'o' || k === 'p')){ e.preventDefault(); return; }
     if(k === 's'){ e.preventDefault(); saveProject(); return; }
     if(k === 'o'){ e.preventDefault(); $('#fileIn').click(); return; }
     if(k === 'p'){ e.preventDefault(); doPrint(); return; }
@@ -1140,7 +1455,7 @@ document.addEventListener('keydown', e => {
   const isBtn = tg.closest && tg.closest('button');
   const sel = selectedWord();
   if(sel){
-    if(e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); deleteBlock(sel.id); return; }
+    if(e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); const at = idxOf(sel.id); deleteBlock(sel.id); S.selectedId = null; startCompose(at); return; }
     if(e.key === 'Enter' || e.key === 'F2'){ if(isBtn && e.key === 'Enter') return; e.preventDefault(); startEdit(sel); return; }
     if(e.key === 'Escape'){ deselect(); return; }
     if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ e.preventDefault(); moveSel(e.key === 'ArrowLeft' ? -1 : 1); return; }
@@ -1149,6 +1464,7 @@ document.addEventListener('keydown', e => {
   if(e.key.length === 1 && !e.altKey){
     e.preventDefault();
     startCompose(sel ? idxOf(sel.id) + 1 : doc.blocks.length, e.key === ' ' ? '' : e.key);
+    if(e.key !== ' ') fbLetter(e.key);
   }
 });
 document.addEventListener('paste', e => {
@@ -1170,15 +1486,15 @@ function deleteBlock(id){
 function cycle(b, d){
   if(!b || b.pictos.length < 2) return;
   mutate(() => {
-    b.idx = (b.idx + d + b.pictos.length) % b.pictos.length; b.pictoId = b.pictos[b.idx].id; b.imgErr = false; b.picOff = false; b.userPic = true;
+    b.idx = (b.idx + d + b.pictos.length) % b.pictos.length; b.pictoId = b.pictos[b.idx].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
     if(!b.catManual) b.cat = categorize(b.pictos[b.idx], b.usedQuery || b.searchedQuery, b.lang, b.text);
   });
 }
-function pickAlt(b, i){ mutate(() => { b.idx = i; b.pictoId = b.pictos[i].id; b.imgErr = false; b.picOff = false; b.userPic = true;
+function pickAlt(b, i){ mutate(() => { b.idx = i; b.pictoId = b.pictos[i].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
   if(!b.catManual) b.cat = categorize(b.pictos[i], b.usedQuery || b.searchedQuery, b.lang, b.text); }); }
 function searchOther(b, q){
   q = lower(q, S.lang); if(!q) return;
-  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; startSearch(b, q); renderAll(); scheduleSave();
+  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; b.own = null; startSearch(b, q); renderAll(); scheduleSave();
 }
 
 /* ================= Toolbar ================= */
@@ -1240,16 +1556,19 @@ function updatePanel(fromTyping){
   const pText = $('#pText'); if(document.activeElement !== pText) pText.value = b.text;
   const pq = $('#pQuery'); if(document.activeElement !== pq) pq.value = b.query || '';
   pq.placeholder = t('searchPh');
-  let st = b.imgErr ? 'imgerr' : b.picOff || b.noSearch ? 'off' : b.status;
+  const own = hasOwn(b);
+  let st = own ? 'own' : b.imgErr ? 'imgerr' : b.picOff || b.noSearch ? 'off' : b.status;
   if(st === 'idle' || st === 'pending') st = 'loading';
   const ghost = st === 'off' && b.picOff && b.status === 'ok' && b.pictos.length > 0 && b.pictoId != null;
   const img = $('#pImg'); const showImg = (st === 'ok' || ghost) && b.pictoId != null;
-  img.hidden = !showImg; img.style.opacity = ghost ? '0.4' : '1'; if(showImg){ const src = IMG(b.pictoId, 300); if(img.getAttribute('src') !== src) img.src = src; }
-  $('#pPrev').style.borderColor = showImg && doc.settings.fitz !== 'off' ? (CAT_COLOR[b.cat] || 'var(--line)') : 'var(--line)';
+  img.hidden = !(showImg || own); img.style.opacity = ghost ? '0.4' : '1';
+  if(own){ if(img.src !== b.own.src) img.src = b.own.src; }
+  else if(showImg){ const src = IMG(b.pictoId, 300); if(img.getAttribute('src') !== src) img.src = src; }
+  $('#pPrev').style.borderColor = (showImg || own) && doc.settings.fitz !== 'off' ? (CAT_COLOR[b.cat] || 'var(--line)') : 'var(--line)';
   const q = b.searchedQuery || b.query || deriveQuery(b.text, S.lang);
   const textQ = deriveQuery(b.text, b.lang || S.lang);
   const changed = !!textQ && st !== 'off' && norm(textQ) !== norm(b.searchedQuery || '') && norm(textQ) !== norm(b.usedQuery || '');
-  let msg = st === 'ok' ? (b.approx ? t('st_approx', {q:b.usedQuery}) : t('st_ok', {q})) : st === 'off' && b.autoOff ? t('st_autooff') : t('st_' + st, {q});
+  let msg = st === 'own' ? ownMsg(b) : st === 'ok' ? (b.approx ? t('st_approx', {q:b.usedQuery}) : t('st_ok', {q})) : st === 'off' && b.autoOff ? t('st_autooff') : t('st_' + st, {q});
   if(changed && st === 'ok') msg += ' ' + t('st_changed');
   const m = $('#pMsg'); m.className = 'msg' + (st === 'error' || st === 'imgerr' || st === 'none' ? ' err' : '');
   m.innerHTML = esc(msg) + (st === 'error' || st === 'imgerr' ? ` <button class="btn outline" id="pRetry" style="height:28px;margin-top:6px">${icon('refresh-cw')}${esc(t('retry'))}</button>` : '');
@@ -1265,7 +1584,8 @@ function updatePanel(fromTyping){
   }
   const byQ = textQ && changed ? t('byTextQ', {q:textQ}) : t('byText');
   $('#pByTextLbl').textContent = byQ; $('#pByText').classList.toggle('hl-search', changed); $('#pByText').disabled = !textQ;
-  const adding = b.picOff || b.noSearch;
+  const adding = b.picOff || (b.noSearch && !own);
+  updateOwnPanel(b);
   $('#pTogglePicLbl').textContent = adding ? t('addPic') : t('removePic');
   $('#pTogglePic').classList.toggle('hl-search', adding);
   const ic = adding ? 'image' : 'image-off'; const icEl = $('#pTogglePicIc'); if(icEl.dataset.k !== ic){ icEl.dataset.k = ic; icEl.innerHTML = icon(ic); }
@@ -1287,6 +1607,8 @@ $('#pText').addEventListener('input', e => { const b = selectedWord(); if(!b) re
 $('#pText').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.target.blur(); } });
 $('#pEdit').onclick = () => { const b = selectedWord(); if(b) startEdit(b); };
 $('#pClearText').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.text = ''; }); };
+$('#pListen').onclick = () => { const b = selectedWord(); if(b) speakBlocks([b]); };
+$('#pSpell').onclick = () => { const b = selectedWord(); if(b){ commitEditor(true); spellBlock(find(b.id)); } };
 $('#pPrevAlt').onclick = () => cycle(selectedWord(), -1);
 $('#pNextAlt').onclick = () => cycle(selectedWord(), 1);
 $('#pAltsToggle').onclick = () => { S.altsOpen = !S.altsOpen; updatePanel(); };
@@ -1295,7 +1617,8 @@ $('#pSearch').onclick = () => { const b = selectedWord(); if(b) searchOther(b, $
 $('#pQuery').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#pSearch').click(); } });
 $('#pByText').onclick = () => { const b = selectedWord(); if(b) searchOther(b, deriveQuery(b.text, S.lang)); };
 $('#pTogglePic').onclick = () => { const b = selectedWord(); if(!b) return;
-  if(b.picOff || b.noSearch){ if(b.pictos.length && b.status === 'ok'){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; }); }
+  if(b.picOff && b.own && b.own.src){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; }); return; }
+  if(b.picOff || (b.noSearch && !hasOwn(b))){ if(b.pictos.length && b.status === 'ok'){ mutate(() => { b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; }); }
     else { const q = deriveQuery(b.text, S.lang); if(q) searchOther(b, q); } }
   else mutate(() => { b.picOff = true; b.autoOff = false; b.userPic = true; }); };
 $('#pCats').addEventListener('click', e => { const c = e.target.closest('[data-c]'); const b = selectedWord(); if(c && b) mutate(() => { b.cat = c.dataset.c; b.catManual = true; }); });
@@ -1311,6 +1634,106 @@ $('#pWordAll').onclick = () => { const b = selectedWord(); if(!b) return; const 
   toast(t('applyWordAll') + ' ✓'); };
 $('#pClearFmt').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.fmt = {}; }); };
 $('#pDelete').onclick = () => { const b = selectedWord(); if(b) deleteBlock(b.id); };
+
+/* ================= Imatges pròpies i de la web (Wikimedia Commons) ================= */
+const COMMONS = 'https://commons.wikimedia.org/w/api.php';
+const webCache = new Map();
+const stripHtml = h => { const d = document.createElement('div'); d.innerHTML = String(h || ''); return (d.textContent || '').replace(/\s+/g, ' ').trim(); };
+function ownCredit(o){ return `«${o.title}», ${o.author || t('unknownAuthor')}, ${o.license || '?'}`; }
+function footText(){
+  const seen = new Set(), list = [];
+  for(const b of doc.blocks){ if(b.kind === 'word' && hasOwn(b) && b.own.from === 'commons'){ const c = ownCredit(b.own); if(!seen.has(c)){ seen.add(c); list.push(c); } } }
+  return t('attrib') + (list.length ? '\n' + t('ownAttrib', {list:list.join('; ')}) : '');
+}
+function ownMsg(b){ const o = b.own; return o.from === 'commons' ? t('st_web', {t:o.title, a:o.author || t('unknownAuthor'), l:o.license || '?'}) : t('st_own'); }
+// Només s'envia la paraula de cerca; mai el nom ni la data
+async function searchCommons(q){
+  const key = q.toLocaleLowerCase();
+  if(webCache.has(key)) return webCache.get(key);
+  const u = COMMONS + '?' + new URLSearchParams({action:'query', format:'json', origin:'*', generator:'search', gsrnamespace:'6',
+    gsrsearch:q + ' filetype:bitmap|drawing', gsrlimit:'24', prop:'imageinfo', iiprop:'url|mime|extmetadata', iiurlwidth:'400',
+    iiextmetadatafilter:'Artist|LicenseShortName|ObjectName', iiextmetadatalanguage:S.lang});
+  const r = await fetch(u); if(!r.ok) throw new Error('commons ' + r.status);
+  const j = await r.json(); const pagesObj = (j.query && j.query.pages) || {};
+  const list = Object.values(pagesObj).sort((a, b) => (a.index || 0) - (b.index || 0)).map(p => {
+    const ii = p.imageinfo && p.imageinfo[0]; if(!ii || !ii.thumburl || !/^image\/(jpeg|png|gif|webp|svg\+xml)$/.test(ii.mime || '')) return null;
+    const m = ii.extmetadata || {}, v = k => m[k] && m[k].value;
+    const title = stripHtml(v('ObjectName')) || String(p.title || '').replace(/^[^:]+:/, '').replace(/\.[a-z0-9]+$/i, '');
+    return {thumb:ii.thumburl, page:ii.descriptionurl || '', title, author:stripHtml(v('Artist')).slice(0, 80), license:stripHtml(v('LicenseShortName'))};
+  }).filter(Boolean);
+  webCache.set(key, list); return list;
+}
+// Converteix qualsevol imatge en un quadrat de 360 px (com els pictogrames), sense retallar-la
+async function toSquare(blob){
+  const url = URL.createObjectURL(blob);
+  try{
+    const im = new Image(); im.src = url; await im.decode();
+    const w = im.naturalWidth || 300, h = im.naturalHeight || 300, N = 360, k = Math.min(N / w, N / h);
+    const cv = document.createElement('canvas'); cv.width = cv.height = N; const cx = cv.getContext('2d');
+    const dw = w * k, dh = h * k; cx.drawImage(im, (N - dw) / 2, (N - dh) / 2, dw, dh);
+    let out = cv.toDataURL('image/png');
+    if(out.length > 200000){ const c2 = document.createElement('canvas'); c2.width = c2.height = N; const x2 = c2.getContext('2d');
+      x2.fillStyle = '#fff'; x2.fillRect(0, 0, N, N); x2.drawImage(cv, 0, 0); out = c2.toDataURL('image/jpeg', 0.86); }
+    return out;
+  } finally { URL.revokeObjectURL(url); }
+}
+function setOwn(b, own){
+  mutate(() => { b.own = own; b.picOff = false; b.autoOff = false; b.userPic = true; b.imgErr = false;
+    if(!b.catManual && (!b.cat || b.cat === 'misc') && b.status !== 'ok') b.cat = 'substantius'; });
+  toast(t('ownAdded'));
+}
+async function ownFromBlob(b, blob, from, meta){
+  if(!blob || !/^image\//.test(blob.type || 'image/')) { toast(t('ownErr'), {kind:'error'}); return; }
+  try{ const src = await toSquare(blob); if(find(b.id)) setOwn(b, {src, from, ...(meta || {})}); }
+  catch(e){ toast(t('ownErr'), {kind:'error'}); }
+}
+function updateOwnPanel(b){
+  const q = $('#pWebQ'); if(document.activeElement !== q && q.dataset.for !== b.id){ q.dataset.for = b.id; q.value = deriveQuery(b.text, S.lang); }
+  q.placeholder = t('searchPh');
+  $('#pOwnOff').hidden = !(b.own && b.own.src);
+  const box = $('#pWeb'), w = S.web;
+  const mine = w && w.id === b.id;
+  $('#pWebMsg').textContent = !mine ? '' : w.loading ? t('webSearching') : w.error ? t('webError') : !w.list.length ? t('webNone', {q:w.q}) : t('webPick');
+  $('#pWebMsg').className = 'msg' + (mine && (w.error || (!w.loading && !w.list.length)) ? ' err' : '');
+  box.hidden = !(mine && !w.loading && w.list.length);
+  if(!box.hidden){ const key = b.id + ':' + w.q + ':' + w.list.length;
+    if(box.dataset.k !== key){ box.dataset.k = key;
+      box.innerHTML = w.list.map((r, i) => `<button data-w="${i}" title="${esc(r.title + ' · ' + (r.author || '') + ' · ' + r.license)}"><img loading="lazy" alt="${esc(r.title)}" src="${esc(r.thumb)}"></button>`).join(''); } }
+}
+async function webSearch(b, q){
+  q = (q || '').trim(); if(!q) return;
+  const ticket = {id:b.id, q, loading:true, list:[]}; S.web = ticket; updatePanel();
+  try{ ticket.list = await searchCommons(q); }
+  catch(e){ ticket.error = true; }
+  ticket.loading = false; if(S.web === ticket) updatePanel();
+}
+$('#pWebSearch').onclick = () => { const b = selectedWord(); if(b) webSearch(b, $('#pWebQ').value); };
+$('#pWebQ').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#pWebSearch').click(); } });
+$('#pWeb').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-w]'), b = selectedWord(); if(!btn || !b || !S.web || btn.classList.contains('busy')) return;
+  const r = S.web.list[+btn.dataset.w]; btn.classList.add('busy');
+  try{ const resp = await fetch(r.thumb); if(!resp.ok) throw new Error('img'); await ownFromBlob(b, await resp.blob(), 'commons', {title:r.title, author:r.author, license:r.license, page:r.page}); }
+  catch(err){ toast(t('ownErr'), {kind:'error'}); }
+  btn.classList.remove('busy');
+});
+$('#pUpload').onclick = () => { $('#imgIn').value = ''; $('#imgIn').click(); };
+$('#imgIn').addEventListener('change', e => { const f = e.target.files && e.target.files[0], b = selectedWord(); if(f && b) ownFromBlob(b, f, 'file', {title:f.name}); });
+$('#pPaste').onclick = async () => {
+  const b = selectedWord(); if(!b) return;
+  try{
+    const items = await navigator.clipboard.read();
+    for(const it of items){ const ty = it.types.find(x => x.startsWith('image/')); if(ty){ await ownFromBlob(b, await it.getType(ty), 'paste', {title:''}); return; } }
+    toast(t('pasteHint'));
+  }catch(err){ toast(t('pasteHint')); }
+};
+$('#pOwnOff').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.own = null; }); };
+// Ctrl+V amb una imatge copiada i una paraula seleccionada
+document.addEventListener('paste', e => {
+  const b = selectedWord(); if(!b || e.target === edInput) return;
+  const it = [...((e.clipboardData && e.clipboardData.items) || [])].find(x => x.kind === 'file' && x.type.startsWith('image/'));
+  if(!it) return;
+  e.preventDefault(); e.stopImmediatePropagation(); ownFromBlob(b, it.getAsFile(), 'paste', {title:''});
+}, true);
 
 /* ================= Header fields ================= */
 function syncHeaderInputs(){ $('#hName').value = doc.header.name || ''; $('#hDate').value = doc.header.date || ''; }
@@ -1344,9 +1767,749 @@ function dialog({title, body, actions, extra}){
   });
 }
 
+/* ================= Veu: lectura en veu alta i ajuda mentre s'escriu ================= */
+// Fa servir les veus del navegador i de l'ordinador (gratuïtes). Els ajustos es desen a cada ordinador,
+// perquè cada ordinador té veus diferents; no van dins el projecte. Mai es llegeix el nom ni la data.
+const DEF_VOICE = {student:false, letters:false, letterKind:'name', words:true, sentences:true, touch:true, touchSpell:false, flow:'natural', rate:1, highlight:true, hlColor:'#FFE36E', voice:{ca:'', es:''}};
+const VS = Object.assign({}, DEF_VOICE, LS.get('voice', {}));
+VS.voice = Object.assign({ca:'', es:''}, VS.voice);
+const saveVS = () => LS.set('voice', VS);
+const HL_COLORS = ['#FFE36E', '#B9F3B0', '#BFE3FF', '#FFC9E3'];
+const PROFILES = {none:[false, false, false], words:[false, true, false], ws:[false, true, true], all:[true, true, true]};
+// Nom de les lletres (no el so: el so es farà amb gravacions de la mestra o la logopeda)
+const LETTERS = {
+  ca:{a:'a', b:'be alta', c:'ce', d:'de', e:'e', f:'efa', g:'ge', h:'hac', i:'i', j:'jota', k:'ca', l:'ela', m:'ema', n:'ena', o:'o', p:'pe', q:'cu', r:'erra', s:'essa', t:'te', u:'u', v:'ve baixa', w:'doble ve', x:'ics', y:'i grega', z:'zeta',
+    'ç':'ce trencada', 'à':'a amb accent obert', 'è':'e amb accent obert', 'é':'e amb accent tancat', 'í':'i amb accent', 'ò':'o amb accent obert', 'ó':'o amb accent tancat', 'ú':'u amb accent',
+    'ï':'i amb dièresi', 'ü':'u amb dièresi', 'ñ':'enye', '·':'punt volat'},
+  es:{a:'a', b:'be', c:'ce', d:'de', e:'e', f:'efe', g:'ge', h:'hache', i:'i', j:'jota', k:'ka', l:'ele', m:'eme', n:'ene', 'ñ':'eñe', o:'o', p:'pe', q:'cu', r:'erre', s:'ese', t:'te', u:'u', v:'uve', w:'uve doble', x:'equis', y:'i griega', z:'zeta',
+    'á':'a con tilde', 'é':'e con tilde', 'í':'i con tilde', 'ó':'o con tilde', 'ú':'u con tilde', 'ü':'u con diéresis', 'ç':'ce cedilla'}
+};
+const SAMPLE = {ca:'Hola! Sóc la veu de PictoEscriu.', es:'¡Hola! Soy la voz de PictoEscriu.'};
+const ENDS = /[.!?…]["»”)\]]*$/;   // final de frase
+const SP = {seq:0, reading:false, active:0, hl:new Set(), voices:[], bnd:{}, warned:{}, live:new Set()};
+const synth = () => window.speechSynthesis;
+const hasSynth = () => !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+const canSpeak = () => hasSynth() || PV.st.ca === 'ready' || PV.st.es === 'ready';
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const vLang = v => String(v.lang).toLowerCase().replace(/_/g, '-');
+function loadVoices(){
+  if(!hasSynth()){ if(voiceDlg) voiceDlg.refresh(); return; }
+  try{ SP.voices = Array.from(synth().getVoices() || []).filter(v => v && v.name && v.name !== 'undefined' && v.lang); }catch(e){ SP.voices = []; }
+  if(voiceDlg) voiceDlg.refresh();
+}
+// Ordre de preferència: veus naturals (Edge), millorades (Apple), de Google, i la variant d'Espanya
+function voiceScore(v, lang){
+  if(v.piper) return 58 - v.piper.i;   // veus baixades: just després de les naturals d'Edge
+  const n = v.name; let s = 0;
+  if(/natural|neural/i.test(n)) s += 50;
+  if(/enhanced|premium|millorada|mejorada/i.test(n)) s += 30;
+  if(/google/i.test(n)) s += 25;
+  if(v.localService === false) s += 5;
+  if(vLang(v) === lang + '-es') s += 10;
+  if(/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i.test(n)) s -= 20;
+  return s;
+}
+function voicesFor(lang){ return [...SP.voices.filter(v => vLang(v).split('-')[0] === lang), ...pvVoices(lang)].sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang)); }
+function pickVoice(lang){ const list = voicesFor(lang), want = VS.voice[lang];
+  return (want && list.find(v => v.voiceURI === want || v.name === want)) || list[0] || null; }
+const voiceKey = v => v ? (v.voiceURI || v.name) : '-';
+function voiceTags(v){ if(v.piper) return t('tagDownloaded'); return [/natural|neural/i.test(v.name) ? t('tagNatural') : '', v.localService === false ? t('tagOnline') : t('tagLocal')].filter(Boolean).join(' · '); }
+// El que diu la veu per a un bloc: el text en minúscules (perquè «HE» no es lletregi). Sense text, la paraula del pictograma.
+function spokenText(b){
+  if(!b || b.kind !== 'word') return '';
+  let s = (b.text || '').trim();
+  if(!s) s = (b.capText || '').trim();
+  if(!s && b.status === 'ok' && !b.picOff && !b.noSearch && b.pictos[b.idx] && b.pictos[b.idx].kw[0]) s = b.pictos[b.idx].kw[0][0];
+  return s.replace(/[’`´]/g, "'").toLocaleLowerCase(b.lang || S.lang);
+}
+// Agrupa els blocs en frases: es talla al punt, al salt de línia, en canviar d'idioma o si la frase és molt llarga
+function chunksOf(blocks){
+  const out = []; let cur = null;
+  const flush = () => { if(cur && cur.items.length) out.push(cur); cur = null; };
+  for(const b of blocks){
+    if(!b || b.kind === 'br'){ flush(); continue; }
+    const s = spokenText(b); if(!/[\p{L}\p{N}]/u.test(s)) continue;
+    const lang = (b.lang || S.lang) === 'es' ? 'es' : 'ca';
+    if(cur && cur.lang !== lang) flush();
+    if(!cur) cur = {lang, items:[]};
+    cur.items.push({id:b.id, s});
+    if(ENDS.test(b.text || '') || cur.items.length >= 30 || (cur.items.length >= 15 && /[,;:]$/.test(s))) flush();
+  }
+  flush(); return out;
+}
+// Diu un text. La promesa es resol quan acaba o quan s'interromp.
+function utter(text, lang, h = {}){
+  const pv = pickVoice(lang);
+  if(pv && pv.piper) return pvUtter(text, lang, pv, h);
+  if(!hasSynth()) return Promise.resolve();
+  return new Promise(res => {
+    const u = new SpeechSynthesisUtterance(text), v = pv;
+    u.lang = v ? v.lang : (lang === 'es' ? 'es-ES' : 'ca-ES'); if(v) u.voice = v;
+    u.rate = VS.rate; u.pitch = 1; u.volume = 1;
+    let done = false;
+    const fin = () => { if(done) return; done = true; clearTimeout(dog); SP.live.delete(u); res(); };
+    u.onstart = () => { if(h.start) h.start(); };
+    u.onboundary = e => { if(h.boundary) h.boundary(e); };
+    u.onend = fin; u.onerror = fin;
+    SP.live.add(u);   // Chrome perd l'avís de final si l'objecte desapareix
+    const dog = setTimeout(fin, 6000 + text.length * 160 / VS.rate);
+    try{ synth().speak(u); }catch(e){ fin(); }
+  });
+}
+/* ---- Veus descarregables (Piper): parlen dins el navegador i, un cop baixades, sense internet ---- */
+// El motor (ONNX Runtime i el convertidor de text a sons de Piper/eSpeak NG) es baixa de jsDelivr o unpkg en versions fixes,
+// i abans d'executar-lo se'n comprova l'empremta (SHA-256): si el fitxer no és l'original, no es fa servir.
+// Les veus (Ona en català, Sharvard en castellà) es baixen de Hugging Face (rhasspy/piper-voices).
+// Tot queda a la memòria del navegador (Cache Storage), que funciona també obrint el fitxer amb doble clic.
+const PV = {
+  CACHE:'pictoescriu-veus-1', KEY:'https://pictoescriu.local/veus/',
+  CDN:['https://cdn.jsdelivr.net/npm/', 'https://unpkg.com/'],
+  HF:['https://huggingface.co/rhasspy/piper-voices/resolve/main/', 'https://huggingface.co/diffusionstudio/piper-voices/resolve/main/'],
+  ENGINE:[
+    {k:'ort.js', p:'onnxruntime-web@1.18.0/dist/ort.wasm.min.js', size:142930, sha:'kFM6P9cAbff4l8DWPEaJltpcjkMOOZZNkuvlhsSZZhQ=', type:'text/javascript'},
+    {k:'ort-wasm-simd.wasm', p:'onnxruntime-web@1.18.0/dist/ort-wasm-simd.wasm', size:10595041, sha:'9TO18heQVj11VsYRw4NaxlhI7jJtomiarFTtfZzIxqQ=', type:'application/wasm'},
+    {k:'piper_phonemize.js', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.js', size:120714, sha:'/vDC/EQtJP3vXHx8w31dojFEB2QP4Rqxv+NHxyPf8Zs=', type:'text/javascript'},
+    {k:'piper_phonemize.wasm', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.wasm', size:635212, sha:'t3fNEHqR0rzGoepG8sJqZip0BzlP6EWJGYrqqD3XqdY=', type:'application/wasm'},
+    {k:'piper_phonemize.data', p:'@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.data', size:18077249, sha:'KfECXrI6W1wZLNFKbvvORQlAL/JlQFBy7m99Ggm3j4w=', type:'application/octet-stream'}],
+  MODELS:{
+    ca:{name:'Ona', path:'ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium', size:63201294, voices:[{spk:null}]},
+    es:{name:'Sharvard', path:'es/es_ES/sharvard/medium/es_ES-sharvard-medium', size:76700000, voices:[{spk:'F', sex:'pvF'}, {spk:'M', sex:'pvM'}]}},
+  st:{ca:'none', es:'none'}, got:{ca:0, es:0}, need:{ca:0, es:0}, err:{ca:'', es:''}, abort:{},
+  engine:null, sess:{}, cfg:{}, ph:null, phOut:[], ctx:null, src:null, done:null, tok:0, timers:[], mem:new Map(), failed:false, shown:0
+};
+const pvCanStore = () => typeof caches !== 'undefined' && !!(window.crypto && crypto.subtle);
+const pvKey = k => PV.KEY + k;
+const pvFiles = lang => { const m = PV.MODELS[lang], base = m.path.split('/').pop();
+  return [{k:base + '.onnx.json', p:m.path + '.onnx.json', hf:true, size:5000, type:'application/json'}, {k:base + '.onnx', p:m.path + '.onnx', hf:true, size:m.size, type:'application/octet-stream'}]; };
+const pvCache = () => caches.open(PV.CACHE);
+async function pvMissing(lang){
+  const c = await pvCache(), out = [];
+  for(const f of [...PV.ENGINE, ...pvFiles(lang)]) if(!(await c.match(pvKey(f.k)))) out.push(f);
+  return out;
+}
+// En obrir l'aplicació: quines veus ja s'havien baixat en aquest ordinador?
+async function pvCheck(){
+  if(!pvCanStore()) return;
+  for(const lang of ['ca', 'es']){ try{ if(PV.st[lang] !== 'downloading') PV.st[lang] = (await pvMissing(lang)).length ? 'none' : 'ready'; }catch(e){} }
+  loadVoices(); updatePlayBtn();
+}
+function pvVoices(lang){
+  if(PV.st[lang] !== 'ready') return [];
+  const m = PV.MODELS[lang];
+  return m.voices.map((x, i) => ({name:x.sex ? `${m.name} (${t(x.sex)})` : m.name, lang:lang === 'es' ? 'es-ES' : 'ca-ES', voiceURI:`piper:${lang}:${i}`, localService:true, piper:{lang, spk:x.spk, i}}));
+}
+function pvMB(lang){ const other = lang === 'ca' ? 'es' : 'ca';
+  return Math.round((PV.MODELS[lang].size + (PV.st[other] === 'ready' ? 0 : PV.ENGINE.reduce((n, f) => n + f.size, 0))) / 1e6); }
+async function pvSha(blob){ const h = new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer())); let b = ''; h.forEach(x => b += String.fromCharCode(x)); return btoa(b); }
+async function pvFetch(f, lang, signal){
+  let last = null;
+  for(const base of (f.hf ? PV.HF : PV.CDN)){
+    const before = PV.got[lang];
+    try{
+      const r = await fetch(base + f.p, {signal}); if(!r.ok) throw new Error('http ' + r.status);
+      if(!r.body || !r.body.getReader){ const b = await r.blob(); PV.got[lang] += b.size; pvShow(lang); return b; }
+      const rd = r.body.getReader(), parts = [];
+      for(;;){ const {done, value} = await rd.read(); if(done) break; parts.push(value); PV.got[lang] += value.length; pvShow(lang); }
+      return new Blob(parts);
+    }catch(e){ if(signal.aborted) throw e; last = e; PV.got[lang] = before; }
+  }
+  throw last || new Error('net');
+}
+function pvShow(lang){ const now = performance.now(); if(now - PV.shown < 120) return; PV.shown = now; if(voiceDlg) voiceDlg.progress(lang); }
+async function pvDownload(lang){
+  if(!pvCanStore() || PV.st[lang] === 'downloading') return;
+  const ac = new AbortController(); PV.abort[lang] = ac;
+  PV.st[lang] = 'downloading'; PV.err[lang] = ''; PV.got[lang] = 0; PV.need[lang] = 1;
+  if(voiceDlg) voiceDlg.render();
+  try{
+    const c = await pvCache(), files = await pvMissing(lang);
+    PV.need[lang] = files.reduce((n, f) => n + f.size, 0) || 1; pvShow(lang);
+    for(const f of files){
+      const blob = await pvFetch(f, lang, ac.signal);
+      if(f.sha && await pvSha(blob) !== f.sha) throw new Error('integrity');
+      await c.put(pvKey(f.k), new Response(blob, {headers:{'Content-Type':f.type}}));
+    }
+    PV.st[lang] = 'ready'; PV.failed = false;
+    try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+    toast(t('pvDone', {v:PV.MODELS[lang].name}));
+  }catch(e){
+    const cancelled = ac.signal.aborted;
+    PV.st[lang] = cancelled ? 'none' : 'error';
+    PV.err[lang] = cancelled ? '' : t(e && e.message === 'integrity' ? 'pvBad' : 'pvNet');
+  }
+  PV.abort[lang] = null; SP.warned[lang] = false;
+  loadVoices(); updatePlayBtn();
+}
+async function pvRemove(lang){
+  pvStop();
+  const c = await pvCache(), other = lang === 'ca' ? 'es' : 'ca';
+  for(const f of pvFiles(lang)) await c.delete(pvKey(f.k));
+  if(PV.st[other] === 'none' || PV.st[other] === 'error') for(const f of PV.ENGINE) await c.delete(pvKey(f.k));
+  PV.sess[lang] = null; PV.mem.clear(); PV.st[lang] = 'none';
+  if(String(VS.voice[lang] || '').startsWith('piper:')){ VS.voice[lang] = ''; saveVS(); }
+  loadVoices(); updatePlayBtn();
+}
+// Motor: es carrega des de la memòria del navegador la primera vegada que es fa servir
+async function pvBlobURL(k){ const r = await (await pvCache()).match(pvKey(k)); if(!r) throw new Error('missing ' + k); return URL.createObjectURL(await r.blob()); }
+function pvScript(url){ return new Promise((res, rej) => { const el = document.createElement('script'); el.src = url; el.onload = res; el.onerror = () => rej(new Error('script')); document.head.appendChild(el); }); }
+async function pvNewPhonemizer(){
+  const wasm = await pvBlobURL('piper_phonemize.wasm'), data = await pvBlobURL('piper_phonemize.data');
+  PV.ph = await createPiperPhonemize({print:l => PV.phOut.push(l), printErr:() => {}, locateFile:f => f.endsWith('.wasm') ? wasm : f.endsWith('.data') ? data : f});
+}
+function pvEngine(){
+  return PV.engine || (PV.engine = (async () => {
+    if(!window.ort) await pvScript(await pvBlobURL('ort.js'));
+    ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;
+    ort.env.wasm.wasmPaths = {'ort-wasm-simd.wasm':await pvBlobURL('ort-wasm-simd.wasm')};
+    if(!window.createPiperPhonemize) await pvScript(await pvBlobURL('piper_phonemize.js'));
+    await pvNewPhonemizer();
+  })().catch(e => { PV.engine = null; throw e; }));
+}
+function pvSession(lang){
+  return PV.sess[lang] || (PV.sess[lang] = (async () => {
+    await pvEngine();
+    const c = await pvCache(), [cf, md] = pvFiles(lang);
+    PV.cfg[lang] = await (await c.match(pvKey(cf.k))).json();
+    return ort.InferenceSession.create(await (await c.match(pvKey(md.k))).arrayBuffer(), {executionProviders:['wasm']});
+  })().catch(e => { PV.sess[lang] = null; throw e; }));
+}
+// Text → sons (identificadors de fonema). Una llista per a cada frase que troba eSpeak.
+function pvPhonemize(text, voice){
+  const run = () => { PV.phOut = []; PV.ph.callMain(['-l', voice, '--input', JSON.stringify([{text}]), '--espeak_data', '/espeak-ng-data']);
+    const out = []; for(const l of PV.phOut){ try{ const j = JSON.parse(l); if(j.phoneme_ids && j.phoneme_ids.length) out.push(j.phoneme_ids); }catch(e){} } return out; };
+  let lines = []; try{ lines = run(); }catch(e){}
+  return lines;
+}
+async function pvSynth(lang, text, spk){
+  const key = [lang, spk, VS.rate, text].join('|');
+  if(PV.mem.has(key)) return PV.mem.get(key);
+  const sess = await pvSession(lang), cfg = PV.cfg[lang], map = cfg.phoneme_id_map || {}, inf = cfg.inference || {};
+  let lines = pvPhonemize(text, (cfg.espeak && cfg.espeak.voice) || lang);
+  if(!lines.length){ await pvNewPhonemizer(); lines = pvPhonemize(text, (cfg.espeak && cfg.espeak.voice) || lang); }   // si el convertidor s'ha encallat, se'n fa un de nou
+  if(!lines.length) throw new Error('phonemes');
+  const SPACE = (map[' '] || [3])[0], SKIP = new Set([(map['_'] || [0])[0], (map['^'] || [1])[0], (map['$'] || [2])[0]]);
+  const pcms = [], groups = []; let g = 0;
+  for(const ids of lines){
+    const feeds = {input:new ort.Tensor('int64', BigInt64Array.from(ids, x => BigInt(x)), [1, ids.length]),
+      input_lengths:new ort.Tensor('int64', BigInt64Array.from([BigInt(ids.length)]), [1]),
+      scales:new ort.Tensor('float32', Float32Array.from([inf.noise_scale ?? 0.667, (inf.length_scale ?? 1) / VS.rate, inf.noise_w ?? 0.8]), [3])};
+    if((cfg.num_speakers || 1) > 1){ const m = cfg.speaker_id_map || {}; feeds.sid = new ort.Tensor('int64', BigInt64Array.from([BigInt(spk != null && spk in m ? m[spk] : 0)]), [1]); }
+    const out = await sess.run(feeds); pcms.push(Object.values(out)[0].data);
+    // Pes de cada paraula (fonemes entre espais), per ressaltar-la quan sona
+    for(const id of ids){ if(id === SPACE){ if(g){ groups.push(g); g = 0; } } else if(!SKIP.has(id)) g++; }
+    if(g){ groups.push(g); g = 0; }
+  }
+  const pcm = new Float32Array(pcms.reduce((n, x) => n + x.length, 0)); let o = 0; pcms.forEach(x => { pcm.set(x, o); o += x.length; });
+  const res = {pcm, sr:(cfg.audio && cfg.audio.sample_rate) || 22050, groups};
+  PV.mem.set(key, res); if(PV.mem.size > 300) PV.mem.delete(PV.mem.keys().next().value);
+  return res;
+}
+// Diu un text amb la veu baixada. Com que aquesta veu no diu quina paraula està dient, es calcula pel nombre de sons de cada paraula.
+function pvUtter(text, lang, v, h = {}){
+  return new Promise(async res => {
+    const my = ++PV.tok; let fin = false, slow = null;
+    const done = () => { if(fin) return; fin = true; clearTimeout(slow); PV.timers.forEach(clearTimeout); PV.timers = []; if(PV.done === done) PV.done = null; res(); };
+    if(PV.done) PV.done(); PV.done = done;
+    try{
+      if(!PV.sess[lang]) slow = setTimeout(() => toast(t('pvPreparing')), 700);
+      const {pcm, sr, groups} = await pvSynth(lang, text, v.piper.spk);
+      clearTimeout(slow);
+      if(my !== PV.tok) return done();
+      const ctx = actx();
+      if(ctx.state === 'suspended'){ try{ await ctx.resume(); }catch(e){} }
+      if(my !== PV.tok) return done();
+      const buf = ctx.createBuffer(1, Math.max(1, pcm.length), sr); buf.getChannelData(0).set(pcm);
+      const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination); PV.src = src;
+      src.onended = () => { if(PV.src === src) PV.src = null; done(); };
+      if(h.start) h.start();
+      src.start();
+      if(h.boundary){
+        const words = [...text.matchAll(/\S+/g)];
+        const w = groups.length === words.length ? groups : words.map(m => Math.max(1, m[0].replace(/[^\p{L}\p{N}]/gu, '').length));
+        const total = w.reduce((a, b) => a + b, 0) || 1, dur = buf.duration, lead = Math.min(0.12, dur * 0.05), span = Math.max(0.05, dur - lead - Math.min(0.25, dur * 0.1));
+        let acc = 0;
+        words.forEach((m, k) => { const at = lead + span * acc / total; acc += w[k];
+          PV.timers.push(setTimeout(() => { if(my === PV.tok) h.boundary({name:'word', charIndex:m.index}); }, at * 1000)); });
+      }
+      PV.timers.push(setTimeout(() => { if(PV.src === src) PV.src = null; done(); }, buf.duration * 1000 + 2000));
+    }catch(e){
+      clearTimeout(slow); console.warn('Veu baixada:', e);
+      if(!PV.failed){ PV.failed = true; toast(t('pvFail'), {kind:'error', timeout:9000, action:{label:t('voiceBtn'), fn:openVoiceDialog}}); }
+      done();
+    }
+  });
+}
+function pvStop(){
+  PV.tok++;
+  const src = PV.src; PV.src = null;
+  if(src){ try{ src.onended = null; src.stop(); }catch(e){} }
+  if(PV.done) PV.done();
+}
+function setHL(ids){
+  const next = new Set(VS.highlight ? ids : []);
+  for(const id of SP.hl) if(!next.has(id)){ const el = els.get(id); if(el) el.classList.remove('speaking'); }
+  for(const id of next) if(!SP.hl.has(id)){ const el = els.get(id); if(el) el.classList.add('speaking'); }
+  SP.hl = next;
+  const el = SP.reading && ids.length && els.get(ids[0]);
+  if(el && el.isConnected){ const r = el.getBoundingClientRect(), w = $('#ws').getBoundingClientRect();
+    if(r.top < w.top + 8 || r.bottom > w.bottom - 8) el.scrollIntoView({block:'center', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }
+}
+function warnNoVoice(lang){
+  if(voicesFor(lang).length || SP.warned[lang]) return;
+  SP.warned[lang] = true;
+  toast(t('noVoiceToast', {lang:t('langName_' + lang)}), {timeout:12000, action:{label:pvCanStore() ? t('dlNow') : t('voiceBtn'), fn:openVoiceDialog}});
+}
+async function speakChunks(chunks, token){
+  for(let ci = 0; ci < chunks.length; ci++){
+    const ch = chunks[ci], ids = ch.items.map(x => x.id);
+    if(token !== SP.seq) return;
+    warnNoVoice(ch.lang);
+    if(VS.flow === 'word'){
+      // Paraula a paraula: el ressaltat sempre és exacte
+      for(const it of ch.items){
+        if(token !== SP.seq) return;
+        await utter(it.s, ch.lang, {start:() => { if(token === SP.seq) setHL([it.id]); }});
+        if(token !== SP.seq) return;
+        await wait(180 / VS.rate);
+      }
+    } else {
+      // Natural: tota la frase alhora; la veu avisa de cada paraula (si ho sap fer) i la ressaltem
+      let text = ''; const offs = [];
+      ch.items.forEach(it => { if(text) text += ' '; offs.push(text.length); text += it.s; });
+      const key = voiceKey(pickVoice(ch.lang)); let got = false, timer = null;
+      await utter(text, ch.lang, {
+        start:() => {
+          if(token !== SP.seq) return;
+          if(ids.length === 1 || SP.bnd[key] === false){ setHL(ids); return; }
+          setHL([ids[0]]);
+          if(SP.bnd[key] !== true) timer = setTimeout(() => { if(!got && token === SP.seq){ SP.bnd[key] = false; setHL(ids); } }, 1500 / VS.rate);
+        },
+        boundary:e => {
+          if(token !== SP.seq || (e.name && e.name !== 'word')) return;
+          got = true; SP.bnd[key] = true; clearTimeout(timer);
+          let k = 0; while(k + 1 < offs.length && offs[k + 1] <= e.charIndex) k++;
+          setHL([ids[k]]);
+        }
+      });
+      clearTimeout(timer);
+      if(!got && ids.length > 1 && SP.bnd[key] === undefined) SP.bnd[key] = false;
+    }
+    if(token !== SP.seq) return;
+    setHL([]);
+    if(ci < chunks.length - 1) await wait(250 / VS.rate);
+  }
+}
+function stopSpeech(){
+  SP.seq++; const was = SP.reading; SP.reading = false;
+  if(hasSynth()){ try{ synth().cancel(); }catch(e){} }
+  pvStop(); sndStop();
+  setHL([]); if(was) updatePlayBtn();
+}
+// Interromp el que s'estigui dient i en comença un de nou
+async function begin(){
+  const busy = !!PV.src || !!SND.src || (hasSynth() && (synth().speaking || synth().pending));
+  stopSpeech(); const token = SP.seq;
+  if(hasSynth()){ try{ synth().resume(); }catch(e){} }
+  if(busy) await wait(60);   // alguns navegadors perden la frase nova si es diu just després d'interrompre
+  return token;
+}
+async function speakBlocks(blocks, reading){
+  if(!canSpeak()){ toast(t('noSpeech'), {kind:'error'}); return; }
+  const chunks = chunksOf(blocks); if(!chunks.length) return;
+  SP.active++;
+  try{
+    const token = await begin(); if(token !== SP.seq) return;
+    SP.reading = !!reading; updatePlayBtn();
+    await speakChunks(chunks, token);
+    if(token === SP.seq){ SP.reading = false; setHL([]); updatePlayBtn(); }
+  } finally { SP.active--; }
+}
+async function sayText(text, lang){
+  if(!canSpeak() || !text) return;
+  SP.active++;
+  try{ const token = await begin(); if(token === SP.seq) await utter(text, lang); }
+  finally { SP.active--; }
+}
+// Botó ▶: tot el document, o des de la paraula seleccionada. Mai la capçalera.
+function togglePlay(){
+  if(SP.reading){ stopSpeech(); return; }
+  if(!canSpeak()){ toast(t('noSpeech'), {kind:'error'}); return; }
+  const sel = selectedWord(), list = doc.blocks.slice(sel ? idxOf(sel.id) : 0);
+  if(!chunksOf(list).length){ toast(t('nothingToRead')); return; }
+  speakBlocks(list, true);
+}
+function updatePlayBtn(){
+  const on = SP.reading, ic = on ? 'square' : 'play';
+  [['#bPlay', '#bPlayL'], ['#bPlayBig', '#bPlayBigL']].forEach(([bs, ls]) => {
+    const btn = $(bs), pi = btn.querySelector('.pi');
+    btn.setAttribute('aria-pressed', String(on)); btn.title = t(on ? 'stopTip' : 'playTip');
+    if(pi.dataset.k !== ic){ pi.dataset.k = ic; pi.innerHTML = icon(ic); }
+    $(ls).textContent = t(on ? 'stop' : 'play');
+  });
+}
+function applyVoiceUI(){
+  document.body.classList.toggle('student', !!VS.student);
+  $('#bStudent').setAttribute('aria-pressed', String(!!VS.student));
+  $('#bPlayBig').hidden = !VS.student;
+  stack.style.setProperty('--speak', VS.hlColor);
+  updatePlayBtn();
+}
+function setStudent(on){ VS.student = !!on; saveVS(); applyVoiceUI(); toast(t(on ? 'studentOn' : 'studentOff')); if(voiceDlg) voiceDlg.render(); }
+
+/* ---- Pantalla bloquejada per a l'alumne ---- */
+// Amaga les barres i el panell i posa la pantalla completa. No és una barrera de seguretat: és perquè l'alumne no toqui
+// els botons de la mestra. Es desbloqueja prement el cadenat 7 vegades seguides (menys d'1,5 s entre tocs).
+const LOCK = {taps:0, last:0, timer:null, N:7, GAP:1500};
+function isLocked(){ return document.body.classList.contains('locked'); }
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+const fsOK = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+function goFull(){ const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen;
+  try{ const r = f && f.call(el); if(r && r.catch) r.catch(() => {}); }catch(e){} }
+function setLocked(on, quiet){
+  document.body.classList.toggle('locked', !!on); $('#lockBar').hidden = !on; LS.set('locked', !!on);
+  LOCK.taps = 0; $('#lockDots').textContent = '';
+  if(on){
+    document.querySelectorAll('.overlay').forEach(o => o.remove()); voiceDlg = null;
+    if(S.selectedId && !(S.editor && S.editor.id === S.selectedId)){ S.selectedId = null; renderAll(); }
+    if(!quiet) goFull();
+    if(!S.editor) startCompose(doc.blocks.length); else focusEditor();
+  } else {
+    try{ if(fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); }catch(e){}
+    if(!quiet) toast(t('unlocked'));
+  }
+  updateFullBtn(); updateToolbar();
+}
+function updateFullBtn(){ document.body.classList.toggle('is-full', !!fsEl() || !fsOK()); }
+function unlockTap(){
+  const now = performance.now();
+  LOCK.taps = now - LOCK.last < LOCK.GAP ? LOCK.taps + 1 : 1; LOCK.last = now;
+  clearTimeout(LOCK.timer); LOCK.timer = setTimeout(() => { LOCK.taps = 0; $('#lockDots').textContent = ''; }, LOCK.GAP + 200);
+  if(LOCK.taps >= LOCK.N){ setLocked(false); return; }
+  // Des del tercer toc es veu quants en falten (perquè la mestra sàpiga que funciona)
+  $('#lockDots').textContent = LOCK.taps >= 3 ? '●'.repeat(LOCK.taps) + '○'.repeat(LOCK.N - LOCK.taps) : '';
+}
+
+/* ---- Sons de les lletres gravats (per la mestra o la logopeda) i «Lletrejar» ---- */
+// Cada so es grava una vegada amb el micròfon i es guarda al navegador (Cache Storage). Es pot desar en un fitxer per passar-lo a un altre ordinador.
+// Taula lletra → so: el so més habitual de cada lletra o grup de lletres (ny, ll, l·l, rr, ss, qu, gu, tx, ix, tj/tg; la h no sona). Pendent de validar amb la logopeda.
+const SOUNDS = {
+  ca:[['a','a, à','pa'], ['e','e, é, è','te'], ['i','i, í, ï, y','pi'], ['o','o, ó, ò','os'], ['u','u, ú, ü','lluna'], ['p','p','pa'], ['b','b, v','bota'], ['t','t','te'],
+    ['d','d','dit'], ['k','c, qu, k, q','casa'], ['g','g, gu','gat'], ['m','m','mà'], ['n','n','nas'], ['ny','ny','nyam'], ['f','f','foc'], ['s','s, ss, ç, c (+e, i)','sol'],
+    ['z','z','zero'], ['sh','x, ix','xocolata'], ['zh','j, g (+e, i)','joc'], ['tsh','tx','cotxe'], ['dzh','tj, tg','platja'], ['l','l, l·l','lila'], ['ll','ll','lluna'],
+    ['r','r','pera'], ['rr','rr, r a l\'inici','rosa'], ['w','w','web']],
+  es:[['a','a, á','casa'], ['e','e, é','té'], ['i','i, í, y final','pino'], ['o','o, ó','oso'], ['u','u, ú, ü','uva'], ['p','p','pato'], ['b','b, v','bota'], ['t','t','taza'],
+    ['d','d','dedo'], ['k','c, qu, k','casa'], ['g','g, gu','gato'], ['m','m','mamá'], ['n','n','nube'], ['ny','ñ','niño'], ['f','f','foca'], ['th','z, c (+e, i)','zapato'],
+    ['s','s','sol'], ['x','j, g (+e, i)','jirafa'], ['ch','ch','chocolate'], ['y','y, ll','yate'], ['l','l','luna'], ['r','r','pera'], ['rr','rr, r al inicio','perro'],
+    ['ks','x','taxi'], ['w','w','web']]
+};
+const SND = {CACHE:'pictoescriu-sons-1', KEY:'https://pictoescriu.local/sons/', have:{ca:new Set(), es:new Set()}, dec:new Map(), src:null, done:null, told:false};
+const sndUrl = (lang, k) => SND.KEY + lang + '/' + k;
+const actx = () => { if(!PV.ctx){ try{ if(navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){} PV.ctx = new (window.AudioContext || window.webkitAudioContext)(); } return PV.ctx; };
+// Divideix una paraula en lletres o grups de lletres amb el so de cadascun (null: no sona, com la h)
+function spellUnits(word, lang){
+  const w = String(word || '').replace(/[’`´]/g, "'"), lw = w.toLocaleLowerCase(lang), out = [];
+  const isL = ch => /\p{L}/u.test(ch || ''), soft = ch => /^[eéèêiíìïy]$/.test(ch || ''), base = ch => ch.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const keys = new Set(SOUNDS[lang].map(x => x[0]));
+  for(let i = 0; i < lw.length;){
+    const c = lw[i], n = lw[i + 1], n2 = lw[i + 2], first = i === 0 || !isL(lw[i - 1]);
+    let len = 1, snd;
+    if(lang === 'es'){
+      if(c === 'c' && n === 'h'){ len = 2; snd = 'ch'; }
+      else if(c === 'l' && n === 'l'){ len = 2; snd = 'y'; }
+      else if(c === 'r' && n === 'r'){ len = 2; snd = 'rr'; }
+      else if((c === 'q' || c === 'g') && n === 'u' && soft(n2)){ len = 2; snd = c === 'q' ? 'k' : 'g'; }
+      else if(c === 'c') snd = soft(n) ? 'th' : 'k';
+      else if(c === 'g') snd = soft(n) ? 'x' : 'g';
+      else snd = {j:'x', z:'th', h:null, 'ñ':'ny', v:'b', x:'ks', q:'k', r:first ? 'rr' : 'r', y:isL(n) ? 'y' : 'i'}[c];
+    } else {
+      if(c === 'l' && (n === '·' || n === '.') && n2 === 'l'){ len = 3; snd = 'l'; }
+      else if(c === 'n' && n === 'y'){ len = 2; snd = 'ny'; }
+      else if(c === 'l' && n === 'l'){ len = 2; snd = 'll'; }
+      else if(c === 'r' && n === 'r'){ len = 2; snd = 'rr'; }
+      else if(c === 's' && n === 's'){ len = 2; snd = 's'; }
+      else if(c === 't' && n === 'x'){ len = 2; snd = 'tsh'; }
+      else if(c === 'i' && n === 'x' && /[aeouàèéòóú]/.test(lw[i - 1] || '')){ len = 2; snd = 'sh'; }
+      else if(c === 't' && (n === 'j' || (n === 'g' && soft(n2)))){ len = 2; snd = 'dzh'; }
+      else if((c === 'q' || c === 'g') && n === 'u' && soft(n2)){ len = 2; snd = c === 'q' ? 'k' : 'g'; }
+      else if(c === 'c') snd = soft(n) ? 's' : 'k';
+      else if(c === 'g') snd = soft(n) ? 'zh' : 'g';
+      else snd = {'ç':'s', j:'zh', h:null, x:'sh', v:'b', q:'k', y:'i', 'ñ':'ny', r:first ? 'rr' : 'r'}[c];
+    }
+    if(snd === undefined){ const bc = base(c); snd = keys.has(bc) ? bc : null; }
+    out.push({start:i, end:i + len, txt:w.slice(i, i + len), snd:isL(c) ? snd : null, letter:isL(c)});
+    i += len;
+  }
+  return out;
+}
+// So d'una lletra pitjada sola (sense saber la lletra següent)
+function letterSound(ch, lang){ if(ch === 'r') return 'r'; if(lang === 'es' && ch === 'y') return 'y'; const u = spellUnits(ch, lang)[0]; return u ? u.snd : null; }
+async function sndIndex(){
+  if(!pvCanStore()) return;
+  try{ const c = await caches.open(SND.CACHE); for(const r of await c.keys()){ const [lang, k] = r.url.slice(SND.KEY.length).split('/'); if(SND.have[lang]) SND.have[lang].add(decodeURIComponent(k)); } }catch(e){}
+  if(voiceDlg) voiceDlg.render();
+}
+async function sndPut(lang, k, blob){ await (await caches.open(SND.CACHE)).put(sndUrl(lang, k), new Response(blob, {headers:{'Content-Type':blob.type || 'audio/webm'}})); SND.have[lang].add(k); SND.dec.delete(lang + '/' + k); }
+async function sndDel(lang, k){ await (await caches.open(SND.CACHE)).delete(sndUrl(lang, k)); SND.have[lang].delete(k); SND.dec.delete(lang + '/' + k); }
+async function sndBuffer(lang, k){
+  const id = lang + '/' + k; if(SND.dec.has(id)) return SND.dec.get(id);
+  const r = await (await caches.open(SND.CACHE)).match(sndUrl(lang, k)); if(!r) return null;
+  const buf = await actx().decodeAudioData(await r.arrayBuffer());
+  // Es retalla el silenci del principi i del final, perquè els sons sonin seguits
+  const d = buf.getChannelData(0); let mx = 0; for(let i = 0; i < d.length; i++){ const v = Math.abs(d[i]); if(v > mx) mx = v; }
+  const th = mx * 0.08; let a = 0, z = d.length - 1; while(a < z && Math.abs(d[a]) < th) a++; while(z > a && Math.abs(d[z]) < th) z--;
+  const pad = Math.round(buf.sampleRate * 0.03), from = Math.max(0, a - pad), to = Math.min(d.length, z + pad);
+  const res = {buf, at:from / buf.sampleRate, dur:Math.max(0.05, (to - from) / buf.sampleRate)};
+  SND.dec.set(id, res); return res;
+}
+function sndPlay(lang, k){
+  return new Promise(async res => {
+    let fin = false; const done = () => { if(fin) return; fin = true; if(SND.done === done) SND.done = null; res(); };
+    if(SND.done) SND.done(); SND.done = done;
+    try{
+      const x = await sndBuffer(lang, k); if(!x || fin) return done();
+      const ctx = actx(); if(ctx.state === 'suspended'){ try{ await ctx.resume(); }catch(e){} }
+      if(fin) return;
+      const src = ctx.createBufferSource(); src.buffer = x.buf; src.connect(ctx.destination); SND.src = src;
+      src.onended = () => { if(SND.src === src) SND.src = null; done(); };
+      src.start(0, x.at, x.dur);
+      setTimeout(() => { if(SND.src === src) SND.src = null; done(); }, x.dur * 1000 + 1500);
+    }catch(e){ console.warn('So gravat:', e); done(); }
+  });
+}
+function sndStop(){ const src = SND.src; SND.src = null; if(src){ try{ src.onended = null; src.stop(); }catch(e){} } if(SND.done) SND.done(); }
+async function sndSay(lang, k){ SP.active++; try{ const token = await begin(); if(token === SP.seq) await sndPlay(lang, k); } finally { SP.active--; } }
+// Marca la lletra que sona dins la paraula escrita (només a la pantalla; no canvia cap mida)
+function markLetters(b, a, z){
+  const el = els.get(b.id), lbl = el && el.querySelector('.lbl'); if(!lbl || lbl.contains(edInput)) return;
+  const tx = b.text || '';
+  if(a < 0){ if(lbl.querySelector('.spell-on')) lbl.textContent = tx; return; }
+  lbl.innerHTML = esc(tx.slice(0, a)) + '<span class="spell-on">' + esc(tx.slice(a, z)) + '</span>' + esc(tx.slice(z));
+}
+// «Lletrejar»: cada lletra (o grup) amb el seu so gravat, o el nom si encara no està gravat; després, la paraula sencera
+async function spellBlock(b){
+  if(!b || b.kind !== 'word' || !(b.text || '').trim() || (S.editor && S.editor.id === b.id)) return;
+  const lang = (b.lang || S.lang) === 'es' ? 'es' : 'ca', units = spellUnits(b.text, lang);
+  if(!SND.have[lang].size && !SND.told){ SND.told = true; toast(t('sndNone'), {timeout:9000, action:{label:t('voiceBtn'), fn:openVoiceDialog}}); }
+  SP.active++;
+  try{
+    const token = await begin(); if(token !== SP.seq) return;
+    SP.reading = true; updatePlayBtn(); setHL([b.id]);
+    for(const u of units){
+      if(token !== SP.seq) break;
+      if(!u.letter) continue;
+      markLetters(b, u.start, u.end);
+      if(u.snd && SND.have[lang].has(u.snd)) await sndPlay(lang, u.snd);
+      else if(u.snd) await utter([...u.txt.toLocaleLowerCase(lang)].map(ch => LETTERS[lang][ch] || ch).join(' '), lang);
+      else await wait(450);   // la h no sona
+      if(token !== SP.seq) break;
+      await wait(260 / VS.rate);
+    }
+    markLetters(b, -1, -1);
+    if(token === SP.seq){ await wait(150); await utter(spokenText(b), lang, {start:() => { if(token === SP.seq) setHL([b.id]); }}); }
+    if(token === SP.seq){ SP.reading = false; setHL([]); updatePlayBtn(); }
+  } finally { SP.active--; markLetters(b, -1, -1); }
+}
+
+/* ---- Ajuda mentre l'alumne escriu (només en mode alumne) ---- */
+function fbLetter(ch){
+  if(!VS.student || !VS.letters || !ch) return;
+  const lang = S.lang === 'es' ? 'es' : 'ca', c = ch.toLocaleLowerCase(lang);
+  if(!/^[\p{L}\p{N}·]$/u.test(c)) return;
+  if(VS.letterKind === 'sound' && /\p{L}/u.test(c)){
+    const k = letterSound(c, lang);
+    if(k === null) return;   // la h no sona
+    if(SND.have[lang].has(k)){ sndSay(lang, k); return; }
+  }
+  sayText(LETTERS[lang][c] || c, lang);
+}
+// La frase que acaba al bloc «li»: enrere fins al punt anterior, un salt de línia o el principi
+function sentenceAt(li){
+  const out = [];
+  for(let i = li; i >= 0; i--){ const b = doc.blocks[i]; if(b.kind === 'br' || (i !== li && ENDS.test(b.text || ''))) break; out.unshift(b); }
+  return out;
+}
+// Després d'un espai, un signe o un Retorn: diu la paraula acabada o llegeix la frase
+function fbAfter(sep, list){
+  if(!VS.student || !S.editor) return;
+  let li = idxOf(S.editor.id) - 1;
+  if(sep === '\n'){
+    li--; const w = doc.blocks[li]; if(!w || w.kind !== 'word') return;
+    if(VS.sentences){ if(!ENDS.test(w.text || '')) speakBlocks(sentenceAt(li)); return; }
+    if(VS.words && list.includes(w)) speakBlocks([w]);
+    return;
+  }
+  const w = doc.blocks[li]; if(!w || w.kind !== 'word') return;
+  if(VS.sentences && /[.!?…]/.test(sep) && ENDS.test(w.text || '')){ speakBlocks(sentenceAt(li)); return; }
+  if(VS.words && list.includes(w)) speakBlocks([w]);
+}
+function fbWord(id){ const b = find(id); if(VS.student && VS.words && b) speakBlocks([b]); }
+
+/* ---- Finestra «Sons de les lletres»: gravar, escoltar, esborrar, desar en un fitxer i obrir-lo ---- */
+function blobToDataURL(blob){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); }); }
+function openSoundsDialog(){
+  if(!pvCanStore() || !window.MediaRecorder){ toast(t('sndNoStore'), {kind:'error'}); return; }
+  if($('#sndOv')) return;
+  let lang = S.lang === 'es' ? 'es' : 'ca', rec = null, note = '';
+  const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'sndOv';
+  const msg = m => { note = m; const el = ov.querySelector('#sdMsg'); if(el) el.textContent = m; };
+  const stopRec = () => { if(rec && rec.mr.state !== 'inactive') rec.mr.stop(); };
+  const startRec = async k => {
+    if(rec){ stopRec(); return; }
+    let stream;
+    try{ stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:true}}); }
+    catch(e){ msg(t('sndMicErr')); return; }
+    const mr = new MediaRecorder(stream), parts = [];
+    rec = {k, mr, timer:null};
+    mr.ondataavailable = e => { if(e.data && e.data.size) parts.push(e.data); };
+    mr.onstop = async () => {
+      stream.getTracks().forEach(tr => tr.stop()); clearTimeout(rec && rec.timer); rec = null;
+      const blob = new Blob(parts, {type:mr.mimeType || 'audio/webm'});
+      if(blob.size){ await sndPut(lang, k, blob); msg(''); render(); sndPlay(lang, k); } else render();
+    };
+    mr.start(); rec.timer = setTimeout(stopRec, 2500); msg(t('sndRecording')); render();
+  };
+  const exportAll = async () => {
+    const c = await caches.open(SND.CACHE), out = {app:'PictoEscriu', kind:'sons', format:1, sons:{ca:{}, es:{}}};
+    for(const l of ['ca', 'es']) for(const k of SND.have[l]){ const r = await c.match(sndUrl(l, k)); if(r) out.sons[l][k] = await blobToDataURL(await r.blob()); }
+    downloadBlob(new Blob([JSON.stringify(out)], {type:'application/json'}), 'sons-pictoescriu.json'); msg(t('sndExported'));
+  };
+  const importFile = file => {
+    const fr = new FileReader();
+    fr.onload = async () => {
+      try{
+        const d = JSON.parse(fr.result); if(!d || d.app !== 'PictoEscriu' || d.kind !== 'sons' || !d.sons) throw new Error('format');
+        let n = 0;
+        for(const l of ['ca', 'es']) for(const [k, url] of Object.entries(d.sons[l] || {})){
+          if(!SOUNDS[l].some(x => x[0] === k) || !/^data:audio\//.test(String(url))) continue;
+          await sndPut(l, k, await (await fetch(url)).blob()); n++;
+        }
+        msg(t('sndImported', {n})); render();
+      }catch(e){ msg(t('sndBadFile')); }
+    };
+    fr.readAsText(file);
+  };
+  const render = () => {
+    const a = document.activeElement, keep = a && ov.contains(a) ? Object.entries(a.dataset).map(([k, v]) => `[data-${k}="${v}"]`).join('') || (a.id ? '#' + a.id : '') : '';
+    ov.innerHTML = `<div class="dialog voice snd" role="dialog" aria-modal="true" aria-labelledby="sdT"><h2 id="sdT">${esc(t('sndTitle'))}</h2>
+      <p class="msg">${esc(t('sndHow'))}</p>
+      <div class="seg" id="sdLang" role="group"><button data-lang="ca" aria-pressed="${lang === 'ca'}">Català</button><button data-lang="es" aria-pressed="${lang === 'es'}">Castellano</button></div>
+      <div class="sndlist">${SOUNDS[lang].map(([k, letters, ex]) => { const has = SND.have[lang].has(k), on = rec && rec.k === k;
+        return `<div class="sndrow${has ? ' has' : ''}"><span class="sndl"><b>${esc(letters)}</b> <span class="msg">${esc(t('sndAsIn', {w:ex}))}</span></span>
+          <button class="btn ${on ? 'rec' : 'outline'}" data-rec="${k}">${icon(on ? 'square' : 'mic')}${esc(t(on ? 'sndStop' : has ? 'sndAgain' : 'sndRec'))}</button>
+          <button class="btn icon-only" data-play="${k}"${has ? '' : ' disabled'} title="${esc(t('listen'))}" aria-label="${esc(t('listen'))}">${icon('play')}</button>
+          <button class="btn icon-only" data-del="${k}"${has ? '' : ' disabled'} title="${esc(t('sndDel'))}" aria-label="${esc(t('sndDel'))}">${icon('trash-2')}</button></div>`; }).join('')}</div>
+      <p class="msg" id="sdMsg">${esc(note)}</p>
+      <div class="acts"><button class="btn outline" id="sdExport"${SND.have.ca.size + SND.have.es.size ? '' : ' disabled'}>${icon('save')}${esc(t('sndExport'))}</button><button class="btn outline" id="sdImport">${icon('folder-open')}${esc(t('sndImport'))}</button><button class="btn primary" id="sdClose">${esc(t('ok'))}</button></div></div>`;
+    ov.querySelector('#sdLang').onclick = e => { const b = e.target.closest('[data-lang]'); if(b && !rec){ lang = b.dataset.lang; render(); } };
+    ov.querySelectorAll('[data-rec]').forEach(b => b.onclick = () => startRec(b.dataset.rec));
+    ov.querySelectorAll('[data-play]').forEach(b => b.onclick = () => sndSay(lang, b.dataset.play));
+    ov.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { await sndDel(lang, b.dataset.del); render(); });
+    ov.querySelector('#sdExport').onclick = exportAll;
+    ov.querySelector('#sdImport').onclick = () => $('#sndIn').click();
+    ov.querySelector('#sdClose').onclick = close;
+    const f = keep && ov.querySelector(keep); if(f) f.focus();
+  };
+  const close = () => { stopRec(); ov.remove(); $('#sndIn').onchange = null; if(voiceDlg) voiceDlg.render(); };
+  $('#sndIn').onchange = e => { const f = e.target.files[0]; if(f) importFile(f); e.target.value = ''; };
+  render();
+  ov.addEventListener('keydown', e => { if(e.key === 'Escape'){ e.stopPropagation(); close(); } });
+  ov.addEventListener('click', e => { if(e.target === ov) close(); });
+  document.body.appendChild(ov); ov.querySelector('#sdClose').focus();
+}
+
+/* ---- Finestra «Veu i lectura» ---- */
+let voiceDlg = null;
+function openVoiceDialog(){
+  if(voiceDlg) return;
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  const msgs = {ca:'', es:''};
+  const profOf = () => Object.keys(PROFILES).find(k => PROFILES[k].join() === [VS.letters, VS.words, VS.sentences].map(Boolean).join());
+  const voiceSel = lang => {
+    const list = voicesFor(lang);
+    if(!list.length) return `<select id="vdV${lang}" class="sel-in" disabled><option>${esc(t('voiceNone'))}</option></select>`;
+    return `<select id="vdV${lang}" class="sel-in"><option value="">${esc(t('voiceAuto', {v:list[0].name}))}</option>${list.map(v => `<option value="${esc(v.voiceURI || v.name)}"${(VS.voice[lang] === v.voiceURI || VS.voice[lang] === v.name) ? ' selected' : ''}>${esc(v.name)} · ${esc(voiceTags(v))}</option>`).join('')}</select>`;
+  };
+  const voiceRow = lang => `<div class="vrow"><label for="vdV${lang}">${esc(t('voice_' + lang))}</label>${voiceSel(lang)}<button class="btn outline" data-test="${lang}"${voicesFor(lang).length ? '' : ' disabled'}>${icon('volume-2')}${esc(t('test'))}</button></div>
+    <p class="msg${voicesFor(lang).length ? '' : ' err'}" id="vdM${lang}">${esc(voicesFor(lang).length ? msgs[lang] : t(pvCanStore() ? 'noVoiceDl_' + lang : 'noVoice_' + lang))}</p>${pvRow(lang)}`;
+  // Veu gratuïta descarregable: botó, progrés o «ja baixada»
+  const pvPct = lang => Math.min(99, Math.floor(PV.got[lang] * 100 / (PV.need[lang] || 1)));
+  const pvTxt = lang => t('pvProgress', {a:Math.round(PV.got[lang] / 1e6), b:Math.max(1, Math.round(PV.need[lang] / 1e6))});
+  const pvRow = lang => {
+    if(!pvCanStore()) return '';
+    const st = PV.st[lang], name = PV.MODELS[lang].name;
+    if(st === 'ready') return `<div class="pvrow ok">${icon('check')}<span>${esc(t('pvReady', {v:name}))}</span><button class="btn" data-pvrm="${lang}">${icon('trash-2')}${esc(t('pvRemove'))}</button></div>`;
+    if(st === 'downloading') return `<div class="pvrow"><div class="pvbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pvPct(lang)}" id="vdBar${lang}"><span style="width:${pvPct(lang)}%"></span></div><span class="msg" id="vdBarT${lang}">${esc(pvTxt(lang))}</span><button class="btn outline" data-pvcancel="${lang}">${esc(t('cancel'))}</button></div>`;
+    return `<div class="pvrow dl">${PV.err[lang] ? `<p class="msg err">${esc(PV.err[lang])}</p>` : ''}<button class="btn pvdl" data-pvdl="${lang}">${icon('download')}${esc(t('pvGet_' + lang, {mb:pvMB(lang)}))}</button><p class="msg">${esc(t('pvNote'))}</p></div>`;
+  };
+  const chk = (id, on, key) => `<label class="chk"><input type="checkbox" id="${id}"${on ? ' checked' : ''}> ${esc(t(key))}</label>`;
+  const render = () => {
+    const a = document.activeElement, inside = a && ov.contains(a) && a !== ov;
+    const focusSel = !inside ? null : a.id ? '#' + a.id : a.parentElement && a.parentElement.id && (a.dataset.v || a.dataset.c) ? `#${a.parentElement.id} [data-${a.dataset.v ? 'v' : 'c'}="${a.dataset.v || a.dataset.c}"]` : null;
+    const prof = profOf();
+    ov.innerHTML = `<div class="dialog voice" role="dialog" aria-modal="true" aria-labelledby="vdT"><h2 id="vdT">${esc(t('voiceT'))}</h2>
+      <label class="chk big"><input type="checkbox" id="vdStudent"${VS.student ? ' checked' : ''}> <b>${esc(t('studentChk'))}</b></label>
+      <div class="vsec"><h3>${esc(t('fbSec'))}</h3><div class="vopts${VS.student ? '' : ' off'}">
+        <div class="seg" id="vdProf" role="group">${Object.keys(PROFILES).map(k => `<button data-v="${k}" aria-pressed="${prof === k}">${esc(t('prof_' + k))}</button>`).join('')}</div>
+        ${chk('vdLetters', VS.letters, 'fbLetters')}
+        ${VS.letters ? `<div class="seg sub" id="vdLK" role="group"><button data-v="name" aria-pressed="${VS.letterKind !== 'sound'}">${esc(t('lkName'))}</button><button data-v="sound" aria-pressed="${VS.letterKind === 'sound'}">${esc(t('lkSound'))}</button></div>` : ''}
+        ${chk('vdWords', VS.words, 'fbWords')}${chk('vdSent', VS.sentences, 'fbSentences')}${chk('vdTouch', VS.touch, 'fbTouch')}
+        ${VS.touch ? `<div class="seg sub" id="vdTK" role="group"><button data-v="say" aria-pressed="${!VS.touchSpell}">${esc(t('tkSay'))}</button><button data-v="spell" aria-pressed="${!!VS.touchSpell}">${esc(t('tkSpell'))}</button></div>` : ''}
+        ${VS.student ? '' : `<p class="msg">${esc(t('fbNote'))}</p>`}</div></div>
+      <div class="vsec"><h3>${esc(t('voicesSec'))}</h3>
+        ${canSpeak() ? voiceRow('ca') + voiceRow('es') + `<p class="msg">${esc(t('onlineNote'))}</p>` : `<p class="msg err">${esc(t('noSpeech'))}</p>`}</div>
+      <div class="vsec"><h3>${esc(t('sndSec'))}</h3><p class="msg">${esc(t('sndIntro'))}</p>
+        <div class="vrow"><span class="msg" style="flex:1">${esc(t('sndCount', {ca:SND.have.ca.size, nca:SOUNDS.ca.length, es:SND.have.es.size, nes:SOUNDS.es.length}))}</span><button class="btn outline" id="vdSnd">${icon('mic')}${esc(t('sndOpen'))}</button></div></div>
+      <div class="vsec"><h3>${esc(t('readSec'))}</h3>
+        <div class="vrow"><label for="vdRate">${esc(t('rate'))}</label><input type="range" id="vdRate" min="0.5" max="1.5" step="0.1" value="${VS.rate}"><span class="val" id="vdRateV">${Math.round(VS.rate * 100)} %</span></div>
+        <div class="seg" id="vdFlow" role="group"><button data-v="natural" aria-pressed="${VS.flow !== 'word'}">${esc(t('flowNatural'))}</button><button data-v="word" aria-pressed="${VS.flow === 'word'}">${esc(t('flowWord'))}</button></div>
+        <p class="msg">${esc(t('flowNote'))}</p>
+        ${chk('vdHl', VS.highlight, 'hlChk')}
+        <div class="swatches" id="vdHlC" role="group" aria-label="${esc(t('hlChk'))}">${HL_COLORS.map((c, i) => `<button data-c="${c}" style="background:${c}" aria-pressed="${VS.hlColor === c}" title="${esc(t('hlc_' + i))}" aria-label="${esc(t('hlc_' + i))}"${VS.highlight ? '' : ' disabled'}></button>`).join('')}</div>
+      </div>
+      <div class="acts"><button class="btn primary" id="vdClose">${esc(t('ok'))}</button></div></div>`;
+    const $o = s => ov.querySelector(s), set = (k, v) => { VS[k] = v; saveVS(); };
+    $o('#vdClose').onclick = close;
+    $o('#vdStudent').onchange = e => setStudent(e.target.checked);
+    $o('#vdProf').onclick = e => { const b = e.target.closest('button[data-v]'); if(!b) return; [VS.letters, VS.words, VS.sentences] = PROFILES[b.dataset.v]; saveVS(); render(); };
+    [['#vdLetters', 'letters'], ['#vdWords', 'words'], ['#vdSent', 'sentences'], ['#vdTouch', 'touch'], ['#vdHl', 'highlight']].forEach(([s, k]) => { $o(s).onchange = e => { set(k, e.target.checked); render(); }; });
+    ['ca', 'es'].forEach(lang => { const s = $o('#vdV' + lang); if(s && !s.disabled) s.onchange = e => { VS.voice[lang] = e.target.value; saveVS(); msgs[lang] = ''; $o('#vdM' + lang).textContent = ''; }; });
+    ov.querySelectorAll('[data-test]').forEach(b => b.onclick = () => testVoice(b.dataset.test));
+    ov.querySelectorAll('[data-pvdl]').forEach(b => b.onclick = () => pvDownload(b.dataset.pvdl));
+    ov.querySelectorAll('[data-pvcancel]').forEach(b => b.onclick = () => { const a = PV.abort[b.dataset.pvcancel]; if(a) a.abort(); });
+    ov.querySelectorAll('[data-pvrm]').forEach(b => b.onclick = () => pvRemove(b.dataset.pvrm));
+    $o('#vdRate').oninput = e => { set('rate', +e.target.value); $o('#vdRateV').textContent = Math.round(VS.rate * 100) + ' %'; };
+    $o('#vdFlow').onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ set('flow', b.dataset.v); render(); } };
+    const lk = $o('#vdLK'); if(lk) lk.onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ set('letterKind', b.dataset.v); render(); } };
+    const tk = $o('#vdTK'); if(tk) tk.onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ set('touchSpell', b.dataset.v === 'spell'); render(); } };
+    $o('#vdSnd').onclick = openSoundsDialog;
+    $o('#vdHlC').onclick = e => { const b = e.target.closest('button[data-c]'); if(b){ set('hlColor', b.dataset.c); applyVoiceUI(); render(); } };
+    const f = focusSel && $o(focusSel); if(f) f.focus();
+  };
+  // Prova la veu i explica si sap indicar cada paraula (per al ressaltat)
+  const testVoice = async lang => {
+    const token = await begin(); if(token !== SP.seq) return;
+    let got = false; const key = voiceKey(pickVoice(lang));
+    await utter(SAMPLE[lang], lang, {boundary:e => { if(!e.name || e.name === 'word'){ got = true; } }});
+    if(token !== SP.seq) return;
+    SP.bnd[key] = got; const pv = pickVoice(lang); msgs[lang] = t(pv && pv.piper ? 'pvBnd' : got ? 'bndYes' : 'bndNo');
+    const m = ov.querySelector('#vdM' + lang); if(m) m.textContent = msgs[lang];
+  };
+  const close = () => { ov.remove(); voiceDlg = null; };
+  // Durant la descàrrega només s'actualitza la barra (així no es perd el focus)
+  const progress = lang => { const bar = ov.querySelector('#vdBar' + lang), tx = ov.querySelector('#vdBarT' + lang);
+    if(!bar){ render(); return; } bar.firstChild.style.width = pvPct(lang) + '%'; bar.setAttribute('aria-valuenow', pvPct(lang)); tx.textContent = pvTxt(lang); };
+  voiceDlg = {render, refresh:render, progress};
+  render();
+  ov.addEventListener('keydown', e => { if(e.key === 'Escape'){ e.stopPropagation(); close(); } });
+  ov.addEventListener('click', e => { if(e.target === ov) close(); });
+  document.body.appendChild(ov);
+  const dl = ['ca', 'es'].find(l => !voicesFor(l).length) && ov.querySelector(`[data-pvdl="${['ca', 'es'].find(l => !voicesFor(l).length)}"]`);
+  if(dl){ dl.scrollIntoView({block:'center'}); dl.focus(); } else ov.querySelector('#vdStudent').focus();
+}
+
 /* ================= Print ================= */
 async function doPrint(){
-  commitEditor(true); deselect(); paginate();
+  commitEditor(true); deselect(); paginate(); stopSpeech();
   if(!LS.get('printNoteOff', false)){
     const r = await dialog({title:t('printT'), body:t('printB'), extra:`<label><input type="checkbox"> ${esc(t('dontShow'))}</label>`,
       actions:[{label:t('cancel'), v:false}, {label:t('printGo'), v:true, primary:true}]});
@@ -1388,12 +2551,12 @@ let busyOv = null;
 function showBusy(msg){ busyOv = document.createElement('div'); busyOv.className = 'overlay'; busyOv.innerHTML = `<div class="dialog" style="max-width:340px;flex-direction:row;align-items:center"><span class="spin"></span><p>${esc(msg)}</p></div>`; document.body.appendChild(busyOv); }
 function hideBusy(){ if(busyOv){ busyOv.remove(); busyOv = null; } }
 async function exportPDF(force){
-  commitEditor(true); deselect(); paginate();
+  commitEditor(true); deselect(); paginate(); stopSpeech();
   if(!window.jspdf || !window.jspdf.jsPDF){ toast(t('pdfLib'), {kind:'error'}); return; }
   showBusy(t('pdfPrep'));
   try{
     await document.fonts.ready;
-    const words = doc.blocks.filter(b => b.kind === 'word' && b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch);
+    const words = doc.blocks.filter(b => b.kind === 'word' && showsArasaac(b));
     const failed = await loadImages([...new Set(words.map(b => b.pictoId))]);
     if(failed.length && !force){
       hideBusy();
@@ -1436,12 +2599,14 @@ async function exportPDF(force){
       for(const el of pg.flow.children){
         const b = find(el.dataset.id); if(!b || b.kind !== 'word') continue;
         const f = eff(b), pic = el.querySelector('.pic'), lbl = el.querySelector('.lbl');
-        if(b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch && imgData.has(b.pictoId)){
+        const own = hasOwn(b);
+        if(own || (showsArasaac(b) && imgData.has(b.pictoId))){
           const r = R(pic), col = CAT_COLOR[b.cat], mode = doc.settings.fitz, bw = 1.2;
           if(mode === 'frame' && col){ const [cr, cg, cb] = hexRgb(col); pdf.setDrawColor(cr, cg, cb); pdf.setFillColor(255, 255, 255); pdf.setLineWidth(bw); pdf.roundedRect(r.x + bw/2, r.y + bw/2, r.w - bw, r.h - bw, 1.2, 1.2, 'FD'); }
           if(mode === 'bg' && col){ const [cr, cg, cb] = hexRgb(col); pdf.setFillColor(cr, cg, cb); pdf.roundedRect(r.x, r.y, r.w, r.h, 1.8, 1.8, 'F'); }
           const ir = R(pic.querySelector('img')), side = Math.min(ir.w, ir.h);
-          pdf.addImage(imgData.get(b.pictoId), 'PNG', ir.x + (ir.w - side) / 2, ir.y + (ir.h - side) / 2, side, side, 'p' + b.pictoId, 'FAST');
+          const data = own ? b.own.src : imgData.get(b.pictoId), kind = /^data:image\/jpe?g/i.test(data) ? 'JPEG' : 'PNG';
+          pdf.addImage(data, kind, ir.x + (ir.w - side) / 2, ir.y + (ir.h - side) / 2, side, side, own ? 'o' + b.id : 'p' + b.pictoId, 'FAST');
           const capEl = pic.querySelector('.cap');
           if(capEl && capEl.textContent && getComputedStyle(capEl).display !== 'none'){
             const cr = R(capEl), cpt = parseFloat(capEl.style.fontSize), cfs = cpt * PT, clh = cfs * 1.15, cfm = fontMetrics({font:f.font});
@@ -1459,7 +2624,8 @@ async function exportPDF(force){
         }
       }
       const fr = R(pg.foot); pdf.setFont('roboto', 'normal'); pdf.setFontSize(6.5); pdf.setTextColor(112, 112, 112);
-      pdf.text(pg.foot.textContent, 105, fr.y + fr.h - 0.8, {align:'center'});
+      const flines = pg.foot.textContent.split('\n').flatMap(l => pdf.splitTextToSize(l, 180)), flh = 6.5 * PT * 1.2;
+      flines.forEach((l, i) => pdf.text(l, 105, fr.y + fr.h - 0.8 - (flines.length - 1 - i) * flh, {align:'center'}));
     });
     pdf.save(fileBase() + '.pdf');
     toast(t('pdfDone'));
@@ -1473,10 +2639,12 @@ function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
   document.querySelectorAll('[data-tip]').forEach(el => { el.title = t(el.dataset.tip); el.setAttribute('aria-label', t(el.dataset.tip)); });
   $('#hNameL').textContent = t('headName'); $('#hDateL').textContent = t('headDate'); $('#hToday').textContent = t('today');
-  pages.forEach((pg, i) => { pg.foot.textContent = t('attrib'); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
+  pages.forEach((pg, i) => { pg.foot.textContent = footText(); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
   $('#sLang').value = S.lang; fillFonts();
+  const sv = $('#splashV'); if(sv) sv.textContent = t('version', {v:VERSION}).replace(/\.$/, '');
   $('#pCats').dataset.k = '';
-  updateToolbar(); updatePanel();
+  updateToolbar(); updatePanel(); updatePlayBtn();
+  if(voiceDlg) voiceDlg.render();
 }
 
 /* ================= Wiring ================= */
@@ -1488,7 +2656,7 @@ $('#bNew').onclick = async () => {
   commitEditor(true);
   const r = await dialog({title:t('confirmNewT'), body:t('confirmNewB'), actions:[{label:t('cancel'), v:false}, {label:t('newDoc'), v:true, primary:true}]});
   if(!r.v) return;
-  pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText};
+  stopSpeech(); pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText};
   renderAll(); syncHeaderInputs(); scheduleSave(); startCompose(0);
 };
 $('#bOpen').onclick = () => $('#fileIn').click();
@@ -1497,7 +2665,7 @@ $('#bSave').onclick = saveProject;
 $('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
 $('#bHead').onclick = openHeadGallery;
 $('#sLang').addEventListener('change', e => { S.lang = e.target.value; LS.set('lang', S.lang); applyI18n(); });
-$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('creditsB') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
+$('#bCredits').onclick = () => dialog({title:t('creditsT'), body:t('version', {v:VERSION}) + '\n' + t('creditsB') + '\n' + t('voiceCredits') + '\n' + t('privacy'), actions:[{label:t('ok'), v:true, primary:true}]});
 $('#bPdf').onclick = () => exportPDF(false);
 $('#bPrint').onclick = doPrint;
 $('#bNext').onclick = () => cycle(selectedWord(), 1);
@@ -1515,6 +2683,31 @@ $('#bItalic').onclick = () => setFmt('italic', !eff(selectedWord()).italic);
 $('#bUpper').onclick = () => setCase('upper');
 $('#bLower').onclick = () => setCase('lower');
 $('#bApplyAll').onclick = applyAll;
+$('#bPlay').onclick = togglePlay;
+$('#bPlayBig').onclick = togglePlay;
+$('#bStudent').onclick = () => setStudent(!VS.student);
+$('#bVoice').onclick = openVoiceDialog;
+$('#bLock').onclick = () => setLocked(true);
+$('#bUnlock').addEventListener('pointerdown', e => e.preventDefault());
+$('#bUnlock').onclick = unlockTap;
+$('#bFull').addEventListener('pointerdown', e => e.preventDefault());
+$('#bFull').onclick = goFull;
+document.addEventListener('fullscreenchange', updateFullBtn);
+document.addEventListener('webkitfullscreenchange', updateFullBtn);
+$('#bTools').onclick = () => { const on = document.body.classList.toggle('tools-open'); $('#bTools').setAttribute('aria-expanded', String(on)); };
+// iPhone i iPad: sense zoom automàtic en tocar per escriure (el zoom amb dos dits continua funcionant)
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if(IOS){ const vp = document.querySelector('meta[name=viewport]'); if(vp) vp.content = 'width=device-width, initial-scale=1, maximum-scale=1'; }
+// En pantalles tàctils, si en tocar el full el teclat no s'ha obert, es torna a intentar amb el «clic»
+stack.addEventListener('click', e => { if(S.editor && document.activeElement !== edInput && e.target.closest('.page') && !e.target.closest('.sheet-head')) focusEditor(); });
+// Llegir i el mode alumne no treuen el cursor de l'editor: l'alumne pot continuar escrivint
+['#bPlay', '#bPlayBig', '#bStudent'].forEach(s => $(s).addEventListener('pointerdown', e => e.preventDefault()));
+sndIndex();
+pvCheck().then(() => { const lang = S.lang === 'es' ? 'es' : 'ca', v = pickVoice(lang);
+  if(v && v.piper) setTimeout(() => pvSession(lang).catch(() => {}), 2500); });
+if(hasSynth()){ loadVoices(); const sy = synth();
+  if(sy.addEventListener) sy.addEventListener('voiceschanged', loadVoices); else sy.onvoiceschanged = loadVoices;
+  [400, 1500, 4000].forEach(ms => setTimeout(() => { if(!SP.voices.length) loadVoices(); }, ms)); }
 $('#bZoomIn').onclick = () => setZoom(zoomVal() + 0.1);
 $('#bZoomOut').onclick = () => setZoom(zoomVal() - 0.1);
 $('#bFitPage').onclick = () => fit('page');
@@ -1525,17 +2718,24 @@ new ResizeObserver(() => document.documentElement.style.setProperty('--bar-h', $
 window.addEventListener('beforeprint', () => { commitEditor(true); });
 
 /* ================= Boot ================= */
+// Pantalla d'inici: uns 2 segons, o fins que es toca o es prem una tecla
+function hideSplash(){ const sp = $('#splash'); if(!sp || sp.classList.contains('out')) return; sp.classList.add('out'); setTimeout(() => sp.remove(), 500);
+  document.removeEventListener('keydown', hideSplash, true); }
+$('#splash').addEventListener('pointerdown', e => { e.preventDefault(); hideSplash(); });
+document.addEventListener('keydown', hideSplash, true);
+setTimeout(hideSplash, 2200);
 fontsReady.then(function boot(){
   const draft = LS.get('draft', null);
   makePage(0);
-  applyI18n();
+  applyI18n(); applyVoiceUI();
+  if(LS.get('locked', false)){ document.body.classList.add('locked'); $('#lockBar').hidden = false; }
   if(draft && draft.app === 'PictoEscriu' && ((draft.blocks && draft.blocks.length) || (draft.header && (draft.header.name || draft.header.date)))){
     restore(draft);
     toast(t('restored'), {action:{label:t('newDoc'), fn:() => $('#bNew').click()}, timeout:6000});
   } else renderAll();
   syncHeaderInputs();
   const z = LS.get('zoom', null);
-  requestAnimationFrame(() => { if(z) setZoom(z); else fit('page'); startCompose(doc.blocks.length); });
+  requestAnimationFrame(() => { if(z) setZoom(z); else fit('page'); startCompose(doc.blocks.length); if(isLocked()) setLocked(true, true); });
 });
 </script>
 </body>
