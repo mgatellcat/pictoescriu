@@ -11,7 +11,7 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - Escriptura contínua: cada paraula rep automàticament un pictograma d'ARASAAC (substantius, verbs i adjectius). La resta es pot afegir després.
 - Botó **Següent pictograma**, alternatives i cerca d'un altre pictograma sense canviar el text.
 - Text i pictograma independents: pots editar la paraula sense perdre el pictograma.
-- Clau Fitzgerald (marc o fons), amb correcció manual.
+- Clau Fitzgerald (marc o fons, o sense clau), amb correcció manual, i pictograma a sota o a sobre de la paraula.
 - Paraula dins el pictograma (a dalt o a baix, en majúscules o en minúscules).
 - 7 tipus de lletra, entre els quals Andika, Atkinson Hyperlegible, Lexend i OpenDyslexic.
 - 7 capçaleres per a primària, també en versió per pintar.

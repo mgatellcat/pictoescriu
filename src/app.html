@@ -124,6 +124,9 @@ body.panel-open .workspace{right:var(--panel-w)}
 .pic img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none}
 .pic.spacer{visibility:hidden}
 .blk.textonly{min-width:0}
+/* Opció «Picto a sobre»: el pictograma damunt de la paraula (la frase queda a la línia de sota) */
+.pic-above .blk .pic{order:-1}
+.pic-above .blk .lbl{margin-bottom:0;margin-top:1.4mm}
 .pic{flex-direction:column}
 .pic .cap{display:none;flex:none;max-width:100%;color:#000;line-height:1.15;text-align:center;white-space:nowrap;overflow:hidden;font-synthesis:none}
 .pic.cap-top .cap,.pic.cap-bottom .cap{display:block}
@@ -368,6 +371,8 @@ body.is-full #bFull{display:none}
       <span class="val" id="vPic"></span>
       <label class="lab" for="sFitz" data-i18n="fitz"></label>
       <select id="sFitz" class="sel-in"><option value="frame" data-i18n="fitzFrame"></option><option value="bg" data-i18n="fitzBg"></option><option value="off" data-i18n="fitzOff"></option></select>
+      <label class="lab" for="sPicPos" data-i18n="picPos"></label>
+      <select id="sPicPos" class="sel-in"><option value="below" data-i18n="picBelow"></option><option value="above" data-i18n="picAbove"></option></select>
     </div>
     <div class="grp">
       <span class="scope" id="scope"></span>
@@ -494,7 +499,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.2';
+const VERSION = '0.9.3';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -519,7 +524,7 @@ const I18N = {
     next:'Següent pictograma', nextTip:'Canvia la imatge del bloc seleccionat per la següent alternativa',
     nextNoSel:'Selecciona una paraula per canviar-ne el pictograma', nextOne:'Aquesta paraula només té una alternativa',
     alts:'Veure alternatives', withText:'Amb text', textTip:'Mostrar o amagar la paraula escrita sobre els pictogrames',
-    pictoSize:'Pictos', fitz:'Clau', fitzFrame:'Marc de color', fitzBg:'Fons de color', fitzOff:'Sense clau',
+    pictoSize:'Pictos', fitz:'Clau', fitzFrame:'Marc de color', fitzBg:'Fons de color', fitzOff:'Sense clau', picPos:'Picto', picBelow:'A sota de la paraula', picAbove:'A sobre de la paraula',
     font:'Tipus de lletra', noItalic:'Aquest tipus de lletra no té cursiva',
     font_roboto:'Roboto', font_andika:'Andika (lectura inicial)', font_atkinson:'Atkinson Hyperlegible (baixa visió)', font_lexend:'Lexend (lectura fàcil)',
     font_comic:'Comic Neue', font_dyslexic:'OpenDyslexic (dislèxia)', font_arial:'Arial',
@@ -588,6 +593,7 @@ const I18N = {
     sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
     tagline:'Escriure i llegir amb pictogrames',
+    blankStart:'Document nou en blanc.', recoverLast:'Recuperar l\'últim', recovered:'S\'ha recuperat l\'últim document.',
     tools:'Format', toolsTip:'Mostrar o amagar les eines de format i de pictogrames',
     lock:'Bloquejar', lockTip:'Bloquejar la pantalla per a l\'alumne: pantalla completa i sense la barra de botons. Per desbloquejar, prem el cadenat 7 vegades seguides.',
     unlockTip:'Per desbloquejar, prem el cadenat 7 vegades seguides', fullTip:'Pantalla completa', unlocked:'Pantalla desbloquejada.',
@@ -614,7 +620,7 @@ const I18N = {
     next:'Siguiente pictograma', nextTip:'Cambia la imagen del bloque seleccionado por la siguiente alternativa',
     nextNoSel:'Selecciona una palabra para cambiar su pictograma', nextOne:'Esta palabra solo tiene una alternativa',
     alts:'Ver alternativas', withText:'Con texto', textTip:'Mostrar u ocultar la palabra escrita sobre los pictogramas',
-    pictoSize:'Pictos', fitz:'Clave', fitzFrame:'Marco de color', fitzBg:'Fondo de color', fitzOff:'Sin clave',
+    pictoSize:'Pictos', fitz:'Clave', fitzFrame:'Marco de color', fitzBg:'Fondo de color', fitzOff:'Sin clave', picPos:'Picto', picBelow:'Debajo de la palabra', picAbove:'Encima de la palabra',
     font:'Tipo de letra', noItalic:'Este tipo de letra no tiene cursiva',
     font_roboto:'Roboto', font_andika:'Andika (lectura inicial)', font_atkinson:'Atkinson Hyperlegible (baja visión)', font_lexend:'Lexend (lectura fácil)',
     font_comic:'Comic Neue', font_dyslexic:'OpenDyslexic (dislexia)', font_arial:'Arial',
@@ -683,6 +689,7 @@ const I18N = {
     sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
     tagline:'Escribir y leer con pictogramas',
+    blankStart:'Documento nuevo en blanco.', recoverLast:'Recuperar el último', recovered:'Se ha recuperado el último documento.',
     tools:'Formato', toolsTip:'Mostrar u ocultar las herramientas de formato y de pictogramas',
     lock:'Bloquear', lockTip:'Bloquear la pantalla para el alumno: pantalla completa y sin la barra de botones. Para desbloquear, pulsa el candado 7 veces seguidas.',
     unlockTip:'Para desbloquear, pulsa el candado 7 veces seguidas', fullTip:'Pantalla completa', unlocked:'Pantalla desbloqueada.',
@@ -730,7 +737,7 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem('pictoescriu.'+k); return v===null? d : JSON.parse(v); }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem('pictoescriu.'+k, JSON.stringify(v)); return true; }catch(e){ return false; } }
 };
-const DEF_SETTINGS = {cap:'none', capCase:'upper', font:'roboto', size:20, color:'#000000', bold:false, italic:false, caseMode:null, showText:true, pictoSize:26, fitz:'frame'};
+const DEF_SETTINGS = {cap:'none', capCase:'upper', font:'roboto', size:20, color:'#000000', bold:false, italic:false, caseMode:null, showText:true, pictoSize:26, fitz:'frame', picPos:'below'};
 function newDoc(){ return {header:{name:'', date:'', show:true, style:'classic', bw:false}, settings:{...DEF_SETTINGS}, blocks:[]}; }
 let doc = newDoc();
 const S = { lang: LS.get('lang','ca'), selectedId:null, editor:null, composePushed:false, editPushed:false,
@@ -1064,7 +1071,7 @@ function openHeadGallery(){
       <button class="hcard" data-k="none" aria-pressed="${!doc.header.show}"><span class="noneart">—</span><span>${esc(t('head_none'))}</span></button></div>
       <div class="acts"><button class="btn primary" id="hgClose">${esc(t('ok'))}</button></div></div>`;
     ov.querySelector('#hgClose').onclick = () => ov.remove();
-    ov.querySelector('#hgBW').onchange = e => { mutate(() => { doc.header.bw = e.target.checked; }); render(); };
+    ov.querySelector('#hgBW').onchange = e => { const on = e.target.checked; mutate(() => { doc.header.bw = on; }); render(); };
     ov.querySelectorAll('.hcard').forEach(btn => btn.onclick = () => { const k = btn.dataset.k;
       mutate(() => { if(k === 'none') doc.header.show = false; else { doc.header.show = true; doc.header.style = k; } }); render(); ov.querySelector(`[data-k="${k}"]`).focus(); });
   };
@@ -1144,6 +1151,7 @@ function capSize(txt, f){
 function applyDocStyles(){
   const s = doc.settings;
   stack.style.setProperty('--pic', s.pictoSize + 'mm');
+  stack.classList.toggle('pic-above', s.picPos === 'above');
   stack.classList.toggle('fitz-frame', s.fitz === 'frame'); stack.classList.toggle('fitz-bg', s.fitz === 'bg'); stack.classList.toggle('fitz-off', s.fitz === 'off');
   stack.classList.toggle('notext', !s.showText);
   stack.classList.toggle('case-upper', s.caseMode === 'upper'); stack.classList.toggle('case-lower', s.caseMode === 'lower');
@@ -1513,7 +1521,7 @@ function updateToolbar(){
   $('#bItalic').disabled = !it; $('#bItalic').title = it ? t('italic') : t('noItalic'); $('#sFont').value = fk;
   $('#sSize').value = String(f.size); $('#iColor').value = f.color;
   $('#bText').setAttribute('aria-pressed', String(s.showText));
-  $('#rPic').value = s.pictoSize; $('#vPic').textContent = s.pictoSize + ' mm'; $('#sFitz').value = s.fitz;
+  $('#rPic').value = s.pictoSize; $('#vPic').textContent = s.pictoSize + ' mm'; $('#sFitz').value = s.fitz; $('#sPicPos').value = s.picPos || 'below';
   const sc = $('#scope'); sc.classList.toggle('block', !!b);
   sc.innerHTML = b ? t('scopeBlock', {w: esc((b.text || '·').slice(0, 18))}) : t('scopeDoc');
   $('#bApplyAll').disabled = false;
@@ -2656,7 +2664,7 @@ $('#bNew').onclick = async () => {
   commitEditor(true);
   const r = await dialog({title:t('confirmNewT'), body:t('confirmNewB'), actions:[{label:t('cancel'), v:false}, {label:t('newDoc'), v:true, primary:true}]});
   if(!r.v) return;
-  stopSpeech(); pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText};
+  stopSpeech(); pushUndo(); S.selectedId = null; const keep = {...doc.settings}; doc = newDoc(); doc.settings = {...DEF_SETTINGS, fitz:keep.fitz, pictoSize:keep.pictoSize, showText:keep.showText, picPos:keep.picPos || 'below'};
   renderAll(); syncHeaderInputs(); scheduleSave(); startCompose(0);
 };
 $('#bOpen').onclick = () => $('#fileIn').click();
@@ -2674,7 +2682,8 @@ $('#bText').onclick = () => mutate(() => { doc.settings.showText = !doc.settings
 let picPushed = false;
 $('#rPic').addEventListener('input', e => { if(!picPushed){ pushUndo(); picPushed = true; } doc.settings.pictoSize = +e.target.value; applyDocStyles(); $('#vPic').textContent = e.target.value + ' mm'; schedulePaginate(); scheduleSave(); });
 $('#rPic').addEventListener('change', () => { picPushed = false; renderAll(); });
-$('#sFitz').addEventListener('change', e => mutate(() => { doc.settings.fitz = e.target.value; }));
+$('#sFitz').addEventListener('change', e => { const v = e.target.value; mutate(() => { doc.settings.fitz = v; }); });
+$('#sPicPos').addEventListener('change', e => { const v = e.target.value; mutate(() => { doc.settings.picPos = v; }); });
 $('#sSize').addEventListener('change', e => setFmt('size', +e.target.value));
 $('#sFont').addEventListener('change', e => setFmt('font', e.target.value));
 $('#iColor').addEventListener('change', e => setFmt('color', e.target.value));
@@ -2725,14 +2734,18 @@ $('#splash').addEventListener('pointerdown', e => { e.preventDefault(); hideSpla
 document.addEventListener('keydown', hideSplash, true);
 setTimeout(hideSplash, 2200);
 fontsReady.then(function boot(){
+  // En obrir, sempre un document en blanc (decisió de la mestra, 3/11/2026). L'últim document es guarda a part
+  // i es pot recuperar amb el botó de l'avís. Es mantenen els ajustos dels pictogrames, com amb «Nou».
+  const hasContent = d => !!d && d.app === 'PictoEscriu' && ((d.blocks && d.blocks.length > 0) || !!(d.header && (d.header.name || d.header.date)));
   const draft = LS.get('draft', null);
+  if(hasContent(draft)) LS.set('prevDraft', draft);
+  const prev = LS.get('prevDraft', null), ks = (draft && draft.settings) || {};
   makePage(0);
   applyI18n(); applyVoiceUI();
   if(LS.get('locked', false)){ document.body.classList.add('locked'); $('#lockBar').hidden = false; }
-  if(draft && draft.app === 'PictoEscriu' && ((draft.blocks && draft.blocks.length) || (draft.header && (draft.header.name || draft.header.date)))){
-    restore(draft);
-    toast(t('restored'), {action:{label:t('newDoc'), fn:() => $('#bNew').click()}, timeout:6000});
-  } else renderAll();
+  doc.settings = {...DEF_SETTINGS, ...['fitz', 'pictoSize', 'showText', 'picPos'].reduce((o, k) => (ks[k] != null && (o[k] = ks[k]), o), {})};
+  renderAll();
+  if(hasContent(prev)) toast(t('blankStart'), {action:{label:t('recoverLast'), fn:() => { commitEditor(true); pushUndo(); S.selectedId = null; restore(prev); startCompose(doc.blocks.length); toast(t('recovered')); }}, timeout:15000});
   syncHeaderInputs();
   const z = LS.get('zoom', null);
   requestAnimationFrame(() => { if(z) setZoom(z); else fit('page'); startCompose(doc.blocks.length); if(isLocked()) setLocked(true, true); });
