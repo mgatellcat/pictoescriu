@@ -8,8 +8,8 @@
 
 /* Layout: fixed two-row toolbar · grey workspace with real A4 sheets · contextual panel on the right (bottom sheet on tablets) */
 :root{
-  --ws:#E3E7ED; --bar:#FFFFFF; --ink:#1B2232; --muted:#5A6476; --line:#D3D9E2; --soft:#F1F4F8;
-  --accent:#2453B8; --accent-weak:#E6EDFB; --accent-line:#B8C8EE; --danger:#B3261E; --danger-weak:#FBEAE9;
+  --ws:#E9EBF0; --bar:#FFFFFF; --ink:#1B2232; --muted:#5A6476; --line:#D3D9E2; --soft:#F1F4F8;
+  --accent:#24386A; --accent-weak:#E6EAF3; --accent-line:#AFBAD3; --orange:#EB6B24; --orange-dark:#D25A16; --danger:#B3261E; --danger-weak:#FBEAE9;
   --head-fill:#F3F7FF;
   --c-persones:#F5C400; --c-verbs:#2E9E44; --c-descriptius:#1F6FD1; --c-substantius:#F07C00; --c-social:#E5559A; --c-misc:#FFFFFF;
   --font:"Roboto","Helvetica Neue",Arial,sans-serif;
@@ -37,8 +37,8 @@ button,input,select{font-family:inherit}
 .btn:focus-visible,.sel-in:focus-visible,.fld:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .btn[aria-pressed="true"]{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{background:var(--accent);color:#fff;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
-.btn.primary:hover:not(:disabled){background:#1C449A}
+.btn.primary{background:var(--orange);color:#fff;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
+.btn.primary:hover:not(:disabled){background:var(--orange-dark)}
 .btn.outline{border-color:var(--line)}
 .btn.next{border-color:var(--accent);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .btn.next:hover:not(:disabled){background:var(--accent-weak)}
@@ -57,6 +57,29 @@ input[type=range]{width:96px;accent-color:var(--accent)}
 .busy{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .spin{width:12px;height:12px;border:2px solid var(--accent-line);border-top-color:var(--accent);border-radius:50%;animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+/* Primera fila: blau marí d'AREMI amb línia taronja; segona fila: cinta clara */
+.topbar .row:first-child{background:var(--accent);border-bottom:3px solid var(--orange)}
+.topbar .row+.row{background:#F6F7FA;border-top:0}
+.topbar .row:first-child .brand,.topbar .row:first-child > .grp > svg.ic{color:#fff}
+.topbar .row:first-child .grp{border-right-color:rgba(255,255,255,.22)}
+.topbar .row:first-child .btn:not(.primary):not(.play){color:#fff}
+.topbar .row:first-child .btn:not(.primary):not(.play):hover:not(:disabled){background:rgba(255,255,255,.14)}
+.topbar .row:first-child .btn:focus-visible{outline-color:#fff}
+.topbar .row:first-child .busy{color:#DCE3F2}
+.topbar .row:first-child .sel-in{border-color:transparent}
+.brand svg{width:30px;height:30px}
+
+/* ---------- Pantalla d'inici ---------- */
+.splash{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#24386A 0%,#2F4682 60%,#24386A 100%);cursor:pointer;transition:opacity .45s}
+.splash.out{opacity:0;pointer-events:none}
+.splash .card{background:#fff;border-radius:28px;padding:40px 60px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);border-bottom:8px solid var(--orange);max-width:calc(100vw - 32px)}
+.splash svg{width:140px;height:140px}
+.splash h1{margin:12px 0 4px;font-size:44px;color:var(--accent);letter-spacing:.01em}
+.splash h1 span{color:var(--orange)}
+.splash p{margin:0;color:var(--muted);font-size:18px}
+.splash .v{margin-top:16px;font-size:13px;color:#8A93A3}
+@media (prefers-reduced-motion:reduce){.splash{transition:none}}
 
 /* ---------- Workspace & sheets ---------- */
 .zoombar{position:fixed;left:16px;bottom:16px;z-index:24;display:flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;box-shadow:0 4px 14px rgba(27,34,50,.12)}
@@ -166,13 +189,14 @@ body.panel-open .workspace{right:var(--panel-w)}
 
 /* ---------- Veu: botó Llegir, mode alumne i ressaltat ---------- */
 .pi{display:inline-flex}
-.btn.play{border-color:var(--accent);color:var(--accent);font-weight:700}
+.btn.play{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700}
+.btn.play:hover:not(:disabled){background:var(--orange-dark)}
 .btn.play .ic,.playfab .ic{fill:currentColor}
-.btn.play[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.play[aria-pressed="true"]:hover{background:#1C449A}
+.btn.play[aria-pressed="true"]{background:#fff;border-color:var(--orange);color:var(--accent)}
+.btn.play[aria-pressed="true"]:hover{background:#FFF1E8}
 body.student #bPlay{height:40px;padding:0 14px;font-size:14px}
 #bStudent[aria-pressed="true"]{background:#FFF4D6;border-color:#E9C46A;color:#6B5200}
-.playfab{position:fixed;right:24px;bottom:24px;z-index:24;width:84px;height:84px;border-radius:50%;border:0;background:var(--accent);color:#fff;box-shadow:0 8px 24px rgba(20,40,90,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.playfab{position:fixed;right:24px;bottom:24px;z-index:24;width:84px;height:84px;border-radius:50%;border:0;background:var(--orange);color:#fff;box-shadow:0 8px 24px rgba(20,40,90,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .playfab .ic{width:40px;height:40px}
 .playfab[aria-pressed="true"]{background:var(--danger)}
 .playfab:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -218,7 +242,7 @@ body.is-full #bFull{display:none}
 .pvrow.ok span{flex:1;font-size:13px}
 .pvrow.dl{flex-direction:column;align-items:flex-start}
 .btn.pvdl{background:var(--accent);color:#fff;height:auto;min-height:38px;padding:6px 12px;white-space:normal;text-align:left}
-.btn.pvdl:hover:not(:disabled){background:#1C449A}
+.btn.pvdl:hover:not(:disabled){background:#1A2A52}
 .pvbar{flex:1;min-width:160px;height:12px;border-radius:6px;background:#fff;border:1px solid var(--line);overflow:hidden}
 .pvbar span{display:block;height:100%;background:var(--accent);transition:width .2s}
 
@@ -273,7 +297,7 @@ body.is-full #bFull{display:none}
   .page-inner{bottom:14.6mm}
   .blk.sel{outline:none;background:none;box-shadow:none}
   .blk.speaking,.lbl .spell-on{background:none!important;box-shadow:none!important}
-  .playfab,.lockbar{display:none!important}
+  .playfab,.lockbar,.splash{display:none!important}
   .blk.composing .lbl,.blk.editing .lbl{border-bottom:0}
   .pic.st-none,.pic.st-error,.pic.st-loading,.pic.st-idle{visibility:hidden}
   .blk.nores .pic .ph{display:none}
@@ -287,7 +311,7 @@ body.is-full #bFull{display:none}
 <header class="topbar" id="topbar">
   <div class="row">
     <div class="brand" aria-label="PictoEscriu">
-      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="6" fill="#2453B8"/><rect x="6" y="5" width="14" height="2.6" rx="1.3" fill="#fff"/><rect x="6" y="10.5" width="14" height="10.5" rx="2" fill="#fff"/><rect x="7.8" y="12.3" width="10.4" height="6.9" rx="1" fill="#F5C400"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#EB6B24"/><rect x="10.5" y="12.5" width="27" height="23" rx="4.5" fill="#fff"/><circle cx="18.5" cy="21.5" r="4.2" fill="#24386A"/><rect x="25.5" y="17.8" width="8.5" height="2.8" rx="1.4" fill="#24386A"/><rect x="25.5" y="23" width="6.2" height="2.8" rx="1.4" fill="#24386A"/><rect x="14" y="29" width="20" height="2.8" rx="1.4" fill="#EB6B24"/></svg>
       <span>PictoEscriu</span>
     </div>
     <div class="grp">
@@ -449,6 +473,7 @@ body.is-full #bFull{display:none}
 </aside>
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="splash no-print" id="splash" aria-hidden="true"><div class="card"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#EB6B24"/><rect x="10.5" y="12.5" width="27" height="23" rx="4.5" fill="#fff"/><circle cx="18.5" cy="21.5" r="4.2" fill="#24386A"/><rect x="25.5" y="17.8" width="8.5" height="2.8" rx="1.4" fill="#24386A"/><rect x="25.5" y="23" width="6.2" height="2.8" rx="1.4" fill="#24386A"/><rect x="14" y="29" width="20" height="2.8" rx="1.4" fill="#EB6B24"/></svg><h1>Picto<span>Escriu</span></h1><p data-i18n="tagline"></p><p class="v" id="splashV"></p></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <input type="file" id="sndIn" accept=".json,application/json" hidden>
 <input type="file" id="imgIn" accept="image/*" hidden>
@@ -458,7 +483,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.8.0';
+const VERSION = '0.9.0';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -551,6 +576,7 @@ const I18N = {
     sndImported:'S\'han afegit {n} sons.', sndBadFile:'Aquest fitxer no és de sons de PictoEscriu.',
     sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
+    tagline:'Escriure i llegir amb pictogrames',
     lock:'Bloquejar', lockTip:'Bloquejar la pantalla per a l\'alumne: pantalla completa i sense la barra de botons. Per desbloquejar, prem el cadenat 7 vegades seguides.',
     unlockTip:'Per desbloquejar, prem el cadenat 7 vegades seguides', fullTip:'Pantalla completa', unlocked:'Pantalla desbloquejada.',
     tagDownloaded:'baixada · sense internet', dlNow:'Baixar-la',
@@ -644,6 +670,7 @@ const I18N = {
     sndImported:'Se han añadido {n} sonidos.', sndBadFile:'Este archivo no es de sonidos de PictoEscriu.',
     sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
+    tagline:'Escribir y leer con pictogramas',
     lock:'Bloquear', lockTip:'Bloquear la pantalla para el alumno: pantalla completa y sin la barra de botones. Para desbloquear, pulsa el candado 7 veces seguidas.',
     unlockTip:'Para desbloquear, pulsa el candado 7 veces seguidas', fullTip:'Pantalla completa', unlocked:'Pantalla desbloqueada.',
     tagDownloaded:'descargada · sin internet', dlNow:'Descargarla',
@@ -2579,6 +2606,7 @@ function applyI18n(){
   $('#hNameL').textContent = t('headName'); $('#hDateL').textContent = t('headDate'); $('#hToday').textContent = t('today');
   pages.forEach((pg, i) => { pg.foot.textContent = footText(); pg.num.textContent = t('page', {n:i + 1}); if(pg.hint) pg.hint.textContent = t('hint'); });
   $('#sLang').value = S.lang; fillFonts();
+  const sv = $('#splashV'); if(sv) sv.textContent = t('version', {v:VERSION}).replace(/\.$/, '');
   $('#pCats').dataset.k = '';
   updateToolbar(); updatePanel(); updatePlayBtn();
   if(voiceDlg) voiceDlg.render();
@@ -2648,6 +2676,12 @@ new ResizeObserver(() => document.documentElement.style.setProperty('--bar-h', $
 window.addEventListener('beforeprint', () => { commitEditor(true); });
 
 /* ================= Boot ================= */
+// Pantalla d'inici: uns 2 segons, o fins que es toca o es prem una tecla
+function hideSplash(){ const sp = $('#splash'); if(!sp || sp.classList.contains('out')) return; sp.classList.add('out'); setTimeout(() => sp.remove(), 500);
+  document.removeEventListener('keydown', hideSplash, true); }
+$('#splash').addEventListener('pointerdown', e => { e.preventDefault(); hideSplash(); });
+document.addEventListener('keydown', hideSplash, true);
+setTimeout(hideSplash, 2200);
 fontsReady.then(function boot(){
   const draft = LS.get('draft', null);
   makePage(0);

@@ -350,7 +350,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.8\.0/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.0/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -660,6 +660,20 @@ let offline = false; const hits = [];
   SV = await ps.evaluate(() => ({locked:document.body.classList.contains('locked'), bar:getComputedStyle(document.querySelector('.topbar')).display, ls:localStorage.getItem('pictoescriu.locked')}));
   ok('BLOQUEIG Set tocs seguits al cadenat el desbloquegen', !SV.locked && SV.bar !== 'none' && SV.ls === 'false', JSON.stringify(SV));
   await ps.close();
+
+  // ================= Colors d'AREMI, logo i pantalla d'inici =================
+  const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
+  await pc.goto('file://' + APP); await pc.waitForTimeout(300);
+  let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.0/.test(C.txt) && C.logo, JSON.stringify(C));
+  await pc.waitForTimeout(2700);
+  C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
+    pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
+  ok('COLORS La pantalla d\'inici desapareix sola', !C.splash);
+  ok('COLORS Barra blava d\'AREMI, botons importants taronja i logo nou', C.bar === 'rgb(36, 56, 106)' && C.play === 'rgb(235, 107, 36)' && C.pdf === 'rgb(235, 107, 36)' && C.logo, JSON.stringify(C));
+  await pc.reload(); await pc.waitForTimeout(300); await pc.keyboard.press('h');
+  ok('COLORS Una tecla treu la pantalla d\'inici i la lletra s\'escriu', await pc.evaluate(() => { const sp = document.querySelector('#splash'); return (!sp || sp.classList.contains('out')) && edInput.value === 'h'; }));
+  await pc.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

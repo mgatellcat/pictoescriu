@@ -2,13 +2,14 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.8.0** (2 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.0** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
   - Una «0.6» i «0.6.1» del 2/11/2026: lectura en veu alta i mode alumne (apartat 12) i el cursor encallat en esborrar.
 - La 0.7.0 hi afegeix les veus descarregables (apartat 12), la selecció sense requadre de línies discontínues (apartat 10) i el doble clic que editava una altra paraula.
 - La 0.8.0 hi afegeix els sons de les lletres gravats, «Lletrejar» i el bloqueig de pantalla (apartats 13 i 14), triats de les propostes de `06_ANALISI_LECAA_DOCS.md`.
+- La 0.9.0 hi afegeix els colors d'AREMI, el logo nou i la pantalla d'inici (apartat 15).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -97,7 +98,7 @@ Ordre de cerca, a `findPictos()`:
   - **Sons de les lletres gravats** per la mestra i la logopeda (també ny, ll, qu, gu, ix, tx, l·l…). Les veus sintètiques diuen el nom de la lletra, no el so.
   - **Lectura fonema a fonema** de com s'ha escrit una paraula i, després, **lectura global**.
   - ~~Veus descarregables~~: fet a la 0.7.0 (Ona i Sharvard). Més endavant, potser **Matxa** del Projecte Aina (més natural; accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
-- **Nova proposta de colors, de logo i de nom de l'eina** («molt visual, fàcil i semblant a un Word o a OpenOffice», amb un logo amb més impacte en obrir el programa). La mestra passarà el logo de la seva associació per inspirar-s'hi; la frase «50 anys» desapareixerà del logo al gener de 2027.
+- ~~Colors i logo~~: fet a la 0.9.0 (apartat 15). **Pendent: el nom de l'eina** (la mestra n'ha demanat propostes).
 - **Propostes a partir de LECAA Docs** (UTAC, UB): vegeu `06_ANALISI_LECAA_DOCS.md`. Pendents de triar.
 
 ## 12. Veu: lectura en veu alta i mode alumne (versions 0.6 i 0.7.0, 2 de novembre de 2026)
@@ -161,4 +162,17 @@ Decisió de la mestra: **sense contrasenya**; es desbloqueja prement un cadenat 
 - **Desbloquejar:** cadenat petit a la cantonada de dalt a la dreta. Cal prémer-lo 7 vegades seguides, amb menys d'1,5 segons entre toc i toc. Des del tercer toc es veuen uns puntets amb els que falten; si s'atura, es torna a començar.
 - Es manté després de tornar a obrir el fitxer. Si es surt de la pantalla completa (Esc), la barra continua amagada i apareix un botó per tornar-hi.
 - És una protecció per a l'aula, no una barrera de seguretat.
+
+## 15. Colors d'AREMI, logo i pantalla d'inici (versió 0.9.0, 3/11/2026)
+Decisions de la mestra, a partir del logo de la seva associació, **AREMI** (paràlisi cerebral i pluridiscapacitat). La frase «50 anys» del logo d'AREMI desapareixerà al gener de 2027; PictoEscriu no la fa servir.
+- **Colors:** els del logo d'AREMI, **blau marí `#24386A`** i **taronja `#EB6B24`** (mesurats sobre la imatge del logo).
+- **Variant A, triada entre dues propostes («molt visual, fàcil i semblant a un Word»):**
+  - La primera fila de la barra és blau marí, amb una línia taronja a sota.
+  - La segona fila és una cinta clara.
+  - Els botons importants (**Llegir**, **Exportar PDF**, **Imprimir** i el botó ▶ gran) són taronja.
+  - La resta d'accents (selecció, botons marcats, enllaços) són blau marí.
+- **Logo nou de PictoEscriu:** un cercle taronja amb una targeta blanca que conté un punt blau (el pictograma) i ratlles (el text). És un dibuix propi; no fa servir el logo d'AREMI.
+- **Pantalla d'inici:** en obrir el programa surt uns 2 segons amb el logo, «PictoEscriu», «Escriure i llegir amb pictogrames» i la versió. Desapareix sola, en tocar-la o en prémer una tecla; si es prem una lletra, la lletra ja s'escriu.
+- No canvia res dels fulls: la capçalera «Clàssica», la clau Fitzgerald, el PDF i la impressió són iguals que abans.
+- **Nom de l'eina:** pendent. La mestra ha demanat propostes de noms nous.
 
