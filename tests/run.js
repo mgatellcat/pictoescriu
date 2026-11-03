@@ -5,8 +5,9 @@ const OUT = process.env.OUT || path.resolve(DIR, '../test-output'); fs.mkdirSync
 const K = (w,t)=>({keyword:w,type:t});
 const DB = { ca:{ la:[[1001,'la',6]], nena:[[2001,'nena',2],[2002,'nena',2],[2003,'nena',2]], menjar:[[3001,'menjar',3],[3002,'menjar',3]],
   una:[[1002,'una',6]], poma:[[4001,'poma',2],[4002,'poma',2],[4003,'poma',2],[4004,'poma',2],[4005,'poma',2]], gat:[[8001,'gat',2]], jo:[[2003,'jo',1]],
-    hola:[[2002,'hola',5]], 'sí':[[3002,'sí',5]], si:[[1002,'si',6]], es:[[1001,'es',6]] },
-  es:{ la:[[1001,'la',6]], 'niña':[[5001,'niña',2]], comer:[[6001,'comer',3]], una:[[1002,'una',6]], manzana:[[7001,'manzana',2]] } };
+    hola:[[2002,'hola',5]], 'sí':[[3002,'sí',5]], si:[[1002,'si',6]], es:[[1001,'es',6]],
+    verd:[[4002,'verd',4]], groc:[[4003,'groc',4]], nou:[[4004,'nou',4]], roig:[[4005,'roig',4]] },
+  es:{ la:[[1001,'la',6]], 'niña':[[5001,'niña',2]], comer:[[6001,'comer',3]], una:[[1002,'una',6]], manzana:[[7001,'manzana',2]], rojo:[[4005,'rojo',4]] } };
 let offline = false; const hits = [];
 (async () => {
   // Micròfon simulat (un xiulet) per provar la gravació dels sons
@@ -354,7 +355,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.3/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.4/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -418,6 +419,12 @@ let offline = false; const hits = [];
   ok('PICTOS Pronoms, expressions i paraules amb contingut porten pictograma; articles, conjuncions i pronoms febles no', PW === 'jo:picto dic:? hola:picto i:text sí,:picto si:text vols.:? es:text diu:? i:text és:?', PW);
   const cats = await pe.evaluate(() => ['jo', 'hola', 'sí,'].map(t => doc.blocks.find(b => b.text === t).cat).join(','));
   ok('PICTOS Clau Fitzgerald: pronom groc, expressions roses', cats === 'persones,social,social', cats);
+  // Femení → masculí: ARASAAC té els adjectius en masculí
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  await pe.keyboard.type('poma verda pomes verdes groga nova roja ', {delay:20}); await eIdle(); await pe.waitForTimeout(300);
+  const FM = await pe.evaluate(() => doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.picOff ? 'text' : b.pictoId || '?') + ':' + (b.cat || '')).join(' '));
+  ok('PICTOS Femenins i plurals troben el pictograma en masculí (verda → verd)', /verda:4002:descriptius/.test(FM) && /verdes:4002/.test(FM) && /groga:4003/.test(FM) && /nova:4004/.test(FM) && /roja:4005/.test(FM), FM);
+  ok('PICTOS El text escrit no canvia', await pe.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.text).join(' ')) === 'poma verda pomes verdes groga nova roja');
   // Clau Fitzgerald i posició del pictograma
   await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
   await pe.keyboard.type('la nena menja ', {delay:20}); await eIdle(); await pe.waitForTimeout(200); await pe.keyboard.press('Escape');
@@ -709,7 +716,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.3/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.4/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
