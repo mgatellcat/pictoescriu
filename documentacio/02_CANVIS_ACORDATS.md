@@ -258,3 +258,23 @@ Mida: proposta acceptada (Petita, Mitjana o Gran).
 - **Barra superior:** per fer-hi lloc, «Capçalera» només mostra la icona per sota de 1600 px, i «Exportar PDF» i «Imprimir», per sota de 1180 px. Per sota de 900 px s'amaga el logo petit.
 - **Pendent / idees:** teclat reduït amb tecles més grans (menys tecles o per freqüència), temps de mirada propi i pas per tecles amb commutador (amb les activitats per a commutador).
 
+
+## 20. Teclat amb predicció (versió 0.11.0, 3/11/2026)
+Petició de la mestra: un segon teclat amb caselles de predicció de paraules, sense la fila de números i més atractiu. Decisions:
+- **Sempre QWERTY**, amb **3 caselles de predicció** a dalt. No hi ha botó «Netejar», però sí **«Esborrar paraula»** (l'última).
+- **Configurador** a la barra del teclat: **[Complet | Amb predicció]** i **«Pictos»** (pictogrames a les caselles, opcional i desactivat per defecte). Amb el cadenat, el configurador s'amaga.
+- **Tecles:**
+  - Q a P i **Esborrar lletra**;
+  - A a L, Ç (en castellà, Ñ) i **Esborrar paraula**;
+  - **Maj**, Z a M, coma, punt i interrogant;
+  - **Bloq Maj**, **123** (números i signes), **À É…**, **Espai**, **Retorn** i **▶ Llegir** (taronja, llegeix el text com el botó de dalt).
+- **Majúscules:** en minúscules, prediccions i escriptura en minúscules. Amb **Bloq Maj**, tot en majúscules. Amb **Maj** (o si la paraula ja comença amb majúscula), només la primera lletra.
+- **Com prediu:**
+  - paraules que comencen igual que el que s'escriu, sense tenir en compte els accents («poma» també surt amb «pò»);
+  - **primer les paraules que ja s'han escrit en aquest aparell** (les aprèn soles i es desen a `pictoescriu.learn`), després les més freqüents de la llengua;
+  - sense res escrit, surten les paraules apreses més usades.
+- **Llista de paraules:** 15.000 paraules freqüents en català i 15.000 en castellà, de **wordfreq** (Robyn Speer; dades CC BY-SA 4.0), sense paraulotes. Va dins el fitxer (`assets/words.json`) i funciona sense internet. Citada als crèdits.
+- **Esborrar paraula:** esborra la paraula que s'està escrivint; si no n'hi ha, esborra l'anterior sencera amb el pictograma (es pot desfer).
+- **Pictos a les caselles:** la imatge recordada per a aquella paraula o el primer pictograma d'ARASAAC. Les paraules gramaticals no en porten. Només s'envia a ARASAAC la paraula proposada.
+- **Aspecte:** fons blau d'AREMI, tecles clares amb ombra, esborrar en vermell suau, Retorn en verd suau, Llegir en taronja, tecles de funció en gris blavós i caselles blanques.
+- **Pendent / idees:** predicció de la paraula següent (segons l'anterior), i que la predicció es pugui triar amb commutador o pas per tecles.
