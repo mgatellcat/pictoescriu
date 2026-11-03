@@ -86,10 +86,32 @@ input[type=range]{width:96px;accent-color:var(--accent)}
 .vk.w15{width:calc(var(--u) * 1.5 + var(--u) * .04)}.vk.w2{width:calc(var(--u) * 2 + var(--u) * .08)}.vk.w5{width:calc(var(--u) * 5 + var(--u) * .32)}
 .vk.fn{background:#EEF1F6;font-size:calc(var(--u) * .22)}
 .vk.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.vkb.locked .vktype,.vkb.locked .vkpics{display:none}
+.vkb:not(.pred) .vkpics{display:none}
+.vkbar .seg button{padding:4px 10px}
+.vk.w4{width:calc(var(--u) * 4 + var(--u) * .24)}
+/* Teclat amb predicció: fons blau d'AREMI, tecles clares i tecles de funció de colors */
+.vkb.pred{background:var(--accent);border-color:#1A2A52}
+.vkb.pred .vkbar .btn{color:#fff}
+.vkb.pred .vkbar .btn[aria-pressed="true"]{background:rgba(255,255,255,.2);border-color:transparent;color:#fff}
+.vkb.pred .vkh{border-color:#C9D3E6}
+.vkb.pred .vk{background:#F4F6FA;color:#1B2232;border:0;box-shadow:0 3px 0 rgba(0,0,0,.28)}
+.vkb.pred .vk:active,.vkb.pred .vk.down{background:#FFE36E;transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.vkb.pred .vk.fn{background:#C9D3E6;font-size:calc(var(--u) * .2)}
+.vkb.pred .vk.del{background:#F9D7D2;color:#8A1C12}
+.vkb.pred .vk.read{background:var(--orange);color:#fff}
+.vkb.pred .vk.ent{background:#CDEBD3;color:#1E5B2B}
+.vkb.pred .vk.on{background:#FFE36E;color:#1B2232}
+.vkpred{height:calc(var(--u) * .95);width:calc(var(--u) * 4 + var(--u) * .24 - var(--u) * .054);flex:none;border:0;border-radius:10px;background:#fff;color:#1B2232;font:700 calc(var(--u) * .36) Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * .12);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.28);padding:0 8px;overflow:hidden;white-space:nowrap;touch-action:manipulation}
+.vkpred:empty{cursor:default;opacity:.55}
+.vkpred img{height:calc(var(--u) * .75);width:calc(var(--u) * .75);object-fit:contain;flex:none}
+.vkpred:active{background:#FFE36E}
 body.kbd-on .workspace{bottom:var(--kb-h,0px)}
 body.kbd-on .panel{bottom:var(--kb-h,0px)}
 body.kbd-on .zoombar{bottom:calc(var(--kb-h,0px) + 12px)}
 body.kbd-on .playfab{bottom:calc(var(--kb-h,0px) + 16px)}
+body.kbd-on .toasts{bottom:calc(var(--kb-h,0px) + 12px)}
+.vkbar .seg button{white-space:nowrap}
 body.kbd-on.panel-open .workspace{bottom:var(--kb-h,0px)}
 
 /* ---------- Pantalla d'inici ---------- */
@@ -430,6 +452,8 @@ body.is-full #bFull{display:none}
 <button class="playfab no-print" id="bPlayBig" aria-pressed="false" hidden><span class="pi"></span><span class="sr" id="bPlayBigL"></span></button>
 <div class="vkb no-print" id="vkb" hidden aria-label="Teclat">
   <div class="vkbar"><span class="vkh vkh-l" id="vkHl" title=""></span>
+    <div class="seg vktype" id="vkType" role="group"><button data-v="full" data-i18n="kbFull"></button><button data-v="pred" data-i18n="kbPred"></button></div>
+    <button class="btn vkpics" id="vkPics" aria-pressed="false"><span data-icon="image"></span><span data-i18n="kbPics"></span></button>
     <div class="seg vksz" id="vkSize" role="group"><button data-v="s" data-i18n="kbS"></button><button data-v="m" data-i18n="kbM"></button><button data-v="l" data-i18n="kbL"></button></div>
     <button class="btn icon-only" id="vkLock" aria-pressed="false"><span class="pi"></span></button>
     <button class="btn icon-only" id="vkClose"><span data-icon="x"></span></button>
@@ -543,9 +567,10 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.10.0';
+const VERSION = '0.11.0';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
+const WORDS = /*__WORDS__*/{};   // paraules freqüents per a la predicció (wordfreq, CC BY-SA 4.0)
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
 const fontsReady = Promise.all(Object.values(FONTS).flatMap(fam => Object.entries(fam.faces).map(([st, b64]) => {
   const ff = new FontFace(fam.family, `url(data:font/ttf;base64,${b64})`, {weight:FACE_CSS[st][0], style:FACE_CSS[st][1]});
@@ -638,6 +663,7 @@ const I18N = {
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
     tagline:'Escriure i llegir amb pictogrames',
     kbd:'Teclat', kbdTip:'Mostrar o amagar el teclat a la pantalla', kbS:'Petita', kbM:'Mitjana', kbL:'Gran', kbDel:'Esborrar', kbShift:'Maj', kbCaps:'Bloq Maj', kbSpace:'Espai', kbEnter:'Retorn',
+    kbFull:'Complet', kbPred:'Amb predicció', kbPics:'Pictos', kbDelL:'Lletra', kbDelW:'Paraula', kbRead:'Llegir',
     kbLockSz:'Fixar la mida del teclat', kbUnlockSz:'Deixar canviar la mida del teclat',
     memNote:'Imatge recordada per a «{w}»: sortirà sola cada vegada que s\'escrigui. Si en tries una altra, es recordarà la nova.', memForget:'Oblidar', memList:'Imatges recordades…',
     memForgot:'«{w}» ja no té imatge recordada.', memTitle:'Imatges recordades', memHow:'Quan poses una imatge pròpia o tries un pictograma a mà, es recorda per a aquella paraula i surt sola el proper cop. Es guarden en aquest aparell (també funcionen sense internet). Per passar-les a un altre aparell, desa-les en un fitxer i obre\'l a l\'altre aparell.',
@@ -656,7 +682,7 @@ const I18N = {
     pvBad:'Un fitxer baixat no era l\'original i no s\'ha fet servir. Torna-ho a provar més tard.',
     pvFail:'No s\'ha pogut fer servir la veu baixada. Obre «Veu», esborra-la i torna-la a baixar.', pvPreparing:'Preparant la veu…',
     pvBnd:'Aquesta veu ressalta les paraules de manera aproximada. Amb «Paraula a paraula» el ressaltat és exacte.', pvF:'dona', pvM:'home',
-    voiceCredits:'Veus descarregables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; llicència CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; llicència CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft) i eSpeak NG.'
+    voiceCredits:'Predicció de paraules: llista de freqüències de wordfreq (Robyn Speer; llicència CC BY-SA 4.0). Veus descarregables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; llicència CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; llicència CC BY), fetes amb Piper (Rhasspy). Funcionen amb ONNX Runtime (Microsoft) i eSpeak NG.'
   },
   es: {
     new:'Nuevo', open:'Abrir', save:'Guardar', undo:'Deshacer', redo:'Rehacer', pdf:'Exportar PDF', print:'Imprimir', credits:'Créditos', lang:'Idioma',
@@ -739,6 +765,7 @@ const I18N = {
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
     tagline:'Escribir y leer con pictogramas',
     kbd:'Teclado', kbdTip:'Mostrar u ocultar el teclado en la pantalla', kbS:'Pequeña', kbM:'Mediana', kbL:'Grande', kbDel:'Borrar', kbShift:'Mayús', kbCaps:'Bloq Mayús', kbSpace:'Espacio', kbEnter:'Intro',
+    kbFull:'Completo', kbPred:'Con predicción', kbPics:'Pictos', kbDelL:'Letra', kbDelW:'Palabra', kbRead:'Leer',
     kbLockSz:'Fijar el tamaño del teclado', kbUnlockSz:'Dejar cambiar el tamaño del teclado',
     memNote:'Imagen recordada para «{w}»: saldrá sola cada vez que se escriba. Si eliges otra, se recordará la nueva.', memForget:'Olvidar', memList:'Imágenes recordadas…',
     memForgot:'«{w}» ya no tiene imagen recordada.', memTitle:'Imágenes recordadas', memHow:'Cuando pones una imagen propia o eliges un pictograma a mano, se recuerda para esa palabra y sale sola la próxima vez. Se guardan en este aparato (también funcionan sin internet). Para pasarlas a otro aparato, guárdalas en un archivo y ábrelo en el otro aparato.',
@@ -757,7 +784,7 @@ const I18N = {
     pvBad:'Un archivo descargado no era el original y no se ha usado. Vuelve a intentarlo más tarde.',
     pvFail:'No se ha podido usar la voz descargada. Abre «Voz», bórrala y vuelve a descargarla.', pvPreparing:'Preparando la voz…',
     pvBnd:'Esta voz resalta las palabras de forma aproximada. Con «Palabra a palabra» el resaltado es exacto.', pvF:'mujer', pvM:'hombre',
-    voiceCredits:'Voces descargables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; licencia CC BY-SA) y Sharvard (corpus de V. Aubanel, M. L. García Lecumberri y M. Cooke; licencia CC BY), hechas con Piper (Rhasspy). Funcionan con ONNX Runtime (Microsoft) y eSpeak NG.'
+    voiceCredits:'Predicción de palabras: lista de frecuencias de wordfreq (Robyn Speer; licencia CC BY-SA 4.0). Voces descargables: Ona (Universitat Politècnica de Catalunya, corpus FestCat; licencia CC BY-SA) y Sharvard (corpus de V. Aubanel, M. L. García Lecumberri y M. Cooke; licencia CC BY), hechas con Piper (Rhasspy). Funcionan con ONNX Runtime (Microsoft) y eSpeak NG.'
   }
 };
 const CATS = ['persones','verbs','descriptius','substantius','social','misc'];
@@ -1292,6 +1319,7 @@ function finalizeWord(b){
   b.composing = false; b.text = applyCase(b.text);
   b.query = deriveQuery(b.text, S.lang);
   if(!b.query){ b.noSearch = true; b.status = 'none'; return; }
+  kbLearn(b.text, b.lang || S.lang);
   if(memApply(b)) return;
   if(b.searchedQuery === b.query && ['loading','ok','none'].includes(b.status)) return;
   startSearch(b, b.query);
@@ -2653,10 +2681,25 @@ function openVoiceDialog(){
 /* ================= Teclat virtual ================= */
 // QWERTY a la part de baix; el document queda sempre visible a sobre. Escriu igual que el teclat de l'ordinador
 // (pictogrames, veu del mode alumne...). Mida: Petita, Mitjana o Gran, o estirant les cantonades; el cadenat la fixa.
-const KB = {st:Object.assign({on:false, size:'m', u:null, locked:false}, LS.get('kbd', {})), shift:false, caps:false, acc:false};
+const KB = {st:Object.assign({on:false, size:'m', u:null, locked:false, type:'full', predPics:false}, LS.get('kbd', {})), shift:false, caps:false, acc:false, num:false, preds:['', '', ''],
+  learn:Object.assign({ca:{}, es:{}}, LS.get('learn', {})), lists:{}};
 const KB_U = {s:57, m:76, l:106};   // tecla d'1,5, 2 i 2,8 cm
 const kbSave = () => LS.set('kbd', KB.st);
+function kbRowsPred(){
+  const L = S.lang === 'es' ? 'es' : 'ca';
+  const r1 = KB.num ? '1 2 3 4 5 6 7 8 9 0' : KB.acc ? (L === 'es' ? 'á é í ó ú ü ñ ¿ ¡ ?' : 'à è é í ï ò ó ú ü ·') : 'q w e r t y u i o p';
+  const r2 = KB.num || KB.acc ? "! ? : ; ' - ( ) « »" : 'a s d f g h j k l ' + (L === 'es' ? 'ñ' : 'ç');
+  return [
+    [{pred:0}, {pred:1}, {pred:2}],
+    [...r1.split(' ').map(c => ({c})), {k:'Backspace', w:'w2', fn:true, cls:'del', lab:'⌫ ' + t('kbDelL')}],
+    [...r2.split(' ').map(c => ({c})), {k:'DelWord', w:'w2', fn:true, cls:'del', lab:'⌫⌫ ' + t('kbDelW')}],
+    [{k:'Shift', w:'w15', fn:true, lab:'⇧ ' + t('kbShift'), on:KB.shift}, ...'z x c v b n m , . ?'.split(' ').map(c => ({c}))],
+    [{k:'Caps', w:'w15', fn:true, lab:t('kbCaps'), on:KB.caps}, {k:'Num', w:'w15', fn:true, lab:KB.num ? 'abc' : '123', on:KB.num}, {k:'Acc', w:'w15', fn:true, lab:KB.acc ? 'abc' : 'À É…', on:KB.acc},
+     {k:' ', w:'w4', fn:true, lab:t('kbSpace')}, {k:'Enter', w:'w15', fn:true, cls:'ent', lab:'↵'}, {k:'Read', w:'w2', fn:true, cls:'read', lab:'▶ ' + t('kbRead')}]
+  ];
+}
 function kbRows(){
+  if(KB.st.type === 'pred') return kbRowsPred();
   const L = S.lang === 'es' ? 'es' : 'ca';
   const r1 = KB.acc ? (L === 'es' ? 'á é í ó ú ü ñ ¿ ¡ ?' : 'à è é í ï ò ó ú ü ·') : 'q w e r t y u i o p';
   const r2 = KB.acc ? "! ? : ; ' - ( ) « »" : 'a s d f g h j k l ' + (L === 'es' ? 'ñ' : 'ç');
@@ -2670,9 +2713,13 @@ function kbRows(){
 }
 function kbRender(){
   const up = KB.shift !== KB.caps, L = S.lang;
-  $('#vkKeys').innerHTML = kbRows().map(r => `<div class="vkrow">${r.map(k => { const c = k.c != null ? (up ? k.c.toLocaleUpperCase(L) : k.c) : null;
-    return `<button class="vk${k.w ? ' ' + k.w : ''}${k.fn ? ' fn' : ''}${k.on ? ' on' : ''}" data-k="${esc(k.k || k.c)}"${k.on ? ' aria-pressed="true"' : ''}>${esc(c != null ? c : k.lab)}</button>`; }).join('')}</div>`).join('');
-  const vk = $('#vkb'); vk.classList.toggle('locked', !!KB.st.locked);
+  $('#vkKeys').innerHTML = kbRows().map(r => `<div class="vkrow">${r.map(k => { if(k.pred != null) return `<button class="vkpred" data-p="${k.pred}"></button>`;
+    const c = k.c != null ? (up ? k.c.toLocaleUpperCase(L) : k.c) : null;
+    return `<button class="vk${k.w ? ' ' + k.w : ''}${k.fn ? ' fn' : ''}${k.cls ? ' ' + k.cls : ''}${k.on ? ' on' : ''}" data-k="${esc(k.k || k.c)}"${k.on ? ' aria-pressed="true"' : ''}>${esc(c != null ? c : k.lab)}</button>`; }).join('')}</div>`).join('');
+  const vk = $('#vkb'); vk.classList.toggle('locked', !!KB.st.locked); vk.classList.toggle('pred', KB.st.type === 'pred');
+  $('#vkType').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((KB.st.type || 'full') === b.dataset.v)));
+  $('#vkPics').setAttribute('aria-pressed', String(!!KB.st.predPics));
+  kbPredict();
   $('#vkLock').setAttribute('aria-pressed', String(!!KB.st.locked)); $('#vkLock').title = t(KB.st.locked ? 'kbUnlockSz' : 'kbLockSz');
   const pi = $('#vkLock .pi'), ic = KB.st.locked ? 'lock' : 'lock-open'; if(pi.dataset.k !== ic){ pi.dataset.k = ic; pi.innerHTML = icon(ic); }
   $('#vkSize').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(!KB.st.u && KB.st.size === b.dataset.v)));
@@ -2693,6 +2740,70 @@ function kbShow(on){
   if(on){ kbRender(); if(!S.editor) startCompose(doc.blocks.length); else focusEditor(); }
   else document.documentElement.style.setProperty('--kb-h', '0px');
 }
+/* ---- Predicció de paraules ---- */
+// Primer les paraules que s'escriuen en aquest aparell (s'aprenen soles), després les més freqüents de la llista.
+// Majúscules: amb Bloq Maj, tot en majúscules; amb Maj, la primera lletra; si no, en minúscules.
+function kbList(lang){ return KB.lists[lang] || (KB.lists[lang] = String(WORDS[lang] || '').split(' ').filter(Boolean)); }
+let learnTimer = null;
+function kbLearn(text, lang){
+  const w = memWord(text, lang === 'es' ? 'es' : 'ca'); if(!w || w.length < 2 || !/^[\p{L}·']+$/u.test(w)) return;
+  const L = KB.learn[lang === 'es' ? 'es' : 'ca']; L[w] = (L[w] || 0) + 1;
+  const keys = Object.keys(L); if(keys.length > 3000){ keys.sort((a, b) => L[a] - L[b]).slice(0, 500).forEach(k => delete L[k]); }
+  clearTimeout(learnTimer); learnTimer = setTimeout(() => LS.set('learn', KB.learn), 800);
+}
+function kbCase(w){
+  const L = S.lang, pre = kbPrefix(), c0 = pre.charAt(0);
+  if(KB.caps || (pre.length > 1 && pre === pre.toLocaleUpperCase(L) && pre !== pre.toLocaleLowerCase(L))) return w.toLocaleUpperCase(L);
+  if(KB.shift || (c0 && c0 !== c0.toLocaleLowerCase(L))) return w.charAt(0).toLocaleUpperCase(L) + w.slice(1);
+  return w;
+}
+function kbPrefix(){ const v = S.editor ? edInput.value : ''; return v.replace(/^[^\p{L}\p{N}]+/u, ''); }
+function kbPredict(){
+  if(!KB.st.on || KB.st.type !== 'pred') return;
+  const lang = S.lang === 'es' ? 'es' : 'ca', pre = norm(kbPrefix()), out = [];
+  const L = KB.learn[lang] || {}, learned = Object.keys(L).sort((a, b) => L[b] - L[a]);
+  const take = w => { if(out.length < 3 && !out.includes(w)) out.push(w); };
+  if(pre){
+    learned.forEach(w => { if(norm(w).startsWith(pre) && norm(w) !== pre) take(w); });
+    for(const w of kbList(lang)){ if(out.length >= 3) break; const n = norm(w); if(n.startsWith(pre) && n !== pre) take(w); }
+  } else learned.filter(w => L[w] >= 2).forEach(take);
+  KB.preds = [0, 1, 2].map(i => out[i] || '');
+  document.querySelectorAll('.vkpred').forEach((b, i) => { const w = KB.preds[i]; b.textContent = w ? kbCase(w) : ''; b.dataset.w = w; if(w && KB.st.predPics) kbPredPic(b, w, lang); });
+}
+// Pictograma dins la casella: la imatge recordada o el primer d'ARASAAC (cap per a les paraules gramaticals)
+function kbPredPic(btn, w, lang){
+  const add = src => { if(btn.dataset.w !== w || !src) return; const im = document.createElement('img'); im.alt = ''; im.src = src; btn.prepend(im); };
+  const me = MEM.map.get(memKey(lang, memWord(w, lang)));
+  if(me){ add(me.own ? me.own.src : IMG(me.pid, 300)); return; }
+  if((FUNC[lang] || FUNC.ca).has(w)) return;
+  clearTimeout(btn._pt);
+  btn._pt = setTimeout(() => apiBest(lang, w).then(l => { if(Array.isArray(l) && l[0]) add(IMG(l[0]._id, 300)); }).catch(() => {}), 200);
+}
+function kbPick(i){
+  const w = KB.preds[i]; if(!w) return;
+  hideSplash();
+  if(!S.editor) startCompose(doc.blocks.length);
+  focusEditor();
+  const lead = (edInput.value.match(/^[^\p{L}\p{N}]*/u) || [''])[0], cw = kbCase(w);
+  edInput.value = lead + cw; try{ edInput.setSelectionRange(edInput.value.length, edInput.value.length); }catch(e){}
+  edInput.dispatchEvent(new InputEvent('input', {inputType:'insertReplacementText', bubbles:true}));
+  kbInsert(' ');
+  if(KB.shift){ KB.shift = false; kbRender(); } else kbPredict();
+}
+// Esborrar l'última paraula (la que s'està escrivint, o l'anterior sencera, amb el pictograma; es pot desfer)
+function kbDelWord(){
+  if(!S.editor) startCompose(doc.blocks.length);
+  focusEditor();
+  if(S.editor.mode === 'compose'){
+    if(edInput.value){ edInput.value = ''; edInput.dispatchEvent(new InputEvent('input', {inputType:'deleteWordBackward', bubbles:true})); return; }
+    const i = idxOf(S.editor.id), prev = doc.blocks[i - 1]; if(!prev) return;
+    pushUndo(); doc.blocks.splice(i - 1, 1); renderAll(); focusEditor(); scheduleSave(); kbPredict(); return;
+  }
+  const b = find(S.editor.id); if(!b) return;
+  const at = idxOf(b.id); if(!S.editPushed) pushUndo();
+  S.editor = null; S.editPushed = false; S.selectedId = null; if(edInput.parentNode) edInput.remove();
+  doc.blocks.splice(at, 1); startCompose(at); scheduleSave();
+}
 // Escriu un caràcter on hi ha el cursor (document, o el camp NOM/DATA si és el que està actiu)
 function kbInsert(ch){
   const a = document.activeElement;
@@ -2707,7 +2818,10 @@ function kbKey(k){
   hideSplash();
   if(k === 'Shift'){ KB.shift = !KB.shift; kbRender(); return; }
   if(k === 'Caps'){ KB.caps = !KB.caps; KB.shift = false; kbRender(); return; }
-  if(k === 'Acc'){ KB.acc = !KB.acc; kbRender(); return; }
+  if(k === 'Acc'){ KB.acc = !KB.acc; KB.num = false; kbRender(); return; }
+  if(k === 'Num'){ KB.num = !KB.num; KB.acc = false; kbRender(); return; }
+  if(k === 'DelWord'){ kbDelWord(); return; }
+  if(k === 'Read'){ togglePlay(); return; }
   const a = document.activeElement, fld = a && a !== edInput && a.matches && a.matches('input[type=text], input:not([type]), textarea') ? a : null;
   if(k === 'Backspace' || k === 'Enter'){
     if(fld){ if(k === 'Enter'){ fld.blur(); return; } const p = fld.selectionStart; if(p > 0){ fld.setRangeText('', p - 1, p, 'end'); fld.dispatchEvent(new InputEvent('input', {inputType:'deleteContentBackward', bubbles:true})); } return; }
@@ -2720,10 +2834,13 @@ function kbKey(k){
   }
   const up = KB.shift !== KB.caps, ch = k === ' ' ? ' ' : (up ? k.toLocaleUpperCase(S.lang) : k);
   kbInsert(ch);
-  if(KB.shift){ KB.shift = false; kbRender(); }
+  if(KB.shift){ KB.shift = false; kbRender(); } else kbPredict();
 }
 $('#vkKeys').addEventListener('pointerdown', e => { e.preventDefault(); const b = e.target.closest('.vk'); if(b){ b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 160); } });
-$('#vkKeys').addEventListener('click', e => { const b = e.target.closest('.vk'); if(b) kbKey(b.dataset.k); });
+$('#vkKeys').addEventListener('click', e => { const p = e.target.closest('.vkpred'); if(p){ kbPick(+p.dataset.p); return; } const b = e.target.closest('.vk'); if(b) kbKey(b.dataset.k); });
+$('#vkType').onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ KB.st.type = b.dataset.v; KB.num = KB.acc = false; kbSave(); kbRender(); } };
+$('#vkPics').onclick = () => { KB.st.predPics = !KB.st.predPics; kbSave(); kbRender(); };
+edInput.addEventListener('input', () => { if(KB.st.on) setTimeout(kbPredict, 0); });
 $('#vkb').addEventListener('pointerdown', e => { if(!e.target.closest('.vkh')) e.preventDefault(); });
 $('#bKbd').addEventListener('pointerdown', e => e.preventDefault());
 $('#bKbd').onclick = () => kbShow(!KB.st.on);

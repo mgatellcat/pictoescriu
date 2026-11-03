@@ -21,7 +21,7 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - **Bloqueig de pantalla** per a l'alumne: pantalla completa sense la barra de botons; es desbloqueja prement el cadenat 7 vegades seguides.
 - Colors d'AREMI (blau marí i taronja), logo propi i pantalla d'inici.
 - **Imatges recordades:** la imatge o el pictograma triat per a una paraula surt sol el proper cop; es poden passar a un altre aparell amb un fitxer.
-- **Teclat virtual** QWERTY a la pantalla, de tres mides o estirable, amb el document sempre visible.
+- **Teclat virtual** QWERTY a la pantalla, de tres mides o estirable, amb el document sempre visible. Dos tipus: **complet** o **amb predicció** (3 caselles de paraules, opcionalment amb pictogrames, que aprèn les paraules que s'escriuen).
 - Interfície en català i castellà.
 
 ## Per a qui vulgui continuar el desenvolupament
@@ -34,4 +34,5 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - **Tipus de lletra:** Roboto (Apache 2.0); Andika, Atkinson Hyperlegible, Lexend, Comic Neue i OpenDyslexic (SIL Open Font License), via Fontsource.
 - **Icones:** Lucide (ISC).
 - **Generador de PDF:** jsPDF 2.5.1 (MIT, vegeu `vendor/jspdf-LICENSE`).
+- **Predicció de paraules:** llista de freqüències de wordfreq (Robyn Speer; dades CC BY-SA 4.0).
 - **Veus descarregables** (no van dins el fitxer; es baixen si la mestra ho demana): Ona (UPC, corpus FestCat; CC BY-SA) i Sharvard (corpus de V. Aubanel, M. L. García Lecumberri i M. Cooke; CC BY), fetes amb Piper (Rhasspy). Motor: ONNX Runtime 1.18.0 (MIT) i piper-wasm 1.0.0 amb eSpeak NG.

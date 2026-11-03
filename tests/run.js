@@ -355,7 +355,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.10\.0/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.11\.0/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -746,7 +746,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.10\.0/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.0/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -813,6 +813,50 @@ let offline = false; const hits = [];
   await pk.click('#vkLock'); await pk.click('#vkClose');
   ok('TECLAT Es pot amagar', await pk.evaluate(() => document.querySelector('#vkb').hidden && !document.body.classList.contains('kbd-on') && edInput.inputMode === ''));
   await pk.close();
+
+  // ================= Teclat amb predicció =================
+  const tp = await ctx.newPage(); tp.on('pageerror', e => errors.push('predicció ' + e));
+  await tp.goto('file://' + APP); await tp.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-imatges-1'); }); await tp.reload(); await tp.waitForTimeout(2600);
+  const tpk = async (...keys) => { for(const k of keys) await tp.click(`.vk[data-k="${k}"]`); };
+  const tpw = () => tp.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.kind === 'br' ? '¶' : b.text).join(' ') + ' [' + edInput.value + ']');
+  const tpreds = () => tp.evaluate(() => [...document.querySelectorAll('.vkpred')].map(b => b.textContent));
+  await tp.click('#bKbd'); await tp.waitForTimeout(200); await tp.click('#vkType [data-v="pred"]'); await tp.waitForTimeout(200);
+  let TPV = await tp.evaluate(() => ({pred:document.querySelector('#vkb').classList.contains('pred'), boxes:document.querySelectorAll('.vkpred').length, nums:!!document.querySelector('.vk[data-k="1"]'), q:!!document.querySelector('.vk[data-k="q"]'), delw:!!document.querySelector('.vk[data-k="DelWord"]'), read:!!document.querySelector('.vk[data-k="Read"]'), bg:getComputedStyle(document.querySelector('#vkb')).backgroundColor, ws:document.querySelector('#ws').getBoundingClientRect().bottom, kb:document.querySelector('#vkb').getBoundingClientRect().top}));
+  ok('PREDICCIÓ QWERTY amb 3 caselles, sense fila de números, Esborrar paraula i Llegir', TPV.pred && TPV.boxes === 3 && !TPV.nums && TPV.q && TPV.delw && TPV.read && TPV.ws <= TPV.kb + 1, JSON.stringify(TPV));
+  ok('PREDICCIÓ Colors d\'AREMI (fons blau)', TPV.bg === 'rgb(36, 56, 106)', TPV.bg);
+  await tpk('p', 'o');
+  let TPL = await tpreds();
+  ok('PREDICCIÓ «po» proposa paraules que comencen per «po», en minúscules', TPL.length === 3 && TPL.every(w => w.startsWith('po')) && TPL.every(w => w === w.toLowerCase()), TPL.join(','));
+  // Triar una predicció: posa la paraula sencera i un espai, i el pictograma
+  await tpk('m'); await tp.click('.vkpred:text-is("poma")'); await tp.waitForTimeout(900);
+  ok('PREDICCIÓ Triar una casella escriu la paraula i un espai, amb pictograma', (await tpw()) === 'poma []' && await tp.evaluate(() => doc.blocks.find(b => b.text === 'poma').pictoId === 4001), await tpw());
+  // La paraula escrita s'aprèn i surt primer
+  await tpk('p', 'o'); TPL = await tpreds();
+  ok('PREDICCIÓ Les paraules ja escrites surten primer', TPL[0] === 'poma', TPL.join(','));
+  await tpk('Caps'); TPL = await tpreds();
+  ok('PREDICCIÓ Amb Bloq Maj, les prediccions en majúscules', TPL[0] === 'POMA' && TPL.every(w => w === w.toUpperCase()), TPL.join(','));
+  await tp.click('.vkpred[data-p="0"]'); await tpk('Caps');
+  ok('PREDICCIÓ I s\'escriuen en majúscules', (await tpw()) === 'poma POMA []', await tpw());
+  await tpk('Shift', 'p', 'o'); TPL = await tpreds();
+  ok('PREDICCIÓ Amb Majúscula, només la primera lletra', TPL[0] === 'Poma' && (await tpw()).endsWith('[Po]'), TPL.join(',') + ' ' + await tpw());
+  await tpk('DelWord');
+  ok('PREDICCIÓ Esborrar paraula esborra la que s\'escriu', (await tpw()) === 'poma POMA []', await tpw());
+  await tpk('DelWord');
+  ok('PREDICCIÓ Esborrar paraula esborra l\'anterior sencera', (await tpw()) === 'poma []', await tpw());
+  await tpk('Num');
+  ok('PREDICCIÓ La tecla 123 mostra els números', await tp.evaluate(() => !!document.querySelector('.vk[data-k="1"]') && !document.querySelector('.vk[data-k="q"]')));
+  await tpk('Num');
+  await tp.evaluate(() => { window.__tts.length = 0; }); await tpk('Read'); await tp.waitForTimeout(400);
+  ok('PREDICCIÓ Llegir llegeix el text', await tp.evaluate(() => window.__tts.some(u => /poma/i.test(u.text))), JSON.stringify(await tp.evaluate(() => window.__tts.map(u => u.text))));
+  await tp.waitForTimeout(400);
+  await tp.click('#vkPics'); await tpk('p', 'o'); await tp.waitForTimeout(800);
+  TPV = await tp.evaluate(() => { const b = document.querySelector('.vkpred'); return {w:b.textContent, img:b.querySelector('img') && b.querySelector('img').src}; });
+  ok('PREDICCIÓ Opció de pictogrames a les caselles', TPV.w === 'poma' && /4001/.test(TPV.img || ''), JSON.stringify(TPV));
+  await tp.reload(); await tp.waitForTimeout(2600);
+  ok('PREDICCIÓ Recorda el tipus de teclat i les paraules apreses', await tp.evaluate(() => KB.st.type === 'pred' && KB.st.predPics && (KB.learn.ca.poma || 0) >= 1));
+  await tp.click('#vkLock');
+  ok('PREDICCIÓ Amb el cadenat, el configurador s\'amaga', await tp.evaluate(() => getComputedStyle(document.querySelector('#vkType')).display === 'none' && getComputedStyle(document.querySelector('#vkPics')).display === 'none'));
+  await tp.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 
