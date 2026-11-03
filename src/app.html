@@ -499,7 +499,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.3';
+const VERSION = '0.9.4';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -815,14 +815,18 @@ function variants(q, lang){
     const m = w.match(/^(?:l|d|s|m|t|n)'(.+)$/); if(m){ w = m[1]; add(w); }
     const h = w.split(/[-']/)[0]; if(h !== w){ w = h; add(w); }
     const R = [[/es$/, 'a'], [/ns$/, ''], [/s$/, ''], [/(ades|ats|ada|at)$/, 'ar'], [/(ava|aves|àvem|àveu|aven)$/, 'ar'], [/(ant)$/, 'ar'],
-      [/(ides|its|ida|it|int)$/, 'ir'], [/a$/, 'ar'], [/(o|em|eu|en)$/, 'ar']];
-    for(const [re, rep] of R){ if(re.test(w) && w.replace(re, '').length >= 3) add(w.replace(re, rep)); }
+      [/(ides|its|ida|it|int)$/, 'ir'], [/a$/, 'ar'], [/(o|em|eu|en)$/, 'ar'],
+      // femení i plural → masculí singular (ARASAAC té els adjectius en masculí): verda → verd, groga → groc, nova → nou, roja → roig
+      [/gues$/, 'c', 2], [/ga$/, 'c', 2], [/ques$/, 'c'], [/ves$/, 'u', 2], [/va$/, 'u', 2], [/ges$/, 'ig', 2], [/ja$/, 'ig', 2], [/sses$/, 's'], [/ssa$/, 's'], [/es$/, ''], [/a$/, '']];
+    for(const [re, rep, min] of R){ if(re.test(w) && w.replace(re, '').length >= (min || 3)) add(w.replace(re, rep)); }
   } else {
     const R = [[/es$/, ''], [/s$/, ''], [/(ados|adas|ado|ada)$/, 'ar'], [/(idos|idas|ido|ida)$/, 'er'], [/(idos|idas|ido|ida)$/, 'ir'], [/(ando)$/, 'ar'], [/(iendo)$/, 'er'],
-      [/(aba|abas|aban)$/, 'ar'], [/(an|amos|o)$/, 'ar'], [/(en|emos|e)$/, 'er'], [/a$/, 'ar']];
+      [/(aba|abas|aban)$/, 'ar'], [/(an|amos|o)$/, 'ar'], [/(en|emos|e)$/, 'er'], [/a$/, 'ar'],
+      // femenino → masculino: roja → rojo, blancas → blanco, trabajadora → trabajador
+      [/as$/, 'o'], [/a$/, 'o'], [/as$/, ''], [/a$/, '']];
     for(const [re, rep] of R){ if(re.test(w) && w.replace(re, '').length >= 3) add(w.replace(re, rep)); }
   }
-  return out.slice(0, 6);
+  return out.slice(0, 12);
 }
 async function findPictos(q, lang){
   const nq = norm(q);

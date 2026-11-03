@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.3** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.4** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -13,6 +13,7 @@ Estat actual: **versió 0.9.3** (3 de novembre de 2026). El número de versió s
 - La 0.9.1: el panell de la dreta ja no s'obre en esborrar (apartat 2) i pictogrames automàtics a totes les paraules menys les gramaticals (apartat 4).
 - La 0.9.2 fa que funcioni bé a mòbils i tauletes (apartat 16).
 - La 0.9.3 corregeix la clau Fitzgerald, afegeix «Picto a sobre de la paraula» i obre sempre amb un document en blanc (apartat 17).
+- La 0.9.4 troba el pictograma dels femenins i plurals en masculí: verda → verd (apartat 3).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -42,6 +43,9 @@ Ordre de cerca, a `findPictos()`:
 1. `bestsearch` amb la paraula exacta (ja resol plurals: «pomes» → poma).
 2. Si no hi ha resultat, `search` filtrada: només paraules clau iguals, o gairebé iguals si la paraula té 3 o més lletres i la diferència és de 2 lletres o menys («menja» → menjar, «beu» → beure).
 3. Variants lingüístiques prudents, només amb coincidència exacta: elisions («l'aigua» → aigua), participis («menjat» → menjar), gerundis («dormint» → dormir, «comiendo» → comer). La variant ha de conservar una arrel d'almenys 3 lletres, perquè «beu» no esdevingui «bar».
+- **Femení i plural → masculí singular** (0.9.4, a petició de la mestra: «la poma és verda» deixava «verda» sense pictograma, perquè ARASAAC té «verd»). També amb coincidència exacta, i només si les altres variants no han trobat res. El text escrit no canvia.
+  - Català: verda/verdes → verd, petita → petit, groga/grogues → groc, blanques → blanc, nova/noves → nou, roja/roges → roig, grossa → gros.
+  - Castellà: roja/rojas → rojo, blanca → blanco, trabajadora → trabajador.
 - Primer van els pictogrames on la paraula és la paraula clau principal: «la» mostra l'article abans que «ella».
 - Paraules com «HE» o «vaig» no reben cap pictograma fals: queden només amb text.
 
