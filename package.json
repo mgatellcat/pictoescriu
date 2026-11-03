@@ -1,6 +1,6 @@
 {
   "name": "pictoescriu",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "private": true,
   "description": "Aplicació web per escriure textos amb pictogrames ARASAAC (estil AraWord), pensada per a educació especial i CAA",
   "scripts": {

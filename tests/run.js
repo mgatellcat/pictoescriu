@@ -254,8 +254,11 @@ let offline = false; const hits = [];
 
   // Autodesament
   await page2.waitForTimeout(1200); const page3 = await ctx.newPage(); await page3.goto('file://' + APP); await page3.waitForTimeout(600);
+  const n3a = await page3.evaluate(() => doc.blocks.filter(b=>!b.composing).length), t3 = await page3.textContent('#toasts');
+  ok('En obrir, document en blanc i avís per recuperar l\'últim', n3a === 0 && /Document nou en blanc/.test(t3) && /Recuperar l'últim/.test(t3), 'blocs: ' + n3a + ' ' + t3);
+  await page3.click('#toasts button:has-text("Recuperar")'); await page3.waitForTimeout(200);
   const n3 = await page3.evaluate(() => doc.blocks.filter(b=>!b.composing).length);
-  ok('Esborrany recuperat automàticament', n3 > 0, 'blocs: '+n3);
+  ok('«Recuperar l\'últim» torna el document anterior', n3 > 0, 'blocs: '+n3);
   await page3.close(); await page2.close();
 
   // 2. Castellà
@@ -351,7 +354,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.2/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.3/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -415,6 +418,26 @@ let offline = false; const hits = [];
   ok('PICTOS Pronoms, expressions i paraules amb contingut porten pictograma; articles, conjuncions i pronoms febles no', PW === 'jo:picto dic:? hola:picto i:text sí,:picto si:text vols.:? es:text diu:? i:text és:?', PW);
   const cats = await pe.evaluate(() => ['jo', 'hola', 'sí,'].map(t => doc.blocks.find(b => b.text === t).cat).join(','));
   ok('PICTOS Clau Fitzgerald: pronom groc, expressions roses', cats === 'persones,social,social', cats);
+  // Clau Fitzgerald i posició del pictograma
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  await pe.keyboard.type('la nena menja ', {delay:20}); await eIdle(); await pe.waitForTimeout(200); await pe.keyboard.press('Escape');
+  const fz = () => pe.evaluate(() => { const b = doc.blocks.find(x => x.text === 'nena'), cs = getComputedStyle(document.querySelector(`.blk[data-id="${b.id}"] .pic`)); return doc.settings.fitz + ':' + cs.borderTopColor + '/' + cs.backgroundColor; });
+  const f1 = await fz(); await pe.selectOption('#sFitz', 'bg'); const f2 = await fz(); await pe.selectOption('#sFitz', 'off'); const f3 = await fz();
+  ok('CLAU Marc de color, fons de color i sense clau canvien de debò', /^frame:rgb\(240, 124, 0\)\/rgb\(255, 255, 255\)$/.test(f1) && /^bg:rgb\(240, 124, 0\)\/rgb\(240, 124, 0\)$/.test(f2) && /^off:rgba\(0, 0, 0, 0\)\/rgb\(255, 255, 255\)$/.test(f3), [f1, f2, f3].join(' | '));
+  await pe.keyboard.press('Control+z');
+  ok('CLAU Es pot desfer', await pe.evaluate(() => doc.settings.fitz === 'bg' && document.querySelector('#sFitz').value === 'bg'));
+  const geoPic = () => pe.evaluate(() => ['la', 'nena', 'menja'].map(t => { const el = document.querySelector(`.blk[data-id="${doc.blocks.find(x => x.text === t).id}"]`), l = el.querySelector('.lbl').getBoundingClientRect(), p = el.querySelector('.pic').getBoundingClientRect(); return {t, picAbove:p.bottom <= l.top + 0.5, picBelow:p.top >= l.bottom - 0.5, lblTop:Math.round(l.top)}; }));
+  await pe.selectOption('#sPicPos', 'above'); await pe.waitForTimeout(150);
+  let G = await geoPic();
+  ok('PICTO A SOBRE El pictograma surt damunt de la paraula i la frase queda alineada', G[1].picAbove && G[2].picAbove && new Set(G.map(x => x.lblTop)).size === 1, JSON.stringify(G));
+  const [dlA] = await Promise.all([pe.waitForEvent('download', {timeout:20000}), pe.click('#bPdf')]);
+  await dlA.saveAs(OUT + '/picto-a-sobre.pdf');
+  ok('PICTO A SOBRE El PDF es fa igual', fs.statSync(OUT + '/picto-a-sobre.pdf').size > 3000);
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  ok('PICTO A SOBRE Es manté en fer un document nou', await pe.evaluate(() => doc.settings.picPos === 'above' && document.querySelector('#sPicPos').value === 'above'));
+  await pe.selectOption('#sPicPos', 'below'); await pe.keyboard.type('la nena ', {delay:20}); await eIdle(); await pe.waitForTimeout(150);
+  G = await pe.evaluate(() => { const el = document.querySelector(`.blk[data-id="${doc.blocks.find(x => x.text === 'nena').id}"]`); return el.querySelector('.pic').getBoundingClientRect().top >= el.querySelector('.lbl').getBoundingClientRect().bottom - 0.5; });
+  ok('PICTO A SOTA Torna a la posició de sempre', G);
   await pe.close();
 
   // ================= Veu: lectura en veu alta i mode alumne =================
@@ -580,6 +603,7 @@ let offline = false; const hits = [];
   pvOffline = true; const pvBefore = pvHits.length;
   await pp.reload(); await pp.waitForTimeout(600); await pp.evaluate(() => { window.__ttsHide = 'ca'; loadVoices(); });
   await pp.waitForFunction(() => PV.st.ca === 'ready');
+  await pp.click('#toasts button:has-text("Recuperar")'); await pp.waitForTimeout(200);
   await pp.click('#bPlay'); await pp.waitForFunction(() => SP.reading); await ppQuiet();
   V = await pp.evaluate(() => ({ph:(window.__ph || []).length, runs:window.ort ? window.ort.__runs.length : 0}));
   ok('VEU BAIXADA Sense internet funciona igual en tornar a obrir', V.ph === 2 && V.runs === 2 && pvHits.length === pvBefore, JSON.stringify(V) + " peticions " + (pvHits.length - pvBefore));
@@ -685,7 +709,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.2/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.3/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));

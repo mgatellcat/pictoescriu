@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.2** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.3** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -12,6 +12,7 @@ Estat actual: **versió 0.9.2** (3 de novembre de 2026). El número de versió s
 - La 0.9.0 hi afegeix els colors d'AREMI, el logo nou i la pantalla d'inici (apartat 15).
 - La 0.9.1: el panell de la dreta ja no s'obre en esborrar (apartat 2) i pictogrames automàtics a totes les paraules menys les gramaticals (apartat 4).
 - La 0.9.2 fa que funcioni bé a mòbils i tauletes (apartat 16).
+- La 0.9.3 corregeix la clau Fitzgerald, afegeix «Picto a sobre de la paraula» i obre sempre amb un document en blanc (apartat 17).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -202,4 +203,15 @@ Decisió de la mestra: «amb iPhone no funciona; també hauria de funcionar amb 
 - Si el teclat no s'obre en tocar el full, es torna a intentar en el «clic».
 - Els textos d'ajuda de les veus expliquen com afegir una veu a Windows, Mac, iPhone, iPad i Android, i parlen d'«aparell» en lloc d'«ordinador».
 - **Proves:** es fan amb Chromium simulant un Pixel 7 i un iPhone 13, i tauletes de 600 i 768 px. **No s'ha pogut provar amb Safari de debò** (el motor de l'iPhone): cal provar-ho en un iPhone o iPad real.
+
+## 17. Clau Fitzgerald, picto a sobre i document en blanc en obrir (versió 0.9.3, 3/11/2026)
+- **Error corregit: la llista «Clau» no feia res** (passava des de la 0.5). En canviar l'opció, la còpia per poder desfer tornava a posar la llista en el valor antic abans de llegir-lo. Ara «Marc de color», «Fons de color» i «Sense clau» funcionen, també al PDF, i es poden desfer.
+- **Opció nova «Picto»: «A sota de la paraula» (per defecte) o «A sobre de la paraula»** (petició de la mestra: «que s'escrigui el picto a dalt de la frase, sense clau Fitzgerald, com a nova opció»).
+  - És independent de la clau. Per tenir el pictograma a dalt i sense colors, cal triar «A sobre» i «Sense clau».
+  - Totes les paraules de la línia queden alineades, també les que no tenen pictograma.
+  - Pantalla, PDF i impressió coincideixen.
+  - Es desa amb el document (`settings.picPos`) i es manté en fer un document nou, com la clau i la mida dels pictogrames.
+- **En obrir, sempre un document en blanc** (decisió de la mestra). Abans s'obria l'últim esborrany.
+  - L'últim document es guarda a part i en obrir surt l'avís «Document nou en blanc», amb el botó **«Recuperar l'últim»** (15 segons). El document guardat a part només es reemplaça quan se n'ha escrit un altre.
+  - Es mantenen els ajustos dels pictogrames (mida, clau, posició, «Amb text»). La resta (lletra, capçalera…) torna als valors per defecte, com amb «Nou».
 
