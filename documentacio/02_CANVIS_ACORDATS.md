@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.1** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.2** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -11,6 +11,7 @@ Estat actual: **versió 0.9.1** (3 de novembre de 2026). El número de versió s
 - La 0.8.0 hi afegeix els sons de les lletres gravats, «Lletrejar» i el bloqueig de pantalla (apartats 13 i 14), triats de les propostes de `06_ANALISI_LECAA_DOCS.md`.
 - La 0.9.0 hi afegeix els colors d'AREMI, el logo nou i la pantalla d'inici (apartat 15).
 - La 0.9.1: el panell de la dreta ja no s'obre en esborrar (apartat 2) i pictogrames automàtics a totes les paraules menys les gramaticals (apartat 4).
+- La 0.9.2 fa que funcioni bé a mòbils i tauletes (apartat 16).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -184,4 +185,21 @@ Decisions de la mestra, a partir del logo de la seva associació, **AREMI** (par
 - **Pantalla d'inici:** en obrir el programa surt uns 2 segons amb el logo, «PictoEscriu», «Escriure i llegir amb pictogrames» i la versió. Desapareix sola, en tocar-la o en prémer una tecla; si es prem una lletra, la lletra ja s'escriu.
 - No canvia res dels fulls: la capçalera «Clàssica», la clau Fitzgerald, el PDF i la impressió són iguals que abans.
 - **Nom de l'eina:** pendent. La mestra ha demanat propostes de noms nous.
+
+## 16. Mòbils i tauletes: iPhone, iPad i Android (versió 0.9.2, 3/11/2026)
+Decisió de la mestra: «amb iPhone no funciona; també hauria de funcionar amb Android»; i publicar-la amb GitHub Pages.
+- **Com s'obre a cada aparell:**
+  - A l'iPhone, l'iPad i Android, un fitxer .html baixat no s'obre bé. S'hi ha d'entrar per l'**adreça web**: https://mgatellcat.github.io/pictoescriu/ (GitHub Pages, carpeta `docs/` de la branca `main`).
+  - Es pot posar com a icona amb «Afegir a la pantalla d'inici».
+  - A l'ordinador continua funcionant el fitxer amb doble clic.
+- **Mòbil (pantalla de 640 px o menys):**
+  - La segona fila de la barra (pictogrames i format) s'amaga i s'obre amb el botó **«Format»**. Així la pàgina té més lloc.
+  - Abans, a les pantalles de menys de 820 px, alguns botons quedaven tallats fora de la pantalla. Ara els botons passen a la línia següent.
+- **iPhone i iPad:**
+  - En tocar per escriure, la pantalla no s'amplia sola (el zoom amb dos dits continua funcionant).
+  - Les veus baixades i els sons gravats sonen encara que l'interruptor de silenci estigui activat (Safari 16.4 o posterior).
+  - La pantalla completa del bloqueig funciona a l'iPad. A l'iPhone, Safari no en té: la barra s'amaga igualment i no surt el botó de pantalla completa.
+- Si el teclat no s'obre en tocar el full, es torna a intentar en el «clic».
+- Els textos d'ajuda de les veus expliquen com afegir una veu a Windows, Mac, iPhone, iPad i Android, i parlen d'«aparell» en lloc d'«ordinador».
+- **Proves:** es fan amb Chromium simulant un Pixel 7 i un iPhone 13, i tauletes de 600 i 768 px. **No s'ha pogut provar amb Safari de debò** (el motor de l'iPhone): cal provar-ho en un iPhone o iPad real.
 

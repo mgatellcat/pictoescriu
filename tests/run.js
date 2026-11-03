@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+const { chromium, devices } = require('playwright');
 const fs = require('fs'); const path = require('path'); const crypto = require('crypto');
 const DIR = __dirname, FIX = path.join(DIR, 'fixtures'), APP = path.resolve(DIR, '../docs/index.html');
 const OUT = process.env.OUT || path.resolve(DIR, '../test-output'); fs.mkdirSync(OUT, {recursive:true});
@@ -351,7 +351,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.1/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.2/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -685,7 +685,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.1/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.2/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -694,6 +694,32 @@ let offline = false; const hits = [];
   await pc.reload(); await pc.waitForTimeout(300); await pc.keyboard.press('h');
   ok('COLORS Una tecla treu la pantalla d\'inici i la lletra s\'escriu', await pc.evaluate(() => { const sp = document.querySelector('#splash'); return (!sp || sp.classList.contains('out')) && edInput.value === 'h'; }));
   await pc.close();
+
+  // ================= Mòbils i tauletes (Android i iPhone simulats amb Chromium) =================
+  const tbOver = pg => pg.evaluate(() => [...document.querySelectorAll('.topbar .btn, .topbar select, .topbar input, .topbar .scope')]
+    .filter(e => e.offsetParent && e.getBoundingClientRect().right > innerWidth + 1).map(e => e.id || e.className.split(' ')[0]).join(','));
+  for(const [name, dev] of [['Android', devices['Pixel 7']], ['iPhone', devices['iPhone 13']]]){
+    const mc = await browser.newContext({...dev});
+    await mc.route(/arasaac\.org/, r => r.fulfill({status:404, headers:{'access-control-allow-origin':'*'}, body:'{}'}));
+    const mp = await mc.newPage(); mp.on('pageerror', e => errors.push(name + ' ' + e));
+    await mp.goto('file://' + APP); await mp.waitForTimeout(2700);
+    let M = await mp.evaluate(() => ({row2:getComputedStyle(document.querySelector('.topbar .row + .row')).display, tools:!!document.querySelector('#bTools').offsetParent, bar:document.querySelector('#topbar').offsetHeight, vp:document.querySelector('meta[name=viewport]').content}));
+    const o1 = await tbOver(mp);
+    ok(`MÒBIL ${name}: cap botó fora de la pantalla i la barra de format amagada`, o1 === '' && M.row2 === 'none' && M.tools && M.bar < 160, o1 + ' ' + JSON.stringify(M));
+    await mp.tap('#bTools'); await mp.waitForTimeout(150);
+    const o2 = await tbOver(mp), row2 = await mp.evaluate(() => getComputedStyle(document.querySelector('.topbar .row + .row')).display);
+    ok(`MÒBIL ${name}: el botó «Format» mostra les eines, totes dins la pantalla`, row2 !== 'none' && o2 === '', o2 + ' ' + row2);
+    await mp.tap('#bTools');
+    const box = await (await mp.$('.page')).boundingBox(); await mp.tap('.page', {position:{x:box.width / 2, y:box.height * 0.45}});
+    await mp.keyboard.type('hola gat ', {delay:20}); await mp.waitForTimeout(300);
+    ok(`MÒBIL ${name}: tocar el full i escriure`, (await mp.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.text).join(' '))) === 'hola gat');
+    if(name === 'iPhone') ok('MÒBIL iPhone: sense zoom automàtic en escriure', /maximum-scale=1/.test(M.vp), M.vp);
+    await mc.close();
+  }
+  for(const w of [600, 768]){
+    const tp = await browser.newPage({viewport:{width:w, height:900}}); await tp.goto('file://' + APP); await tp.waitForTimeout(400);
+    const o = await tbOver(tp); ok(`TAULETA ${w} px: cap botó fora de la pantalla`, o === '', o); await tp.close();
+  }
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

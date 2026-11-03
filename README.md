@@ -3,8 +3,9 @@
 Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la línia d'AraWord, i preparar materials en DIN A4 per a l'alumnat d'educació especial i usuari de comunicació augmentativa i alternativa (CAA).
 
 ## Com s'obre
-- **Al teu ordinador:** descarrega `docs/index.html` i obre'l amb doble clic a Chrome o Edge. Cal connexió a internet per cercar pictogrames.
-- **Amb una adreça web:** activa GitHub Pages (Settings → Pages → Branch `main`, carpeta `/docs`). L'aplicació quedarà publicada a `https://<el-teu-usuari>.github.io/<nom-del-repositori>/`.
+- **Amb l'adreça web (qualsevol aparell):** https://mgatellcat.github.io/pictoescriu/ . Funciona a l'ordinador (Windows, Mac, Chromebook, Linux) i també a l'**iPhone, l'iPad i el mòbil o la tauleta Android**. Al mòbil o la tauleta, es pot posar com a icona amb «Afegir a la pantalla d'inici». La publica GitHub Pages a partir de la carpeta `docs/` de la branca `main`.
+- **Amb el fitxer, només a l'ordinador:** descarrega `docs/index.html` i obre'l amb doble clic a Chrome o Edge. A l'iPhone, l'iPad i Android un fitxer .html baixat no s'obre bé: cal fer servir l'adreça web.
+- Cal connexió a internet per cercar pictogrames.
 
 ## Què fa
 - Escriptura contínua: cada paraula rep automàticament un pictograma d'ARASAAC (substantius, verbs i adjectius). La resta es pot afegir després.

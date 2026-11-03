@@ -268,6 +268,16 @@ body.is-full #bFull{display:none}
 .toast button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;font-weight:700;font-size:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
+/* Mòbils i tauletes: cap botó pot quedar fora de la pantalla; als mòbils, la segona fila (format) s'obre amb el botó «Format» */
+#gTools{display:none}
+@media (max-width:900px){ .grp{flex-wrap:wrap;row-gap:4px} }
+@media (max-width:640px){
+  #gTools{display:flex}
+  body:not(.tools-open) .topbar .row+.row{display:none}
+  .row{padding:4px 8px}
+  .grp{padding-right:4px;margin-right:0}
+  #bTools .t{display:inline}
+}
 /* La primera fila ha de cabre en una línia: a les pantalles més estretes, alguns botons només mostren la icona */
 @media (max-width:1599px){ #bUndo .t,#bRedo .t,#bCredits .t,#bVoice .t,#bLock .t{display:none} }
 @media (max-width:1365px){ .brand span,#bNew .t,#bOpen .t,#bSave .t{display:none} }
@@ -326,6 +336,7 @@ body.is-full #bFull{display:none}
     <div class="grp">
       <button class="btn" id="bHead" data-tip="headerTip"><span data-icon="text-cursor-input"></span><span class="t" data-i18n="header"></span></button>
     </div>
+    <div class="grp" id="gTools"><button class="btn" id="bTools" aria-expanded="false" data-tip="toolsTip"><span data-icon="type"></span><span class="t" data-i18n="tools"></span></button></div>
     <div class="grp" id="gVoice">
       <button class="btn play" id="bPlay" aria-pressed="false"><span class="pi"></span><span class="t" id="bPlayL"></span></button>
       <button class="btn" id="bStudent" aria-pressed="false" data-tip="studentTip"><span data-icon="graduation-cap"></span><span class="t" data-i18n="student"></span></button>
@@ -483,7 +494,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.1';
+const VERSION = '0.9.2';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -557,14 +568,14 @@ const I18N = {
     voicesSec:'Veus', voice_ca:'Català', voice_es:'Castellà', voiceAuto:'Automàtica: {v}', voiceNone:'Cap veu', test:'Provar',
     tagNatural:'natural', tagOnline:'en línia', tagLocal:'de l\'ordinador',
     onlineNote:'Les veus «en línia» sonen més naturals, però necessiten internet i envien el text que es llegeix a Microsoft o Google per convertir-lo en veu. El nom i la data no es llegeixen ni s\'envien mai.',
-    noVoice_ca:'Aquest ordinador no té cap veu en català. El navegador Edge en té de naturals. A Windows també en pots afegir una: Configuració → Hora i idioma → Veu → Afegir veus → Català.',
-    noVoice_es:'Aquest ordinador no té cap veu en castellà. El navegador Edge en té de naturals. A Windows també en pots afegir una: Configuració → Hora i idioma → Veu → Afegir veus → Español (España).',
+    noVoice_ca:'Aquest aparell no té cap veu en català. Se\'n pot afegir una al sistema: a Windows, Configuració → Hora i idioma → Veu → Afegir veus; al Mac, l\'iPad i l\'iPhone, Configuració → Accessibilitat → Contingut parlat → Veus → Català; a Android, Configuració → Text a veu → Motor de Google → Instal·lar dades de veu. El navegador Edge ja en té de naturals.',
+    noVoice_es:'Aquest aparell no té cap veu en castellà. Se\'n pot afegir una al sistema: a Windows, Configuració → Hora i idioma → Veu → Afegir veus; al Mac, l\'iPad i l\'iPhone, Configuració → Accessibilitat → Contingut parlat → Veus → Espanyol; a Android, Configuració → Text a veu → Motor de Google → Instal·lar dades de veu. El navegador Edge ja en té de naturals.',
     noSpeech:'Aquest navegador no pot llegir en veu alta. Fes servir Chrome o Edge.',
     readSec:'Lectura', rate:'Velocitat', flowNatural:'Natural (frase sencera)', flowWord:'Paraula a paraula',
     flowNote:'Amb «Paraula a paraula» el ressaltat sempre és exacte, però sona menys fluid.',
     hlChk:'Ressaltar la paraula que es llegeix', hlc_0:'Groc', hlc_1:'Verd', hlc_2:'Blau', hlc_3:'Rosa',
     bndYes:'Aquesta veu ressalta cada paraula.', bndNo:'Aquesta veu no diu quina paraula llegeix: amb «Natural» es ressaltarà la frase sencera. Per ressaltar paraula per paraula, tria «Paraula a paraula».',
-    noVoiceToast:'Aquest ordinador no té veu en {lang}.', langName_ca:'català', langName_es:'castellà',
+    noVoiceToast:'Aquest aparell no té veu en {lang}.', langName_ca:'català', langName_es:'castellà',
     nothingToRead:'Encara no hi ha res per llegir.', listen:'Escoltar',
     lkName:'El nom («ema»)', lkSound:'El so gravat (/m/)', tkSay:'La diu', tkSpell:'La lletreja i després la diu',
     spell:'Lletrejar', spellTip:'Diu el so de cada lletra, ressaltant-la, i després la paraula sencera',
@@ -577,11 +588,12 @@ const I18N = {
     sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
     tagline:'Escriure i llegir amb pictogrames',
+    tools:'Format', toolsTip:'Mostrar o amagar les eines de format i de pictogrames',
     lock:'Bloquejar', lockTip:'Bloquejar la pantalla per a l\'alumne: pantalla completa i sense la barra de botons. Per desbloquejar, prem el cadenat 7 vegades seguides.',
     unlockTip:'Per desbloquejar, prem el cadenat 7 vegades seguides', fullTip:'Pantalla completa', unlocked:'Pantalla desbloquejada.',
     tagDownloaded:'baixada · sense internet', dlNow:'Baixar-la',
-    noVoiceDl_ca:'Aquest ordinador no té cap veu en català. Baixa aquí sota la veu gratuïta Ona: només cal fer-ho una vegada.',
-    noVoiceDl_es:'Aquest ordinador no té cap veu en castellà. Baixa aquí sota la veu gratuïta Sharvard: només cal fer-ho una vegada.',
+    noVoiceDl_ca:'Aquest aparell no té cap veu en català. Baixa aquí sota la veu gratuïta Ona: només cal fer-ho una vegada.',
+    noVoiceDl_es:'Aquest aparell no té cap veu en castellà. Baixa aquí sota la veu gratuïta Sharvard: només cal fer-ho una vegada.',
     pvGet_ca:'Baixar la veu catalana gratuïta Ona (uns {mb} MB)', pvGet_es:'Baixar la veu castellana gratuïta Sharvard, de dona i d\'home (uns {mb} MB)',
     pvNote:'Només cal fer-ho una vegada en aquest ordinador i navegador. Després funciona sense internet i el text no surt de l\'ordinador.',
     pvProgress:'Baixant… {a} MB de {b} MB', pvReady:'Veu {v} baixada: funciona sense internet.', pvRemove:'Esborrar-la',
@@ -651,14 +663,14 @@ const I18N = {
     voicesSec:'Voces', voice_ca:'Catalán', voice_es:'Castellano', voiceAuto:'Automática: {v}', voiceNone:'Ninguna voz', test:'Probar',
     tagNatural:'natural', tagOnline:'en línea', tagLocal:'del ordenador',
     onlineNote:'Las voces «en línea» suenan más naturales, pero necesitan internet y envían el texto que se lee a Microsoft o Google para convertirlo en voz. El nombre y la fecha nunca se leen ni se envían.',
-    noVoice_ca:'Este ordenador no tiene ninguna voz en catalán. El navegador Edge tiene voces naturales. En Windows también puedes añadir una: Configuración → Hora e idioma → Voz → Agregar voces → Català.',
-    noVoice_es:'Este ordenador no tiene ninguna voz en castellano. El navegador Edge tiene voces naturales. En Windows también puedes añadir una: Configuración → Hora e idioma → Voz → Agregar voces → Español (España).',
+    noVoice_ca:'Este aparato no tiene ninguna voz en catalán. Se puede añadir una al sistema: en Windows, Configuración → Hora e idioma → Voz → Agregar voces; en el Mac, el iPad y el iPhone, Ajustes → Accesibilidad → Contenido leído → Voces → Catalán; en Android, Ajustes → Texto a voz → Motor de Google → Instalar datos de voz. El navegador Edge ya tiene voces naturales.',
+    noVoice_es:'Este aparato no tiene ninguna voz en castellano. Se puede añadir una al sistema: en Windows, Configuración → Hora e idioma → Voz → Agregar voces; en el Mac, el iPad y el iPhone, Ajustes → Accesibilidad → Contenido leído → Voces → Español; en Android, Ajustes → Texto a voz → Motor de Google → Instalar datos de voz. El navegador Edge ya tiene voces naturales.',
     noSpeech:'Este navegador no puede leer en voz alta. Usa Chrome o Edge.',
     readSec:'Lectura', rate:'Velocidad', flowNatural:'Natural (frase entera)', flowWord:'Palabra a palabra',
     flowNote:'Con «Palabra a palabra» el resaltado siempre es exacto, pero suena menos fluido.',
     hlChk:'Resaltar la palabra que se lee', hlc_0:'Amarillo', hlc_1:'Verde', hlc_2:'Azul', hlc_3:'Rosa',
     bndYes:'Esta voz resalta cada palabra.', bndNo:'Esta voz no indica qué palabra lee: con «Natural» se resaltará la frase entera. Para resaltar palabra por palabra, elige «Palabra a palabra».',
-    noVoiceToast:'Este ordenador no tiene voz en {lang}.', langName_ca:'catalán', langName_es:'castellano',
+    noVoiceToast:'Este aparato no tiene voz en {lang}.', langName_ca:'catalán', langName_es:'castellano',
     nothingToRead:'Todavía no hay nada que leer.', listen:'Escuchar',
     lkName:'El nombre («eme»)', lkSound:'El sonido grabado (/m/)', tkSay:'La dice', tkSpell:'La deletrea y después la dice',
     spell:'Deletrear', spellTip:'Dice el sonido de cada letra, resaltándola, y después la palabra entera',
@@ -671,11 +683,12 @@ const I18N = {
     sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
     tagline:'Escribir y leer con pictogramas',
+    tools:'Formato', toolsTip:'Mostrar u ocultar las herramientas de formato y de pictogramas',
     lock:'Bloquear', lockTip:'Bloquear la pantalla para el alumno: pantalla completa y sin la barra de botones. Para desbloquear, pulsa el candado 7 veces seguidas.',
     unlockTip:'Para desbloquear, pulsa el candado 7 veces seguidas', fullTip:'Pantalla completa', unlocked:'Pantalla desbloqueada.',
     tagDownloaded:'descargada · sin internet', dlNow:'Descargarla',
-    noVoiceDl_ca:'Este ordenador no tiene ninguna voz en catalán. Descarga aquí debajo la voz gratuita Ona: solo hay que hacerlo una vez.',
-    noVoiceDl_es:'Este ordenador no tiene ninguna voz en castellano. Descarga aquí debajo la voz gratuita Sharvard: solo hay que hacerlo una vez.',
+    noVoiceDl_ca:'Este aparato no tiene ninguna voz en catalán. Descarga aquí debajo la voz gratuita Ona: solo hay que hacerlo una vez.',
+    noVoiceDl_es:'Este aparato no tiene ninguna voz en castellano. Descarga aquí debajo la voz gratuita Sharvard: solo hay que hacerlo una vez.',
     pvGet_ca:'Descargar la voz catalana gratuita Ona (unos {mb} MB)', pvGet_es:'Descargar la voz castellana gratuita Sharvard, de mujer y de hombre (unos {mb} MB)',
     pvNote:'Solo hay que hacerlo una vez en este ordenador y navegador. Después funciona sin internet y el texto no sale del ordenador.',
     pvProgress:'Descargando… {a} MB de {b} MB', pvReady:'Voz {v} descargada: funciona sin internet.', pvRemove:'Borrarla',
@@ -2002,7 +2015,7 @@ function pvUtter(text, lang, v, h = {}){
       const {pcm, sr, groups} = await pvSynth(lang, text, v.piper.spk);
       clearTimeout(slow);
       if(my !== PV.tok) return done();
-      const ctx = PV.ctx || (PV.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      const ctx = actx();
       if(ctx.state === 'suspended'){ try{ await ctx.resume(); }catch(e){} }
       if(my !== PV.tok) return done();
       const buf = ctx.createBuffer(1, Math.max(1, pcm.length), sr); buf.getChannelData(0).set(pcm);
@@ -2148,7 +2161,10 @@ function setStudent(on){ VS.student = !!on; saveVS(); applyVoiceUI(); toast(t(on
 // els botons de la mestra. Es desbloqueja prement el cadenat 7 vegades seguides (menys d'1,5 s entre tocs).
 const LOCK = {taps:0, last:0, timer:null, N:7, GAP:1500};
 function isLocked(){ return document.body.classList.contains('locked'); }
-function goFull(){ try{ const r = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if(r && r.catch) r.catch(() => {}); }catch(e){} }
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+const fsOK = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+function goFull(){ const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen;
+  try{ const r = f && f.call(el); if(r && r.catch) r.catch(() => {}); }catch(e){} }
 function setLocked(on, quiet){
   document.body.classList.toggle('locked', !!on); $('#lockBar').hidden = !on; LS.set('locked', !!on);
   LOCK.taps = 0; $('#lockDots').textContent = '';
@@ -2158,12 +2174,12 @@ function setLocked(on, quiet){
     if(!quiet) goFull();
     if(!S.editor) startCompose(doc.blocks.length); else focusEditor();
   } else {
-    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+    try{ if(fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); }catch(e){}
     if(!quiet) toast(t('unlocked'));
   }
   updateFullBtn(); updateToolbar();
 }
-function updateFullBtn(){ document.body.classList.toggle('is-full', !!document.fullscreenElement); }
+function updateFullBtn(){ document.body.classList.toggle('is-full', !!fsEl() || !fsOK()); }
 function unlockTap(){
   const now = performance.now();
   LOCK.taps = now - LOCK.last < LOCK.GAP ? LOCK.taps + 1 : 1; LOCK.last = now;
@@ -2188,7 +2204,7 @@ const SOUNDS = {
 };
 const SND = {CACHE:'pictoescriu-sons-1', KEY:'https://pictoescriu.local/sons/', have:{ca:new Set(), es:new Set()}, dec:new Map(), src:null, done:null, told:false};
 const sndUrl = (lang, k) => SND.KEY + lang + '/' + k;
-const actx = () => PV.ctx || (PV.ctx = new (window.AudioContext || window.webkitAudioContext)());
+const actx = () => { if(!PV.ctx){ try{ if(navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){} PV.ctx = new (window.AudioContext || window.webkitAudioContext)(); } return PV.ctx; };
 // Divideix una paraula en lletres o grups de lletres amb el so de cadascun (null: no sona, com la h)
 function spellUnits(word, lang){
   const w = String(word || '').replace(/[’`´]/g, "'"), lw = w.toLocaleLowerCase(lang), out = [];
@@ -2677,6 +2693,13 @@ $('#bUnlock').onclick = unlockTap;
 $('#bFull').addEventListener('pointerdown', e => e.preventDefault());
 $('#bFull').onclick = goFull;
 document.addEventListener('fullscreenchange', updateFullBtn);
+document.addEventListener('webkitfullscreenchange', updateFullBtn);
+$('#bTools').onclick = () => { const on = document.body.classList.toggle('tools-open'); $('#bTools').setAttribute('aria-expanded', String(on)); };
+// iPhone i iPad: sense zoom automàtic en tocar per escriure (el zoom amb dos dits continua funcionant)
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if(IOS){ const vp = document.querySelector('meta[name=viewport]'); if(vp) vp.content = 'width=device-width, initial-scale=1, maximum-scale=1'; }
+// En pantalles tàctils, si en tocar el full el teclat no s'ha obert, es torna a intentar amb el «clic»
+stack.addEventListener('click', e => { if(S.editor && document.activeElement !== edInput && e.target.closest('.page') && !e.target.closest('.sheet-head')) focusEditor(); });
 // Llegir i el mode alumne no treuen el cursor de l'editor: l'alumne pot continuar escrivint
 ['#bPlay', '#bPlayBig', '#bStudent'].forEach(s => $(s).addEventListener('pointerdown', e => e.preventDefault()));
 sndIndex();
