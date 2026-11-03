@@ -21,6 +21,7 @@ Aplicació web per escriure frases i textos amb **pictogrames d'ARASAAC**, en la
 - **Bloqueig de pantalla** per a l'alumne: pantalla completa sense la barra de botons; es desbloqueja prement el cadenat 7 vegades seguides.
 - Colors d'AREMI (blau marí i taronja), logo propi i pantalla d'inici.
 - **Imatges recordades:** la imatge o el pictograma triat per a una paraula surt sol el proper cop; es poden passar a un altre aparell amb un fitxer.
+- **Teclat virtual** QWERTY a la pantalla, de tres mides o estirable, amb el document sempre visible.
 - Interfície en català i castellà.
 
 ## Per a qui vulgui continuar el desenvolupament

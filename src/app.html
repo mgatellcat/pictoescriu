@@ -70,6 +70,28 @@ input[type=range]{width:96px;accent-color:var(--accent)}
 .topbar .row:first-child .sel-in{border-color:transparent}
 .brand svg{width:30px;height:30px}
 
+/* ---------- Teclat virtual ---------- */
+.vkb{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:35;background:#DDE2EA;border:1px solid #B9C1CE;border-bottom:0;border-radius:12px 12px 0 0;box-shadow:0 -6px 20px rgba(20,30,50,.18);padding:4px 8px 8px;--u:76px;max-width:100vw}
+.vkbar{display:flex;align-items:center;justify-content:center;gap:6px;height:30px;margin-bottom:4px;position:relative}
+.vkbar .btn{height:28px}
+.vksz button{padding:4px 10px}
+.vkh{position:absolute;top:-4px;width:26px;height:26px;cursor:nwse-resize;touch-action:none;border:3px solid #7C879A;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.vkh-l{left:-6px}
+.vkh-r{right:-6px;cursor:nesw-resize;border-left:0;border-right:3px solid #7C879A;border-radius:0 6px 0 0}
+.vkb.locked .vkh,.vkb.locked .vksz,.vkb.locked #vkClose{display:none}
+.vkeys{display:flex;flex-direction:column;gap:calc(var(--u) * .08)}
+.vkrow{display:flex;gap:calc(var(--u) * .08);justify-content:center}
+.vk{width:var(--u);height:var(--u);flex:none;border:1.5px solid #8C96A8;border-radius:2pt;background:#fff;color:#000;font:700 calc(var(--u) * .42) Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;touch-action:manipulation;user-select:none}
+.vk:active,.vk.down{background:#FFE36E}
+.vk.w15{width:calc(var(--u) * 1.5 + var(--u) * .04)}.vk.w2{width:calc(var(--u) * 2 + var(--u) * .08)}.vk.w5{width:calc(var(--u) * 5 + var(--u) * .32)}
+.vk.fn{background:#EEF1F6;font-size:calc(var(--u) * .22)}
+.vk.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+body.kbd-on .workspace{bottom:var(--kb-h,0px)}
+body.kbd-on .panel{bottom:var(--kb-h,0px)}
+body.kbd-on .zoombar{bottom:calc(var(--kb-h,0px) + 12px)}
+body.kbd-on .playfab{bottom:calc(var(--kb-h,0px) + 16px)}
+body.kbd-on.panel-open .workspace{bottom:var(--kb-h,0px)}
+
 /* ---------- Pantalla d'inici ---------- */
 .splash{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#24386A 0%,#2F4682 60%,#24386A 100%);cursor:pointer;transition:opacity .45s}
 .splash.out{opacity:0;pointer-events:none}
@@ -286,11 +308,12 @@ body.is-full #bFull{display:none}
   #bTools .t{display:inline}
 }
 /* La primera fila ha de cabre en una línia: a les pantalles més estretes, alguns botons només mostren la icona */
-@media (max-width:1599px){ #bUndo .t,#bRedo .t,#bCredits .t,#bVoice .t,#bLock .t{display:none} }
+@media (max-width:1799px){ #bKbd .t{display:none} }
+@media (max-width:1599px){ #bUndo .t,#bRedo .t,#bCredits .t,#bVoice .t,#bLock .t,#bHead .t{display:none} }
 @media (max-width:1365px){ .brand span,#bNew .t,#bOpen .t,#bSave .t{display:none} }
 @media (max-width:1180px){
   .btn .t{display:none}
-  .btn.next .t,.btn.primary .t,#bApplyAll .t,#bPlay .t{display:inline}
+  .btn.next .t,#bApplyAll .t,#bPlay .t{display:inline}
   .brand span{display:none}
 }
 @media (max-width:900px){
@@ -300,6 +323,8 @@ body.is-full #bFull{display:none}
   body.panel-open .playfab{right:16px;bottom:calc(46vh + 16px)}
   .btn.primary .t{display:none}
   .topbar .grp > svg.ic{display:none}
+  #sLang{max-width:76px}
+  .brand{display:none}
 }
 
 /* ---------- Print ---------- */
@@ -314,7 +339,7 @@ body.is-full #bFull{display:none}
   .page-inner{bottom:14.6mm}
   .blk.sel{outline:none;background:none;box-shadow:none}
   .blk.speaking,.lbl .spell-on{background:none!important;box-shadow:none!important}
-  .playfab,.lockbar,.splash{display:none!important}
+  .playfab,.lockbar,.splash,.vkb{display:none!important}
   .blk.composing .lbl,.blk.editing .lbl{border-bottom:0}
   .pic.st-none,.pic.st-error,.pic.st-loading,.pic.st-idle{visibility:hidden}
   .blk.nores .pic .ph{display:none}
@@ -348,6 +373,7 @@ body.is-full #bFull{display:none}
       <button class="btn play" id="bPlay" aria-pressed="false"><span class="pi"></span><span class="t" id="bPlayL"></span></button>
       <button class="btn" id="bStudent" aria-pressed="false" data-tip="studentTip"><span data-icon="graduation-cap"></span><span class="t" data-i18n="student"></span></button>
       <button class="btn icon-only" id="bVoice" data-tip="voiceTip"><span data-icon="sliders-horizontal"></span><span class="t" data-i18n="voiceBtn"></span></button>
+      <button class="btn icon-only" id="bKbd" aria-pressed="false" data-tip="kbdTip"><span data-icon="keyboard"></span><span class="t" data-i18n="kbd"></span></button>
       <button class="btn icon-only" id="bLock" data-tip="lockTip"><span data-icon="lock"></span><span class="t" data-i18n="lock"></span></button>
     </div>
     <span class="busy" id="busy" hidden><span class="spin"></span><span id="busyTxt"></span></span>
@@ -402,6 +428,14 @@ body.is-full #bFull{display:none}
   <button class="btn" id="bFitWidth"><span data-i18n="zoomWidth"></span></button>
 </div>
 <button class="playfab no-print" id="bPlayBig" aria-pressed="false" hidden><span class="pi"></span><span class="sr" id="bPlayBigL"></span></button>
+<div class="vkb no-print" id="vkb" hidden aria-label="Teclat">
+  <div class="vkbar"><span class="vkh vkh-l" id="vkHl" title=""></span>
+    <div class="seg vksz" id="vkSize" role="group"><button data-v="s" data-i18n="kbS"></button><button data-v="m" data-i18n="kbM"></button><button data-v="l" data-i18n="kbL"></button></div>
+    <button class="btn icon-only" id="vkLock" aria-pressed="false"><span class="pi"></span></button>
+    <button class="btn icon-only" id="vkClose"><span data-icon="x"></span></button>
+    <span class="vkh vkh-r" id="vkHr" title=""></span></div>
+  <div class="vkeys" id="vkKeys"></div>
+</div>
 <div class="lockbar no-print" id="lockBar" hidden>
   <button class="lockbtn" id="bFull" data-tip="fullTip"><span data-icon="maximize"></span></button>
   <button class="lockbtn" id="bUnlock" data-tip="unlockTip"><span data-icon="lock"></span></button>
@@ -509,7 +543,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.5';
+const VERSION = '0.10.0';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -603,6 +637,8 @@ const I18N = {
     sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
     tagline:'Escriure i llegir amb pictogrames',
+    kbd:'Teclat', kbdTip:'Mostrar o amagar el teclat a la pantalla', kbS:'Petita', kbM:'Mitjana', kbL:'Gran', kbDel:'Esborrar', kbShift:'Maj', kbCaps:'Bloq Maj', kbSpace:'Espai', kbEnter:'Retorn',
+    kbLockSz:'Fixar la mida del teclat', kbUnlockSz:'Deixar canviar la mida del teclat',
     memNote:'Imatge recordada per a «{w}»: sortirà sola cada vegada que s\'escrigui. Si en tries una altra, es recordarà la nova.', memForget:'Oblidar', memList:'Imatges recordades…',
     memForgot:'«{w}» ja no té imatge recordada.', memTitle:'Imatges recordades', memHow:'Quan poses una imatge pròpia o tries un pictograma a mà, es recorda per a aquella paraula i surt sola el proper cop. Es guarden en aquest aparell (també funcionen sense internet). Per passar-les a un altre aparell, desa-les en un fitxer i obre\'l a l\'altre aparell.',
     memNone:'Encara no hi ha cap imatge recordada.', memExport:'Desar en un fitxer', memImport:'Obrir un fitxer d\'imatges', memExported:'Imatges desades al fitxer «imatges-pictoescriu.json».', memImported:'S\'han afegit {n} imatges recordades.', memBadFile:'Aquest fitxer no és d\'imatges recordades de PictoEscriu.',
@@ -702,6 +738,8 @@ const I18N = {
     sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
     tagline:'Escribir y leer con pictogramas',
+    kbd:'Teclado', kbdTip:'Mostrar u ocultar el teclado en la pantalla', kbS:'Pequeña', kbM:'Mediana', kbL:'Grande', kbDel:'Borrar', kbShift:'Mayús', kbCaps:'Bloq Mayús', kbSpace:'Espacio', kbEnter:'Intro',
+    kbLockSz:'Fijar el tamaño del teclado', kbUnlockSz:'Dejar cambiar el tamaño del teclado',
     memNote:'Imagen recordada para «{w}»: saldrá sola cada vez que se escriba. Si eliges otra, se recordará la nueva.', memForget:'Olvidar', memList:'Imágenes recordadas…',
     memForgot:'«{w}» ya no tiene imagen recordada.', memTitle:'Imágenes recordadas', memHow:'Cuando pones una imagen propia o eliges un pictograma a mano, se recuerda para esa palabra y sale sola la próxima vez. Se guardan en este aparato (también funcionan sin internet). Para pasarlas a otro aparato, guárdalas en un archivo y ábrelo en el otro aparato.',
     memNone:'Todavía no hay ninguna imagen recordada.', memExport:'Guardar en un archivo', memImport:'Abrir un archivo de imágenes', memExported:'Imágenes guardadas en el archivo «imatges-pictoescriu.json».', memImported:'Se han añadido {n} imágenes recordadas.', memBadFile:'Este archivo no es de imágenes recordadas de PictoEscriu.',
@@ -2612,6 +2650,97 @@ function openVoiceDialog(){
   if(dl){ dl.scrollIntoView({block:'center'}); dl.focus(); } else ov.querySelector('#vdStudent').focus();
 }
 
+/* ================= Teclat virtual ================= */
+// QWERTY a la part de baix; el document queda sempre visible a sobre. Escriu igual que el teclat de l'ordinador
+// (pictogrames, veu del mode alumne...). Mida: Petita, Mitjana o Gran, o estirant les cantonades; el cadenat la fixa.
+const KB = {st:Object.assign({on:false, size:'m', u:null, locked:false}, LS.get('kbd', {})), shift:false, caps:false, acc:false};
+const KB_U = {s:57, m:76, l:106};   // tecla d'1,5, 2 i 2,8 cm
+const kbSave = () => LS.set('kbd', KB.st);
+function kbRows(){
+  const L = S.lang === 'es' ? 'es' : 'ca';
+  const r1 = KB.acc ? (L === 'es' ? 'á é í ó ú ü ñ ¿ ¡ ?' : 'à è é í ï ò ó ú ü ·') : 'q w e r t y u i o p';
+  const r2 = KB.acc ? "! ? : ; ' - ( ) « »" : 'a s d f g h j k l ' + (L === 'es' ? 'ñ' : 'ç');
+  return [
+    [...'1234567890'.split('').map(c => ({c})), {k:'Backspace', w:'w2', fn:true, lab:t('kbDel')}],
+    r1.split(' ').map(c => ({c})),
+    r2.split(' ').map(c => ({c})),
+    [{k:'Shift', w:'w15', fn:true, lab:'⇧ ' + t('kbShift'), on:KB.shift}, ...'z x c v b n m , .'.split(' ').map(c => ({c}))],
+    [{k:'Caps', w:'w15', fn:true, lab:t('kbCaps'), on:KB.caps}, {k:'Acc', w:'w15', fn:true, lab:KB.acc ? 'abc' : 'À É…', on:KB.acc}, {k:' ', w:'w5', fn:true, lab:t('kbSpace')}, {k:'Enter', w:'w2', fn:true, lab:t('kbEnter') + ' ↵'}]
+  ];
+}
+function kbRender(){
+  const up = KB.shift !== KB.caps, L = S.lang;
+  $('#vkKeys').innerHTML = kbRows().map(r => `<div class="vkrow">${r.map(k => { const c = k.c != null ? (up ? k.c.toLocaleUpperCase(L) : k.c) : null;
+    return `<button class="vk${k.w ? ' ' + k.w : ''}${k.fn ? ' fn' : ''}${k.on ? ' on' : ''}" data-k="${esc(k.k || k.c)}"${k.on ? ' aria-pressed="true"' : ''}>${esc(c != null ? c : k.lab)}</button>`; }).join('')}</div>`).join('');
+  const vk = $('#vkb'); vk.classList.toggle('locked', !!KB.st.locked);
+  $('#vkLock').setAttribute('aria-pressed', String(!!KB.st.locked)); $('#vkLock').title = t(KB.st.locked ? 'kbUnlockSz' : 'kbLockSz');
+  const pi = $('#vkLock .pi'), ic = KB.st.locked ? 'lock' : 'lock-open'; if(pi.dataset.k !== ic){ pi.dataset.k = ic; pi.innerHTML = icon(ic); }
+  $('#vkSize').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(!KB.st.u && KB.st.size === b.dataset.v)));
+  kbFit();
+}
+// Mida de la tecla: la triada, però mai més ampla que la pantalla (12 tecles i mitja d'amplada) ni més alta que la meitat
+function kbFit(){
+  const want = KB.st.u || KB_U[KB.st.size] || KB_U.m;
+  const maxW = (innerWidth - 24) / (12 * 1.08 + .2), maxH = (innerHeight * .55 - 44) / (5 * 1.08);
+  const u = Math.max(30, Math.min(want, maxW, maxH));
+  $('#vkb').style.setProperty('--u', u.toFixed(1) + 'px');
+  requestAnimationFrame(() => document.documentElement.style.setProperty('--kb-h', (KB.st.on ? $('#vkb').offsetHeight : 0) + 'px'));
+}
+function kbShow(on){
+  KB.st.on = !!on; kbSave();
+  $('#vkb').hidden = !on; document.body.classList.toggle('kbd-on', !!on); $('#bKbd').setAttribute('aria-pressed', String(!!on));
+  edInput.inputMode = on ? 'none' : '';   // a la tauleta, que no surti el teclat del sistema
+  if(on){ kbRender(); if(!S.editor) startCompose(doc.blocks.length); else focusEditor(); }
+  else document.documentElement.style.setProperty('--kb-h', '0px');
+}
+// Escriu un caràcter on hi ha el cursor (document, o el camp NOM/DATA si és el que està actiu)
+function kbInsert(ch){
+  const a = document.activeElement;
+  const fld = a && a !== edInput && a.matches && a.matches('input[type=text]:not([readonly]), input:not([type]), textarea') ? a : null;
+  if(!fld && !S.editor) startCompose(doc.blocks.length);
+  const el = fld || edInput; if(!fld) focusEditor();
+  const st = el.selectionStart ?? el.value.length, en = el.selectionEnd ?? st;
+  el.setRangeText(ch, st, en, 'end');
+  el.dispatchEvent(new InputEvent('input', {inputType:'insertText', data:ch, bubbles:true}));
+}
+function kbKey(k){
+  hideSplash();
+  if(k === 'Shift'){ KB.shift = !KB.shift; kbRender(); return; }
+  if(k === 'Caps'){ KB.caps = !KB.caps; KB.shift = false; kbRender(); return; }
+  if(k === 'Acc'){ KB.acc = !KB.acc; kbRender(); return; }
+  const a = document.activeElement, fld = a && a !== edInput && a.matches && a.matches('input[type=text], input:not([type]), textarea') ? a : null;
+  if(k === 'Backspace' || k === 'Enter'){
+    if(fld){ if(k === 'Enter'){ fld.blur(); return; } const p = fld.selectionStart; if(p > 0){ fld.setRangeText('', p - 1, p, 'end'); fld.dispatchEvent(new InputEvent('input', {inputType:'deleteContentBackward', bubbles:true})); } return; }
+    if(!S.editor) startCompose(doc.blocks.length);
+    focusEditor();
+    const p = edInput.selectionStart, v = edInput.value;
+    if(k === 'Backspace' && v && p > 0){ edInput.setRangeText('', p - 1, p, 'end'); edInput.dispatchEvent(new InputEvent('input', {inputType:'deleteContentBackward', bubbles:true})); return; }
+    edInput.dispatchEvent(new KeyboardEvent('keydown', {key:k, bubbles:true, cancelable:true}));
+    return;
+  }
+  const up = KB.shift !== KB.caps, ch = k === ' ' ? ' ' : (up ? k.toLocaleUpperCase(S.lang) : k);
+  kbInsert(ch);
+  if(KB.shift){ KB.shift = false; kbRender(); }
+}
+$('#vkKeys').addEventListener('pointerdown', e => { e.preventDefault(); const b = e.target.closest('.vk'); if(b){ b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 160); } });
+$('#vkKeys').addEventListener('click', e => { const b = e.target.closest('.vk'); if(b) kbKey(b.dataset.k); });
+$('#vkb').addEventListener('pointerdown', e => { if(!e.target.closest('.vkh')) e.preventDefault(); });
+$('#bKbd').addEventListener('pointerdown', e => e.preventDefault());
+$('#bKbd').onclick = () => kbShow(!KB.st.on);
+$('#vkClose').onclick = () => kbShow(false);
+$('#vkLock').onclick = () => { KB.st.locked = !KB.st.locked; kbSave(); kbRender(); };
+$('#vkSize').onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ KB.st.size = b.dataset.v; KB.st.u = null; kbSave(); kbRender(); } };
+// Estirar per les cantonades: la mida de les tecles segueix l'amplada o l'alçada que es demana
+['#vkHl', '#vkHr'].forEach((sel, i) => $(sel).addEventListener('pointerdown', e => {
+  if(KB.st.locked) return; e.preventDefault(); const h = e.currentTarget; h.setPointerCapture(e.pointerId);
+  const r0 = $('#vkb').getBoundingClientRect(), u0 = parseFloat(getComputedStyle($('#vkb')).getPropertyValue('--u')), x0 = e.clientX, y0 = e.clientY;
+  const move = ev => { const dx = (ev.clientX - x0) * (i ? 1 : -1) * 2, dy = y0 - ev.clientY;
+    const k = Math.max((r0.width + dx) / r0.width, (r0.height + dy) / r0.height); KB.st.u = Math.round(Math.max(30, u0 * k)); kbFit(); };
+  const end = () => { h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', end); h.removeEventListener('pointercancel', end); kbSave(); kbRender(); };
+  h.addEventListener('pointermove', move); h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
+}));
+addEventListener('resize', () => { if(KB.st.on) kbFit(); });
+
 /* ================= Print ================= */
 async function doPrint(){
   commitEditor(true); deselect(); paginate(); stopSpeech();
@@ -2750,6 +2879,7 @@ function applyI18n(){
   $('#pCats').dataset.k = '';
   updateToolbar(); updatePanel(); updatePlayBtn();
   if(voiceDlg) voiceDlg.render();
+  if(KB.st.on) kbRender();
 }
 
 /* ================= Wiring ================= */
@@ -2845,7 +2975,7 @@ fontsReady.then(function boot(){
   if(hasContent(prev)) toast(t('blankStart'), {action:{label:t('recoverLast'), fn:() => { commitEditor(true); pushUndo(); S.selectedId = null; restore(prev); startCompose(doc.blocks.length); toast(t('recovered')); }}, timeout:15000});
   syncHeaderInputs();
   const z = LS.get('zoom', null);
-  requestAnimationFrame(() => { if(z) setZoom(z); else fit('page'); startCompose(doc.blocks.length); if(isLocked()) setLocked(true, true); });
+  requestAnimationFrame(() => { if(z) setZoom(z); else fit('page'); startCompose(doc.blocks.length); if(isLocked()) setLocked(true, true); if(KB.st.on) kbShow(true); });
 });
 </script>
 </body>
