@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.5** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.10.0** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -15,6 +15,7 @@ Estat actual: **versió 0.9.5** (3 de novembre de 2026). El número de versió s
 - La 0.9.3 corregeix la clau Fitzgerald, afegeix «Picto a sobre de la paraula» i obre sempre amb un document en blanc (apartat 17).
 - La 0.9.4 troba el pictograma dels femenins i plurals en masculí: verda → verd (apartat 3).
 - La 0.9.5 afegeix les imatges recordades (apartat 18).
+- La 0.10.0 afegeix el teclat virtual (apartat 19).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -227,4 +228,33 @@ Proposta de la mestra: si una paraula no té pictograma i s'hi posa una imatge, 
 - **Canviar-la:** si es tria una altra imatge o un altre pictograma, es recorda el nou. Amb **«Oblidar»** (panell) es torna a la cerca d'ARASAAC. «Treure la imatge» també oblida la imatge pròpia.
 - **Panell:** avís «Imatge recordada per a «…»» i botó **«Imatges recordades…»**, amb la llista de totes les paraules, per esborrar-ne, **desar-les en un fitxer** (`imatges-pictoescriu.json`) i **obrir-les en un altre aparell**.
 - Es guarden al navegador (Cache Storage). Funcionen sense internet. **Els documents ja fets no canvien**: només afecta les paraules que s'escriuen de nou (regla 1).
+
+## 19. Teclat virtual (versió 0.10.0, 3/11/2026)
+Petició de la mestra:
+- teclat QWERTY amb les tecles una mica separades, quadrades i amb les cantonades arrodonides (2 punts), en Arial negreta;
+- números, Retorn, Esborrar, Majúscula, Majúscula fixa, Espai, punt i coma;
+- el document sempre visible;
+- la mida es pot canviar estirant les cantonades i es pot fixar.
+
+Mida: proposta acceptada (Petita, Mitjana o Gran).
+- **Botó «Teclat»** a la barra. El teclat surt a baix, centrat, i la zona del document s'escurça perquè **no el tapi mai**. També funciona amb la pantalla bloquejada.
+- **Tecles:**
+  - 1 a 0 i **Esborrar**;
+  - Q a P;
+  - A a L i **Ç** (en castellà, **Ñ**);
+  - **Maj** (només la lletra següent), Z a M, **coma** i **punt**;
+  - **Bloq Maj** (majúscules fixes, amb la tecla il·luminada), **À É…**, **Espai** i **Retorn**.
+- La tecla **«À É…»** canvia les dues primeres files per lletres accentuades i signes:
+  - en català: à è é í ï ò ó ú ü i el punt volat;
+  - en castellà: á é í ó ú ü ñ ¿ ¡ ?;
+  - a la fila de sota, ! ? : ; ' - ( ) « ».
+- Escriu exactament com el teclat de l'ordinador: pictogrames, esborrar com en un processador de textos i veu del mode alumne. També escriu als camps NOM i DATA si hi ha el cursor.
+- A la tauleta, amb el teclat obert no surt el teclat del sistema.
+- **Mides:** Petita (tecla d'1,5 cm, ratolí o bona motricitat fina), **Mitjana (2 cm, per defecte)** i Gran (2,8 cm, seguidor ocular o dificultats motrius greus). També es pot **estirar per les cantonades** de dalt.
+  - El teclat no passa mai de l'amplada de la pantalla ni de la meitat de l'alçada (aprox.), perquè el document es continuï veient. En pantalles petites, «Gran» queda limitada.
+  - El **cadenat** fixa la mida: amaga les cantonades, els botons de mida i el botó de tancar.
+  - Es recorda en cada aparell (`pictoescriu.kbd`).
+- Amb el seguidor ocular funciona amb el clic del programa pont (per exemple, Tobii amb clic per permanència).
+- **Barra superior:** per fer-hi lloc, «Capçalera» només mostra la icona per sota de 1600 px, i «Exportar PDF» i «Imprimir», per sota de 1180 px. Per sota de 900 px s'amaga el logo petit.
+- **Pendent / idees:** teclat reduït amb tecles més grans (menys tecles o per freqüència), temps de mirada propi i pas per tecles amb commutador (amb les activitats per a commutador).
 

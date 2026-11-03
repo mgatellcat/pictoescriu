@@ -355,7 +355,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.5/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.10\.0/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -746,7 +746,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.5/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.10\.0/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -781,6 +781,38 @@ let offline = false; const hits = [];
     const tp = await browser.newPage({viewport:{width:w, height:900}}); await tp.goto('file://' + APP); await tp.waitForTimeout(400);
     const o = await tbOver(tp); ok(`TAULETA ${w} px: cap botó fora de la pantalla`, o === '', o); await tp.close();
   }
+
+  // ================= Teclat virtual =================
+  const pk = await ctx.newPage(); pk.on('pageerror', e => errors.push('teclat ' + e));
+  await pk.goto('file://' + APP); await pk.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-imatges-1'); }); await pk.reload(); await pk.waitForTimeout(2600);
+  const vk = async (...keys) => { for(const k of keys) await pk.click(`.vk[data-k="${k}"]`); };
+  const kwords = () => pk.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.kind === 'br' ? '¶' : b.text).join(' ') + ' [' + edInput.value + ']');
+  await pk.click('#bKbd'); await pk.waitForTimeout(300);
+  let KV = await pk.evaluate(() => ({on:!document.querySelector('#vkb').hidden && document.body.classList.contains('kbd-on'), im:edInput.inputMode, ws:document.querySelector('#ws').getBoundingClientRect().bottom, kb:document.querySelector('#vkb').getBoundingClientRect().top, keys:document.querySelectorAll('.vk').length, font:getComputedStyle(document.querySelector('.vk[data-k="q"]')).fontFamily + ' ' + getComputedStyle(document.querySelector('.vk[data-k="q"]')).fontWeight, rad:getComputedStyle(document.querySelector('.vk[data-k="q"]')).borderTopLeftRadius}));
+  ok('TECLAT Es mostra a baix, el document queda a sobre sense tapar-lo i sense el teclat del sistema', KV.on && KV.im === 'none' && KV.ws <= KV.kb + 1 && KV.keys >= 45, JSON.stringify(KV));
+  ok('TECLAT Tecles en Arial negreta i cantonades arrodonides', /Arial/.test(KV.font) && /700/.test(KV.font) && /2\.6|2\.7/.test(KV.rad), KV.font + ' ' + KV.rad);
+  await vk('h', 'o', 'l', 'a', ' ', 'Shift', 'm', 'a', ' ', 'Caps', 'g', 'a', 't', 'Caps', ' ', '1', '2', ' ');
+  ok('TECLAT Lletres, espai, Majúscula (una lletra), Bloq Maj i números', (await kwords()) === 'hola Ma GAT 12 []', await kwords());
+  await vk('Acc', 'à', 'Acc', 'p', 'Backspace', 'Backspace', 'Enter', 'p', 'a', '.');
+  ok('TECLAT Accents, Esborrar, Retorn i punt', (await kwords()) === 'hola Ma GAT 12 ¶ pa. []', await kwords());
+  await vk('Backspace');
+  ok('TECLAT Esborrar també entra a la paraula anterior', (await kwords()).endsWith('[pa]') || (await kwords()).endsWith('pa []'), await kwords());
+  const uOf = () => pk.evaluate(() => parseFloat(getComputedStyle(document.querySelector('#vkb')).getPropertyValue('--u')));
+  await pk.click('#vkSize [data-v="s"]'); const uS = await uOf(); await pk.click('#vkSize [data-v="l"]'); const uL = await uOf(); await pk.click('#vkSize [data-v="m"]'); const uM = await uOf();
+  ok('TECLAT Mides Petita, Mitjana i Gran', uS < uM && uM <= uL && Math.round(uS) === 57, [uS, uM, uL].join(' < '));
+  const hb = await (await pk.$('#vkHr')).boundingBox(); await pk.mouse.move(hb.x + 10, hb.y + 10); await pk.mouse.down(); await pk.mouse.move(hb.x + 10, hb.y - 60, {steps:5}); await pk.mouse.up();
+  const uD = await uOf();
+  ok('TECLAT Es pot fer més gran estirant la cantonada', uD > uM, uM + ' → ' + uD);
+  await pk.click('#vkLock');
+  KV = await pk.evaluate(() => ({h:getComputedStyle(document.querySelector('#vkHr')).display, sz:getComputedStyle(document.querySelector('#vkSize')).display, st:JSON.parse(localStorage.getItem('pictoescriu.kbd'))}));
+  ok('TECLAT El cadenat fixa la mida (no es pot estirar ni canviar)', KV.h === 'none' && KV.sz === 'none' && KV.st.locked && KV.st.on, JSON.stringify(KV));
+  await pk.reload(); await pk.waitForTimeout(2800);
+  ok('TECLAT Es recorda obert, amb la mida fixada', await pk.evaluate(() => !document.querySelector('#vkb').hidden && document.querySelector('#vkb').classList.contains('locked')));
+  await pk.click('#hName'); await vk('Shift', 'p', 'a', 'u');
+  ok('TECLAT També escriu al camp NOM', (await pk.inputValue('#hName')) === 'Pau', await pk.inputValue('#hName'));
+  await pk.click('#vkLock'); await pk.click('#vkClose');
+  ok('TECLAT Es pot amagar', await pk.evaluate(() => document.querySelector('#vkb').hidden && !document.body.classList.contains('kbd-on') && edInput.inputMode === ''));
+  await pk.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 
