@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.4** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.5** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -14,6 +14,7 @@ Estat actual: **versió 0.9.4** (3 de novembre de 2026). El número de versió s
 - La 0.9.2 fa que funcioni bé a mòbils i tauletes (apartat 16).
 - La 0.9.3 corregeix la clau Fitzgerald, afegeix «Picto a sobre de la paraula» i obre sempre amb un document en blanc (apartat 17).
 - La 0.9.4 troba el pictograma dels femenins i plurals en masculí: verda → verd (apartat 3).
+- La 0.9.5 afegeix les imatges recordades (apartat 18).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -218,4 +219,12 @@ Decisió de la mestra: «amb iPhone no funciona; també hauria de funcionar amb 
 - **En obrir, sempre un document en blanc** (decisió de la mestra). Abans s'obria l'últim esborrany.
   - L'últim document es guarda a part i en obrir surt l'avís «Document nou en blanc», amb el botó **«Recuperar l'últim»** (15 segons). El document guardat a part només es reemplaça quan se n'ha escrit un altre.
   - Es mantenen els ajustos dels pictogrames (mida, clau, posició, «Amb text»). La resta (lletra, capçalera…) torna als valors per defecte, com amb «Nou».
+
+## 18. Imatges recordades (versió 0.9.5, 3/11/2026)
+Proposta de la mestra: si una paraula no té pictograma i s'hi posa una imatge, que la propera vegada surti sola, però que es pugui canviar. Opció triada: **es recorda sola, a cada aparell, i es passa a altres aparells amb un fitxer** (no al núvol, per privacitat: hi pot haver fotos de l'alumnat).
+- **Què es recorda:** una imatge pròpia (pujada, enganxada o de Wikimedia), o un pictograma d'ARASAAC triat a mà («Següent pictograma», les alternatives o «Cercar un altre pictograma»). La propera vegada que s'escriu la paraula, surt sola.
+- **Clau:** la paraula en minúscules i amb accents, separada per idioma («Marc», «MARC» i «marc» són la mateixa).
+- **Canviar-la:** si es tria una altra imatge o un altre pictograma, es recorda el nou. Amb **«Oblidar»** (panell) es torna a la cerca d'ARASAAC. «Treure la imatge» també oblida la imatge pròpia.
+- **Panell:** avís «Imatge recordada per a «…»» i botó **«Imatges recordades…»**, amb la llista de totes les paraules, per esborrar-ne, **desar-les en un fitxer** (`imatges-pictoescriu.json`) i **obrir-les en un altre aparell**.
+- Es guarden al navegador (Cache Storage). Funcionen sense internet. **Els documents ja fets no canvien**: només afecta les paraules que s'escriuen de nou (regla 1).
 

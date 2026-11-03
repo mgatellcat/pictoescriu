@@ -355,12 +355,12 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.4/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.5/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
   const pe = await ctx.newPage(); pe.on('pageerror', e => errors.push('esborrar ' + e));
-  await pe.goto('file://' + APP); await pe.evaluate(() => localStorage.clear()); await pe.reload(); await pe.waitForTimeout(500);
+  await pe.goto('file://' + APP); await pe.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-imatges-1'); }); await pe.reload(); await pe.waitForTimeout(500);
   await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);   // sempre amb un document nou (una altra pàgina pot haver desat un esborrany)
   const eState = () => pe.evaluate(() => ({ed:S.editor ? S.editor.mode : null, sel:S.selectedId, selBox:document.querySelectorAll('.blk.sel').length,
     words:doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.pictoId || '-')).join(' ')}));
@@ -425,6 +425,36 @@ let offline = false; const hits = [];
   const FM = await pe.evaluate(() => doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.picOff ? 'text' : b.pictoId || '?') + ':' + (b.cat || '')).join(' '));
   ok('PICTOS Femenins i plurals troben el pictograma en masculí (verda → verd)', /verda:4002:descriptius/.test(FM) && /verdes:4002/.test(FM) && /groga:4003/.test(FM) && /nova:4004/.test(FM) && /roja:4005/.test(FM), FM);
   ok('PICTOS El text escrit no canvia', await pe.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.text).join(' ')) === 'poma verda pomes verdes groga nova roja');
+  // Imatges recordades
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  await pe.keyboard.type('xyzzy poma ', {delay:20}); await eIdle(); await pe.waitForTimeout(200);
+  const blkId = t => pe.evaluate(t => doc.blocks.find(b => b.text === t && !b.composing).id, t);
+  await pe.click(`.blk[data-id="${await blkId('xyzzy')}"] .lbl`);
+  await pe.setInputFiles('#imgIn', path.join(FIX, '8001.png')); await pe.waitForFunction(() => doc.blocks.some(b => b.text === 'xyzzy' && b.own && b.own.src));
+  await pe.click(`.blk[data-id="${await blkId('poma')}"] .lbl`); await pe.click('#bNext'); await pe.waitForTimeout(150);
+  const memNote = await pe.evaluate(() => !document.querySelector('#pMem').hidden && document.querySelector('#pMem').textContent);
+  ok('RECORDADES Avís al panell en triar un pictograma', /Imatge recordada per a «poma»/.test(memNote || ''), String(memNote));
+  await pe.keyboard.press('Escape'); await pe.evaluate(() => startCompose(doc.blocks.length));
+  await pe.keyboard.type('XYZZY poma ', {delay:20}); await eIdle(); await pe.waitForTimeout(300);
+  let RM = await pe.evaluate(() => doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.own && b.own.src ? 'pròpia' : b.pictoId)).join(' '));
+  ok('RECORDADES La paraula torna a sortir amb la imatge pròpia i el pictograma triat (també en majúscules)', RM === 'xyzzy:pròpia poma:4002 XYZZY:pròpia poma:4002', RM);
+  await pe.click(`.blk[data-id="${await pe.evaluate(() => doc.blocks.filter(b => b.text === 'poma').pop().id)}"] .lbl`); await pe.click('#pMemForget'); await pe.keyboard.press('Escape');
+  await pe.evaluate(() => startCompose(doc.blocks.length)); await pe.keyboard.type('poma ', {delay:20}); await eIdle(); await pe.waitForTimeout(300);
+  RM = await pe.evaluate(() => doc.blocks.filter(b => b.text === 'poma').map(b => b.pictoId).join(','));
+  ok('RECORDADES «Oblidar» torna a la cerca d\'ARASAAC (els documents no canvien)', RM === '4002,4002,4001', RM);
+  await pe.click(`.blk[data-id="${await blkId('xyzzy')}"] .lbl`); await pe.click('#pMemList'); await pe.waitForSelector('#memOv');
+  const cards = await pe.$$eval('#memOv .memcard b', x => x.map(e => e.textContent).join(','));
+  const [dlm] = await Promise.all([pe.waitForEvent('download'), pe.click('#mdExport')]); const memFile = OUT + '/imatges.json'; await dlm.saveAs(memFile);
+  const mj = JSON.parse(fs.readFileSync(memFile, 'utf8'));
+  ok('RECORDADES Llista i fitxer per passar-les a un altre aparell', cards === 'xyzzy' && mj.kind === 'imatges' && mj.items.length === 1 && /^data:image\//.test(mj.items[0].own.src), cards + ' ' + mj.items.length);
+  await pe.click('#mdClose');
+  const pm = await ctx.newPage(); await pm.goto('file://' + APP); await pm.evaluate(async () => { localStorage.clear(); await caches.delete('pictoescriu-imatges-1'); }); await pm.reload(); await pm.waitForTimeout(2600);
+  await pm.keyboard.type('poma ', {delay:20}); await pm.waitForTimeout(800);
+  await pm.click(`.blk[data-id="${await pm.evaluate(() => doc.blocks.find(b => b.text === 'poma').id)}"] .lbl`); await pm.click('#pMemList');
+  await pm.setInputFiles('#memIn', memFile); await pm.waitForFunction(() => MEM.map.size === 1); await pm.click('#mdClose'); await pm.keyboard.press('Escape');
+  await pm.evaluate(() => startCompose(doc.blocks.length)); await pm.keyboard.type('xyzzy ', {delay:20}); await pm.waitForTimeout(300);
+  ok('RECORDADES Obrir el fitxer en un altre aparell', await pm.evaluate(() => { const b = doc.blocks.find(x => x.text === 'xyzzy'); return !!(b && b.own && b.own.src); }));
+  await pm.close();
   // Clau Fitzgerald i posició del pictograma
   await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
   await pe.keyboard.type('la nena menja ', {delay:20}); await eIdle(); await pe.waitForTimeout(200); await pe.keyboard.press('Escape');
@@ -716,7 +746,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.4/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.5/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));

@@ -230,6 +230,10 @@ body.panel-open .playfab{right:calc(var(--panel-w) + 24px)}
 .sndrow{display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:8px}
 .sndrow.has{background:#EAF6EC;border-color:#B9DFC0}
 .sndl{flex:1;min-width:0;font-size:14px}
+.memnote{background:#FFF4D6;color:#6B5200;border-radius:8px;padding:6px 10px}
+.memgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:50vh;overflow:auto}
+.memcard{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.memcard img{width:72px;height:72px;object-fit:contain}
 .btn.rec{background:var(--danger);color:#fff;border-color:var(--danger)}
 /* Pantalla bloquejada per a l'alumne: sense barres ni panell; es desbloqueja prement el cadenat 7 vegades seguides */
 body.locked .topbar,body.locked .panel,body.locked .zoombar{display:none!important}
@@ -460,6 +464,11 @@ body.is-full #bFull{display:none}
       <button class="btn outline" id="pPaste"><span data-icon="clipboard-paste"></span><span data-i18n="paste"></span></button>
       <button class="btn outline" id="pOwnOff" hidden><span data-icon="x"></span><span data-i18n="ownOff"></span></button>
     </div>
+    <p class="msg memnote" id="pMem" hidden></p>
+    <div class="stack-btns">
+      <button class="btn outline" id="pMemForget" hidden><span data-icon="trash-2"></span><span data-i18n="memForget"></span></button>
+      <button class="btn outline" id="pMemList"><span data-icon="layout-grid"></span><span data-i18n="memList"></span></button>
+    </div>
   </div>
 
   <div class="sec" id="secWord">
@@ -492,6 +501,7 @@ body.is-full #bFull{display:none}
 <div class="splash no-print" id="splash" aria-hidden="true"><div class="card"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#EB6B24"/><rect x="10.5" y="12.5" width="27" height="23" rx="4.5" fill="#fff"/><circle cx="18.5" cy="21.5" r="4.2" fill="#24386A"/><rect x="25.5" y="17.8" width="8.5" height="2.8" rx="1.4" fill="#24386A"/><rect x="25.5" y="23" width="6.2" height="2.8" rx="1.4" fill="#24386A"/><rect x="14" y="29" width="20" height="2.8" rx="1.4" fill="#EB6B24"/></svg><h1>Picto<span>Escriu</span></h1><p data-i18n="tagline"></p><p class="v" id="splashV"></p></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <input type="file" id="sndIn" accept=".json,application/json" hidden>
+<input type="file" id="memIn" accept=".json,application/json" hidden>
 <input type="file" id="imgIn" accept="image/*" hidden>
 
 <script>
@@ -499,7 +509,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.4';
+const VERSION = '0.9.5';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -593,6 +603,9 @@ const I18N = {
     sndMicErr:'No s\'ha pogut fer servir el micròfon. Comprova que el navegador hi té permís.', sndNoStore:'Aquest navegador no pot gravar ni guardar sons.',
     sndNone:'Encara no hi ha sons gravats: es diran els noms de les lletres. Els pots gravar a «Veu».',
     tagline:'Escriure i llegir amb pictogrames',
+    memNote:'Imatge recordada per a «{w}»: sortirà sola cada vegada que s\'escrigui. Si en tries una altra, es recordarà la nova.', memForget:'Oblidar', memList:'Imatges recordades…',
+    memForgot:'«{w}» ja no té imatge recordada.', memTitle:'Imatges recordades', memHow:'Quan poses una imatge pròpia o tries un pictograma a mà, es recorda per a aquella paraula i surt sola el proper cop. Es guarden en aquest aparell (també funcionen sense internet). Per passar-les a un altre aparell, desa-les en un fitxer i obre\'l a l\'altre aparell.',
+    memNone:'Encara no hi ha cap imatge recordada.', memExport:'Desar en un fitxer', memImport:'Obrir un fitxer d\'imatges', memExported:'Imatges desades al fitxer «imatges-pictoescriu.json».', memImported:'S\'han afegit {n} imatges recordades.', memBadFile:'Aquest fitxer no és d\'imatges recordades de PictoEscriu.',
     blankStart:'Document nou en blanc.', recoverLast:'Recuperar l\'últim', recovered:'S\'ha recuperat l\'últim document.',
     tools:'Format', toolsTip:'Mostrar o amagar les eines de format i de pictogrames',
     lock:'Bloquejar', lockTip:'Bloquejar la pantalla per a l\'alumne: pantalla completa i sense la barra de botons. Per desbloquejar, prem el cadenat 7 vegades seguides.',
@@ -689,6 +702,9 @@ const I18N = {
     sndMicErr:'No se ha podido usar el micrófono. Comprueba que el navegador tiene permiso.', sndNoStore:'Este navegador no puede grabar ni guardar sonidos.',
     sndNone:'Todavía no hay sonidos grabados: se dirán los nombres de las letras. Los puedes grabar en «Voz».',
     tagline:'Escribir y leer con pictogramas',
+    memNote:'Imagen recordada para «{w}»: saldrá sola cada vez que se escriba. Si eliges otra, se recordará la nueva.', memForget:'Olvidar', memList:'Imágenes recordadas…',
+    memForgot:'«{w}» ya no tiene imagen recordada.', memTitle:'Imágenes recordadas', memHow:'Cuando pones una imagen propia o eliges un pictograma a mano, se recuerda para esa palabra y sale sola la próxima vez. Se guardan en este aparato (también funcionan sin internet). Para pasarlas a otro aparato, guárdalas en un archivo y ábrelo en el otro aparato.',
+    memNone:'Todavía no hay ninguna imagen recordada.', memExport:'Guardar en un archivo', memImport:'Abrir un archivo de imágenes', memExported:'Imágenes guardadas en el archivo «imatges-pictoescriu.json».', memImported:'Se han añadido {n} imágenes recordadas.', memBadFile:'Este archivo no es de imágenes recordadas de PictoEscriu.',
     blankStart:'Documento nuevo en blanco.', recoverLast:'Recuperar el último', recovered:'Se ha recuperado el último documento.',
     tools:'Formato', toolsTip:'Mostrar u ocultar las herramientas de formato y de pictogramas',
     lock:'Bloquear', lockTip:'Bloquear la pantalla para el alumno: pantalla completa y sin la barra de botones. Para desbloquear, pulsa el candado 7 veces seguidas.',
@@ -875,6 +891,7 @@ async function startSearch(b, q){
     // menys les gramaticals: articles, preposicions, conjuncions i nexes, pronoms febles i auxiliars. Aquestes queden només amb text,
     // sense «?» encara que ARASAAC no en tingui, i se'ls pot afegir després amb «Afegir pictograma».
     if(!cur.userPic){ cur.picOff = isFuncWord(used, lang, cur.text); cur.autoOff = cur.picOff; }
+    if(cur.memAfter){ cur.memAfter = false; if(list.length) memRemember(cur); }
   }catch(e){
     const cur = find(b.id); if(!cur || cur.searchSeq !== seq) return;
     cur.status = 'error'; noteNetError();
@@ -1237,6 +1254,7 @@ function finalizeWord(b){
   b.composing = false; b.text = applyCase(b.text);
   b.query = deriveQuery(b.text, S.lang);
   if(!b.query){ b.noSearch = true; b.status = 'none'; return; }
+  if(memApply(b)) return;
   if(b.searchedQuery === b.query && ['loading','ok','none'].includes(b.status)) return;
   startSearch(b, b.query);
 }
@@ -1501,12 +1519,13 @@ function cycle(b, d){
     b.idx = (b.idx + d + b.pictos.length) % b.pictos.length; b.pictoId = b.pictos[b.idx].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
     if(!b.catManual) b.cat = categorize(b.pictos[b.idx], b.usedQuery || b.searchedQuery, b.lang, b.text);
   });
+  memRemember(b);
 }
 function pickAlt(b, i){ mutate(() => { b.idx = i; b.pictoId = b.pictos[i].id; b.imgErr = false; b.picOff = false; b.userPic = true; b.own = null;
-  if(!b.catManual) b.cat = categorize(b.pictos[i], b.usedQuery || b.searchedQuery, b.lang, b.text); }); }
+  if(!b.catManual) b.cat = categorize(b.pictos[i], b.usedQuery || b.searchedQuery, b.lang, b.text); }); memRemember(b); }
 function searchOther(b, q){
   q = lower(q, S.lang); if(!q) return;
-  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; b.own = null; startSearch(b, q); renderAll(); scheduleSave();
+  pushUndo(); b.query = q; b.picOff = false; b.autoOff = false; b.userPic = true; b.noSearch = false; b.own = null; b.memAfter = true; startSearch(b, q); renderAll(); scheduleSave();
 }
 
 /* ================= Toolbar ================= */
@@ -1689,9 +1708,79 @@ async function toSquare(blob){
     return out;
   } finally { URL.revokeObjectURL(url); }
 }
+/* ================= Imatges recordades ================= */
+// Quan la mestra posa una imatge pròpia o tria a mà un pictograma d'ARASAAC, es recorda per a aquella paraula (en minúscules,
+// amb accents, separat per idioma) i surt sola cada vegada que s'escriu. Es guarda al navegador (funciona sense internet)
+// i es pot passar a un altre aparell amb un fitxer. Els documents desats no canvien.
+const MEM = {CACHE:'pictoescriu-imatges-1', KEY:'https://pictoescriu.local/imatges/', map:new Map()};
+const memWord = (text, lang) => lower(stripPunct(text || ''), lang);
+const memKey = (lang, w) => lang + '|' + w;
+async function memLoad(){
+  if(!pvCanStore()) return;
+  try{ const c = await caches.open(MEM.CACHE); for(const r of await c.keys()){ const e = await (await c.match(r)).json(); if(e && e.w && e.lang) MEM.map.set(memKey(e.lang, e.w), e); } }catch(e){}
+}
+function memGet(b){ const lang = b.lang || S.lang, w = memWord(b.text, lang); return w ? MEM.map.get(memKey(lang, w)) || null : null; }
+async function memPut(e){
+  MEM.map.set(memKey(e.lang, e.w), e);
+  try{ await (await caches.open(MEM.CACHE)).put(MEM.KEY + encodeURIComponent(memKey(e.lang, e.w)), new Response(JSON.stringify(e), {headers:{'Content-Type':'application/json'}})); }catch(err){}
+}
+async function memDel(lang, w){ MEM.map.delete(memKey(lang, w)); try{ await (await caches.open(MEM.CACHE)).delete(MEM.KEY + encodeURIComponent(memKey(lang, w))); }catch(e){} }
+function memRemember(b){
+  b = b && find(b.id); if(!b || b.kind !== 'word') return;
+  const lang = b.lang || S.lang, w = memWord(b.text, lang); if(!w) return;
+  if(hasOwn(b)) memPut({w, lang, own:b.own, cat:b.cat});
+  else if(b.status === 'ok' && b.pictoId != null && !b.picOff) memPut({w, lang, pid:b.pictoId, pictos:b.pictos, idx:b.idx, cat:b.cat, used:b.usedQuery || b.searchedQuery});
+  else return;
+  if(b.id === S.selectedId) updatePanel();
+}
+// En acabar d'escriure una paraula: si n'hi ha una de recordada, es posa directament
+function memApply(b){
+  const e = memGet(b); if(!e) return false;
+  if(e.own){
+    Object.assign(b, {own:{...e.own}, picOff:false, autoOff:false, userPic:true, imgErr:false});
+    if(!b.catManual && e.cat) b.cat = e.cat;
+    return false;   // es continua cercant a ARASAAC (sense canviar la imatge), per si després es vol triar un pictograma
+  }
+  const pictos = Array.isArray(e.pictos) && e.pictos.length ? e.pictos : [{id:e.pid, kw:[]}];
+  const idx = Math.max(0, pictos.findIndex(x => x.id === e.pid));
+  Object.assign(b, {pictos, idx, pictoId:e.pid, status:'ok', usedQuery:e.used || b.query, searchedQuery:b.query, approx:false, picOff:false, autoOff:false, userPic:true, imgErr:false, own:null});
+  if(!b.catManual && e.cat) b.cat = e.cat;
+  return true;
+}
+function openMemDialog(){
+  if($('#memOv')) return;
+  let note = '';
+  const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'memOv';
+  const render = () => {
+    const items = [...MEM.map.values()].sort((a, b) => a.w.localeCompare(b.w));
+    ov.innerHTML = `<div class="dialog voice" role="dialog" aria-modal="true" aria-labelledby="mdT"><h2 id="mdT">${esc(t('memTitle'))}</h2>
+      <p class="msg">${esc(t('memHow'))}</p>
+      ${items.length ? `<div class="memgrid">${items.map(e => `<div class="memcard"><img alt="" src="${esc(e.own ? e.own.src : IMG(e.pid, 300))}"><b>${esc(e.w)}</b><span class="msg">${e.lang === 'es' ? 'castellano' : 'català'}</span>
+        <button class="btn icon-only" data-del="${esc(memKey(e.lang, e.w))}" title="${esc(t('memForget'))}" aria-label="${esc(t('memForget'))}">${icon('trash-2')}</button></div>`).join('')}</div>` : `<p class="msg">${esc(t('memNone'))}</p>`}
+      <p class="msg" id="mdMsg">${esc(note)}</p>
+      <div class="acts"><button class="btn outline" id="mdExport"${items.length ? '' : ' disabled'}>${icon('save')}${esc(t('memExport'))}</button><button class="btn outline" id="mdImport">${icon('folder-open')}${esc(t('memImport'))}</button><button class="btn primary" id="mdClose">${esc(t('ok'))}</button></div></div>`;
+    ov.querySelectorAll('[data-del]').forEach(x => x.onclick = async () => { const [lang, w] = x.dataset.del.split(/\|(.*)/s); await memDel(lang, w); render(); updatePanel(); });
+    ov.querySelector('#mdExport').onclick = () => { downloadBlob(new Blob([JSON.stringify({app:'PictoEscriu', kind:'imatges', format:1, items:[...MEM.map.values()]})], {type:'application/json'}), 'imatges-pictoescriu.json'); note = t('memExported'); render(); };
+    ov.querySelector('#mdImport').onclick = () => $('#memIn').click();
+    ov.querySelector('#mdClose').onclick = close;
+  };
+  const close = () => { ov.remove(); $('#memIn').onchange = null; updatePanel(); };
+  $('#memIn').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if(!f) return;
+    const fr = new FileReader(); fr.onload = async () => {
+      try{ const d = JSON.parse(fr.result); if(!d || d.app !== 'PictoEscriu' || d.kind !== 'imatges' || !Array.isArray(d.items)) throw new Error('format');
+        let n = 0; for(const x of d.items){ if(x && x.w && (x.lang === 'ca' || x.lang === 'es') && ((x.own && /^data:image\//.test(String(x.own.src))) || Number.isFinite(x.pid))){ await memPut(x); n++; } }
+        note = t('memImported', {n}); }catch(err){ note = t('memBadFile'); }
+      render(); };
+    fr.readAsText(f); };
+  render();
+  ov.addEventListener('keydown', e => { if(e.key === 'Escape'){ e.stopPropagation(); close(); } });
+  ov.addEventListener('click', e => { if(e.target === ov) close(); });
+  document.body.appendChild(ov); ov.querySelector('#mdClose').focus();
+}
 function setOwn(b, own){
   mutate(() => { b.own = own; b.picOff = false; b.autoOff = false; b.userPic = true; b.imgErr = false;
     if(!b.catManual && (!b.cat || b.cat === 'misc') && b.status !== 'ok') b.cat = 'substantius'; });
+  memRemember(b);
   toast(t('ownAdded'));
 }
 async function ownFromBlob(b, blob, from, meta){
@@ -1703,6 +1792,8 @@ function updateOwnPanel(b){
   const q = $('#pWebQ'); if(document.activeElement !== q && q.dataset.for !== b.id){ q.dataset.for = b.id; q.value = deriveQuery(b.text, S.lang); }
   q.placeholder = t('searchPh');
   $('#pOwnOff').hidden = !(b.own && b.own.src);
+  const me = memGet(b); $('#pMem').hidden = !me; $('#pMemForget').hidden = !me;
+  if(me) $('#pMem').textContent = t('memNote', {w:me.w});
   const box = $('#pWeb'), w = S.web;
   const mine = w && w.id === b.id;
   $('#pWebMsg').textContent = !mine ? '' : w.loading ? t('webSearching') : w.error ? t('webError') : !w.list.length ? t('webNone', {q:w.q}) : t('webPick');
@@ -1738,7 +1829,9 @@ $('#pPaste').onclick = async () => {
     toast(t('pasteHint'));
   }catch(err){ toast(t('pasteHint')); }
 };
-$('#pOwnOff').onclick = () => { const b = selectedWord(); if(b) mutate(() => { b.own = null; }); };
+$('#pOwnOff').onclick = () => { const b = selectedWord(); if(!b) return; const e = memGet(b); if(e && e.own) memDel(e.lang, e.w); mutate(() => { b.own = null; }); };
+$('#pMemForget').onclick = async () => { const b = selectedWord(), e = b && memGet(b); if(e){ await memDel(e.lang, e.w); toast(t('memForgot', {w:e.w})); updatePanel(); } };
+$('#pMemList').onclick = openMemDialog;
 // Ctrl+V amb una imatge copiada i una paraula seleccionada
 document.addEventListener('paste', e => {
   const b = selectedWord(); if(!b || e.target === edInput) return;
@@ -2715,7 +2808,7 @@ if(IOS){ const vp = document.querySelector('meta[name=viewport]'); if(vp) vp.con
 stack.addEventListener('click', e => { if(S.editor && document.activeElement !== edInput && e.target.closest('.page') && !e.target.closest('.sheet-head')) focusEditor(); });
 // Llegir i el mode alumne no treuen el cursor de l'editor: l'alumne pot continuar escrivint
 ['#bPlay', '#bPlayBig', '#bStudent'].forEach(s => $(s).addEventListener('pointerdown', e => e.preventDefault()));
-sndIndex();
+sndIndex(); memLoad();
 pvCheck().then(() => { const lang = S.lang === 'es' ? 'es' : 'ca', v = pickVoice(lang);
   if(v && v.piper) setTimeout(() => pvSession(lang).catch(() => {}), 2500); });
 if(hasSynth()){ loadVoices(); const sy = synth();
