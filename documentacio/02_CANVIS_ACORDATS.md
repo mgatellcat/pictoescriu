@@ -104,7 +104,10 @@ Ordre de cerca, a `findPictos()`:
   - **Sons de les lletres gravats** per la mestra i la logopeda (també ny, ll, qu, gu, ix, tx, l·l…). Les veus sintètiques diuen el nom de la lletra, no el so.
   - **Lectura fonema a fonema** de com s'ha escrit una paraula i, després, **lectura global**.
   - ~~Veus descarregables~~: fet a la 0.7.0 (Ona i Sharvard). Més endavant, potser **Matxa** del Projecte Aina (més natural; accents central, nord-occidental i valencià; CC BY-NC; uns 140 MB).
-- ~~Colors i logo~~: fet a la 0.9.0 (apartat 15). **Pendent: el nom de l'eina** (la mestra n'ha demanat propostes).
+- ~~Colors i logo~~: fet a la 0.9.0 (apartat 15).
+- **Nom (3/11/2026):** «PictoEscriu» es manté si ningú més el fa servir. Comprovat a la web: no s'ha trobat cap altra eina amb aquest nom; n'hi ha una de semblant, el mètode «PictoEscritura / PictoEscriptura» de VoxPrima.
+- **Família d'aplicacions (pendent):** caldrà un nom de col·lecció amb sigles, com el de la UTAC, perquè hi haurà més aplicacions. Propostes: EICA, MIRA, PAS, ECA i AREMI Tec. Pendent que la mestra en triï un.
+- **Aplicacions noves previstes:** control amb la mirada, a partir de treball fet amb ChatGPT que la mestra ha d'importar, i activitats per a commutador (vegeu els documents 03, 04 i 05).
 - **Propostes a partir de LECAA Docs** (UTAC, UB): vegeu `06_ANALISI_LECAA_DOCS.md`. Pendents de triar.
 
 ## 12. Veu: lectura en veu alta i mode alumne (versions 0.6 i 0.7.0, 2 de novembre de 2026)
