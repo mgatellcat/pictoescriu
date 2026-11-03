@@ -4,7 +4,8 @@ const DIR = __dirname, FIX = path.join(DIR, 'fixtures'), APP = path.resolve(DIR,
 const OUT = process.env.OUT || path.resolve(DIR, '../test-output'); fs.mkdirSync(OUT, {recursive:true});
 const K = (w,t)=>({keyword:w,type:t});
 const DB = { ca:{ la:[[1001,'la',6]], nena:[[2001,'nena',2],[2002,'nena',2],[2003,'nena',2]], menjar:[[3001,'menjar',3],[3002,'menjar',3]],
-  una:[[1002,'una',6]], poma:[[4001,'poma',2],[4002,'poma',2],[4003,'poma',2],[4004,'poma',2],[4005,'poma',2]], gat:[[8001,'gat',2]], jo:[[2003,'jo',1]] },
+  una:[[1002,'una',6]], poma:[[4001,'poma',2],[4002,'poma',2],[4003,'poma',2],[4004,'poma',2],[4005,'poma',2]], gat:[[8001,'gat',2]], jo:[[2003,'jo',1]],
+    hola:[[2002,'hola',5]], 'sí':[[3002,'sí',5]], si:[[1002,'si',6]], es:[[1001,'es',6]] },
   es:{ la:[[1001,'la',6]], 'niña':[[5001,'niña',2]], comer:[[6001,'comer',3]], una:[[1002,'una',6]], manzana:[[7001,'manzana',2]] } };
 let offline = false; const hits = [];
 (async () => {
@@ -350,7 +351,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.9\.0/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.9\.1/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -395,6 +396,25 @@ let offline = false; const hits = [];
   await pe.click(`.blk[data-id="${xid}"] .lbl`); await pe.waitForTimeout(150); await pe.dblclick(`.blk[data-id="${xid}"] .lbl`); await pe.keyboard.press('Control+A'); await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace');
   E = await eState();
   ok('ESBORRAR Paraula sense pictograma buidada: el requadre buit desapareix', E.ed === 'compose' && E.selBox === 0 && E.words === 'la:1001 GAT:8001', JSON.stringify(E));
+  // El panell de la dreta no s'obre mentre s'esborra; després es continua escrivint
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  await pe.keyboard.type('la nena menja ', {delay:20}); await eIdle(); await pe.waitForTimeout(200);
+  await pe.evaluate(() => { window.__panel = 0; new MutationObserver(() => { if(document.body.classList.contains('panel-open')) window.__panel++; }).observe(document.body, {attributes:true, attributeFilter:['class']}); });
+  await pe.keyboard.press('Backspace'); await pe.keyboard.press('Backspace');
+  E = await eState();
+  ok('ESBORRAR Esborrant, el panell de la dreta no s\'obre ni hi ha cap paraula seleccionada', E.ed === 'edit' && !E.sel && E.selBox === 0 && /men:3001$/.test(E.words) && await pe.evaluate(() => window.__panel === 0 && document.querySelector('#panel').hidden), JSON.stringify(E));
+  await pe.keyboard.type('ja una poma ', {delay:20}); await eIdle(); await pe.waitForTimeout(200);
+  E = await eState();
+  ok('ESBORRAR Després d\'esborrar, l\'espai acaba la paraula i es continua escrivint (es conserva el pictograma)', E.ed === 'compose' && E.words === 'la:1001 nena:2001 menja:3001 una:1002 poma:4001' && await pe.evaluate(() => window.__panel === 0), JSON.stringify(E));
+  for(let i = 0; i < 12; i++) await pe.keyboard.press('Backspace');
+  ok('ESBORRAR Esborrant moltes paraules seguides el panell continua tancat', await pe.evaluate(() => window.__panel === 0 && !document.body.classList.contains('panel-open')));
+  // Pictogrames automàtics: totes les paraules menys les gramaticals
+  await pe.click('#bNew'); await pe.click('.overlay .btn.primary'); await pe.waitForTimeout(100);
+  await pe.keyboard.type('jo dic hola i sí, si vols. es diu i és ', {delay:20}); await eIdle(); await pe.waitForTimeout(300);
+  const PW = await pe.evaluate(() => doc.blocks.filter(b => b.kind === 'word' && !b.composing).map(b => b.text + ':' + (b.picOff ? 'text' : (b.pictoId ? 'picto' : '?'))).join(' '));
+  ok('PICTOS Pronoms, expressions i paraules amb contingut porten pictograma; articles, conjuncions i pronoms febles no', PW === 'jo:picto dic:? hola:picto i:text sí,:picto si:text vols.:? es:text diu:? i:text és:?', PW);
+  const cats = await pe.evaluate(() => ['jo', 'hola', 'sí,'].map(t => doc.blocks.find(b => b.text === t).cat).join(','));
+  ok('PICTOS Clau Fitzgerald: pronom groc, expressions roses', cats === 'persones,social,social', cats);
   await pe.close();
 
   // ================= Veu: lectura en veu alta i mode alumne =================
@@ -665,7 +685,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.0/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.9\.1/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));

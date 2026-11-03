@@ -2,7 +2,7 @@
 
 Aquest document recull tot el que s'ha decidit **després** de l'especificació original (`01_ESPECIFICACIO_ORIGINAL.md`). Quan hi ha contradicció, **preval aquest document**.
 
-Estat actual: **versió 0.9.0** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
+Estat actual: **versió 0.9.1** (3 de novembre de 2026). El número de versió surt a la finestra «Crèdits» (constant `VERSION` de `src/app.html`): cal augmentar-lo a cada versió nova.
 - La 0.5 es va construir i provar al xat de claude.ai entre el 29 i el 31 d'octubre de 2026.
 - Hi va haver dues línies de treball paral·leles, que la 0.7.0 ajunta:
   - Una «0.6» del 31/10/2026: tecles d'esborrar, imatges de la web o pròpies (apartat 9) i verbs auxiliars sense «?» (apartat 4).
@@ -10,6 +10,7 @@ Estat actual: **versió 0.9.0** (3 de novembre de 2026). El número de versió s
 - La 0.7.0 hi afegeix les veus descarregables (apartat 12), la selecció sense requadre de línies discontínues (apartat 10) i el doble clic que editava una altra paraula.
 - La 0.8.0 hi afegeix els sons de les lletres gravats, «Lletrejar» i el bloqueig de pantalla (apartats 13 i 14), triats de les propostes de `06_ANALISI_LECAA_DOCS.md`.
 - La 0.9.0 hi afegeix els colors d'AREMI, el logo nou i la pantalla d'inici (apartat 15).
+- La 0.9.1: el panell de la dreta ja no s'obre en esborrar (apartat 2) i pictogrames automàtics a totes les paraules menys les gramaticals (apartat 4).
 - Totes les proves d'acceptació (`tests/run.js`) passen amb un ARASAAC, un Wikimedia Commons i una veu simulats. La cerca d'ARASAAC s'ha verificat amb el servei real; l'aplicació sencera encara no s'ha provat a l'aula amb els serveis reals ni amb les veus reals.
 
 ## 1. Distribució
@@ -29,6 +30,8 @@ Estat actual: **versió 0.9.0** (3 de novembre de 2026). El número de versió s
   - Si el text es buida amb doble clic o amb «Editar text», el pictograma es conserva igual que abans (regla 1).
   - **Afegit a la 0.6.1 / 0.7.0:** si es **manté la tecla premuda**, el retrocés s'atura quan una paraula amb pictograma queda buida (així no es perd el pictograma per anar massa lluny); cal tornar a prémer la tecla per treure-la, i **Ctrl+Z** recupera la paraula sencera. Les paraules sense pictograma s'esborren seguit.
   - Una paraula **sense pictograma** que es buida amb doble clic o «Editar text» desapareix amb un retrocés més: ja no es queda el cursor encallat dins un requadre buit.
+  - **El panell de la dreta no s'obre mentre s'esborra** (error greu corregit a la 0.9.1, a petició de la mestra: «només s'hauria d'obrir quan tu decideixes»). En entrar esborrant a la paraula anterior, ja no se selecciona. El panell només s'obre fent clic en una paraula.
+  - **Després d'esborrar, es continua escrivint** (0.9.1): si s'esborren lletres d'una paraula i es torna a escriure, l'espai, un signe de puntuació, el Tab o el Retorn acaben aquella paraula (amb el mateix pictograma, regla 1) i l'escriptura continua al darrere amb una paraula nova. Abans, l'espai quedava dins la mateixa paraula.
   - **Doble clic** (corregit a la 0.7.0): si el primer clic obria el panell i el full es desplaçava, el doble clic editava una altra paraula. Ara s'edita sempre la paraula del primer clic.
 - **Botó «Amb text»:** mostra o amaga la paraula escrita sobre tots els pictogrames.
 
@@ -40,12 +43,15 @@ Ordre de cerca, a `findPictos()`:
 - Primer van els pictogrames on la paraula és la paraula clau principal: «la» mostra l'article abans que «ella».
 - Paraules com «HE» o «vaig» no reben cap pictograma fals: queden només amb text.
 
-## 4. Pictogrames automàtics només a paraules amb contingut (decisió de la mestra)
-- Reben pictograma automàtic: **substantius, verbs i adjectius** (tipus ARASAAC 2, 3 i 4).
-- Queden només amb text: **articles, preposicions, conjuncions, pronoms personals, noms propis i expressions socials**. La mestra els pot posar pictograma després, amb un clic.
+## 4. Pictogrames automàtics a totes les paraules menys les gramaticals (decisió de la mestra, 3/11/2026)
+- **Canvi del 3/11/2026:** «només volem que no s'escriguin automàticament articles, preposicions, nexes, conjuncions…; la resta de paraules, totes».
+  - **Sense pictograma automàtic**, només text: articles, preposicions, conjuncions i nexes (*i, o, però, que, si, perquè, doncs*…), pronoms febles (*em, et, es, ens, us, li, hi, ho*; en castellà *me, te, se, nos, os, le, les, lo*) i verbs auxiliars (*he, ha, vaig, van*…). La llista és `FUNC` a `src/app.html`.
+  - **Amb pictograma automàtic:** totes les altres paraules, també els **pronoms personals** (*jo, tu*), els **noms propis** i les **expressions** (*hola, gràcies, sí, adéu*).
+  - La comparació respecta els accents: «es» (pronom) va sense pictograma i «és» (verb) en porta; «si» (conjunció) va sense i «sí» en porta.
+  - Abans (fins a la 0.9.0) només en portaven els substantius, els verbs i els adjectius.
+- Les paraules gramaticals **no mostren el «?»** encara que ARASAAC no en tingui. El «?» queda per a les altres paraules que no tenen pictograma.
 - El panell mostra el pictograma que tindrien, esvaït, amb el botó **«Afegir pictograma»**.
 - **Verbs auxiliars (31/10/2026, a petició de la mestra):** *he, has, ha, hem, heu, han, havia…, vaig, vam, van…* (i en castellà *he, has, ha, hemos, han, había…*) també queden només amb text. «vas» no hi és, perquè també és un nom.
-- Aquestes paraules (articles, preposicions, pronoms i auxiliars) **ja no mostren el «?»** encara que ARASAAC no en tingui cap pictograma. El «?» queda només per a les paraules amb contingut que no tenen pictograma. Amb «Afegir pictograma» es torna a cercar.
 - Flags del bloc: `picOff` (sense pictograma), `autoOff` (tret automàticament), `userPic` (la mestra ha decidit, i la cerca no ho tornarà a canviar).
 
 ## 5. Separació entre paraules

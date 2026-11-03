@@ -483,7 +483,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.9.0';
+const VERSION = '0.9.1';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const FACE_CSS = {normal:['400','normal'], bold:['700','normal'], italic:['400','italic'], bolditalic:['700','italic']};
@@ -504,7 +504,7 @@ const I18N = {
     head_space:'Viatge a l\'espai', head_cork:'Suro amb notes', head_flags:'Festa amb banderoles', head_garden:'Jardí', head_none:'Sense capçalera',
     wordSec:'Paraula dins el pictograma', capNone:'Sense paraula', capTop:'A dalt', capBottom:'A baix', capUpper:'MAJÚSCULES', capLower:'minúscules',
     capTextLabel:'Paraula que surt dins el pictograma (la frase no canvia)',
-    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula sense pictograma automàtic (article, preposició, conjunció, pronom, verb auxiliar com «ha» o «vaig», nom propi o expressió). Pots afegir-n\'hi un.',
+    applyWordAll:'Aplicar a tot el document', addPic:'Afegir pictograma', st_autooff:'Paraula gramatical sense pictograma automàtic (article, preposició, conjunció o nexe, pronom feble o verb auxiliar com «ha» o «vaig»). Pots afegir-n\'hi un.',
     next:'Següent pictograma', nextTip:'Canvia la imatge del bloc seleccionat per la següent alternativa',
     nextNoSel:'Selecciona una paraula per canviar-ne el pictograma', nextOne:'Aquesta paraula només té una alternativa',
     alts:'Veure alternatives', withText:'Amb text', textTip:'Mostrar o amagar la paraula escrita sobre els pictogrames',
@@ -598,7 +598,7 @@ const I18N = {
     head_space:'Viaje al espacio', head_cork:'Corcho con notas', head_flags:'Fiesta con banderines', head_garden:'Jardín', head_none:'Sin cabecera',
     wordSec:'Palabra dentro del pictograma', capNone:'Sin palabra', capTop:'Arriba', capBottom:'Abajo', capUpper:'MAYÚSCULAS', capLower:'minúsculas',
     capTextLabel:'Palabra que aparece dentro del pictograma (la frase no cambia)',
-    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra sin pictograma automático (artículo, preposición, conjunción, pronombre, verbo auxiliar como «ha», nombre propio o expresión). Puedes añadirle uno.',
+    applyWordAll:'Aplicar a todo el documento', addPic:'Añadir pictograma', st_autooff:'Palabra gramatical sin pictograma automático (artículo, preposición, conjunción o nexo, pronombre átono o verbo auxiliar como «ha»). Puedes añadirle uno.',
     next:'Siguiente pictograma', nextTip:'Cambia la imagen del bloque seleccionado por la siguiente alternativa',
     nextNoSel:'Selecciona una palabra para cambiar su pictograma', nextOne:'Esta palabra solo tiene una alternativa',
     alts:'Ver alternativas', withText:'Con texto', textTip:'Mostrar u ocultar la palabra escrita sobre los pictogramas',
@@ -694,15 +694,22 @@ const PRON = {
   ca:new Set('jo tu ell ella nosaltres vosaltres ells elles vostè vostès mi nosaltres'.split(' ')),
   es:new Set('yo tú él ella nosotros nosotras vosotros vosotras ellos ellas usted ustedes mí ti'.split(' '))
 };
+// Paraules gramaticals: articles, preposicions, conjuncions i nexes, pronoms febles i verbs auxiliars.
+// Són les úniques que NO porten pictograma automàtic (decisió de la mestra, 3/11/2026). Es comparen amb accents: «és» no és «es», «sí» no és «si».
 const FUNC = {
-  ca:new Set(("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap" +
+  ca:new Set(("el la els les l' un una uns unes de del dels d' a al als en amb per pel pels i o però que com si ni sense sobre sota entre fins des cap contra segons durant vers" +
+    " sinó doncs perquè" +
+    // pronoms febles
+    " em et es ens us li hi ho" +
     // verbs auxiliars (haver i passat perifràstic): només text, sense «?» ("vas" no hi és perquè també és un nom)
     " he has ha hem heu han havia havies havíem havíeu havien hagi hagis hàgim hàgiu hagin hauria vaig vam vau van vàrem vàreu varen").split(' ')),
-  es:new Set(('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde' +
+  es:new Set(('el la los las un una unos unas de del a al en con por para y e o u pero que como si ni sin sobre bajo entre hacia hasta desde ante contra durante mediante según tras' +
+    ' sino pues porque aunque' +
+    // pronombres átonos
+    ' me te se nos os le les lo' +
     // verbos auxiliares (haber): solo texto, sin «?»
     ' he has ha hemos habéis han había habías habíamos habíais habían haya hayas hayamos hayáis hayan hube hubo habría').split(' '))
 };
-const AUTO_PIC = new Set(['substantius','verbs','descriptius']);
 const SIZES = [12,14,16,18,20,22,24,28,32,36,40,48,56,64,72];
 
 /* ================= State ================= */
@@ -816,16 +823,13 @@ async function findPictos(q, lang){
   }
   return {list:[], used:q};
 }
-function isFuncWord(used, lang, text){
-  const w = norm(stripPunct(text)), q = norm(used), P = PRON[lang] || PRON.ca, F = FUNC[lang] || FUNC.ca;
-  return [...P, ...F].some(x => { const n = norm(x); return n === w || n === q; });
-}
+// Paraula gramatical? Es mira la paraula escrita (en minúscules i amb els accents), no la paraula de cerca.
+function isFuncWord(used, lang, text){ return (FUNC[lang] || FUNC.ca).has(lower(stripPunct(text), lang)); }
 function categorize(p, used, lang, text){
-  const w = norm(stripPunct(text)), q = norm(used);
+  const w = lower(stripPunct(text), lang), q = lower(used, lang);
   const P = PRON[lang] || PRON.ca, F = FUNC[lang] || FUNC.ca;
-  const nP = new Set([...P].map(norm)), nF = new Set([...F].map(norm));
-  if(nP.has(w) || nP.has(q)) return 'persones';
-  if(nF.has(w) || nF.has(q)) return 'misc';
+  if(P.has(w) || P.has(q)) return 'persones';
+  if(F.has(w)) return 'misc';
   if(!p) return 'misc';
   const k = p.kw.find(k => norm(k[0]) === q) || p.kw.find(k => norm(k[0]) === w) || p.kw[0];
   return TYPE_CAT[k && k[1]] || 'misc';
@@ -843,9 +847,10 @@ async function startSearch(b, q){
       usedQuery:used, approx: norm(used) !== norm(q)});
     const autoCat = categorize(list[0], used, lang, cur.text);
     if(!cur.catManual) cur.cat = autoCat;
-    // Només substantius, verbs i adjectius/adverbis porten pictograma automàtic; la resta es pot afegir després
-    // Articles, preposicions, pronoms, auxiliars…: només text, també si ARASAAC no en té cap pictograma (sense «?»)
-    if(!cur.userPic){ const fw = isFuncWord(used, lang, cur.text); cur.picOff = (!!list.length || fw) && !AUTO_PIC.has(autoCat); cur.autoOff = cur.picOff; }
+    // Totes les paraules porten pictograma automàtic (també pronoms personals, noms propis i expressions com «hola» o «gràcies»),
+    // menys les gramaticals: articles, preposicions, conjuncions i nexes, pronoms febles i auxiliars. Aquestes queden només amb text,
+    // sense «?» encara que ARASAAC no en tingui, i se'ls pot afegir després amb «Afegir pictograma».
+    if(!cur.userPic){ cur.picOff = isFuncWord(used, lang, cur.text); cur.autoOff = cur.picOff; }
   }catch(e){
     const cur = find(b.id); if(!cur || cur.searchSeq !== seq) return;
     cur.status = 'error'; noteNetError();
@@ -1258,6 +1263,7 @@ function onEdInput(e){
   if(SP.reading) stopSpeech();
   if(typed) fbLetter(typed);
   if(S.editor.mode === 'edit'){
+    if(S.editor.flow && typed && SEP.test(typed) && v.endsWith(typed) && edInput.selectionStart === v.length){ flowFinish(b, /\s/.test(typed) ? v.slice(0, -1) : v, typed); return; }
     if(!S.editPushed){ pushUndo(); S.editPushed = true; }
     b.text = v; paintBlock(b, idxOf(b.id)); sizeEditor(); schedulePaginate(); scheduleSave(); updatePanel(true); updateToolbar(); return;
   }
@@ -1275,6 +1281,7 @@ function onEdKey(e){
   if(mod && /^[zZyY]$/.test(e.key)){ e.preventDefault(); e.stopPropagation(); (e.key.toLowerCase() === 'y' || e.shiftKey) ? redo() : undo(); return; }
   if(mod) return;
   if(S.editor.mode === 'edit'){
+    if(S.editor.flow && (e.key === 'Enter' || e.key === 'Tab')){ e.preventDefault(); flowFinish(find(S.editor.id), edInput.value, e.key === 'Enter' ? '\n' : ' '); return; }
     if(e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab'){ e.preventDefault(); const id = S.editor.id; commitEditor(); select(id); if(e.key === 'Enter') fbWord(id); return; }
     // Retrocés o Supr amb la paraula ja buida: el bloc desapareix i el cursor continua en aquell lloc.
     // Es conserva el pictograma (regla 1) si el text s'ha buidat amb doble clic o «Editar text», o si es manté la tecla premuda.
@@ -1296,7 +1303,7 @@ function onEdKey(e){
     if(prev.kind === 'br'){ pushUndo(); doc.blocks.splice(i-1, 1); renderAll(); focusEditor(); scheduleSave(); return; }
     // Retrocés sobre la paraula anterior: s'editen les lletres, el pictograma es conserva.
     doc.blocks.splice(i, 1); S.editor = null;
-    startEdit(prev, true); S.editor.flow = true;
+    startEdit(prev, true, true);
     if(prev.text){ pushUndo(); S.editPushed = true; prev.text = Array.from(prev.text).slice(0, -1).join(''); edInput.value = prev.text; paintBlock(prev, idxOf(prev.id)); sizeEditor(); schedulePaginate(); updatePanel(true); scheduleSave(); }
     return;
   }
@@ -1308,6 +1315,17 @@ function onEdKey(e){
   }
 }
 const hasPicto = b => b.status === 'ok' && b.pictoId != null && !b.picOff && !b.noSearch;
+// Acaba la paraula que s'estava corregint després d'esborrar i continua l'escriptura just al darrere (com en un processador de textos).
+// El pictograma es conserva (regla 1); si la paraula ha quedat buida i no té pictograma, desapareix.
+function flowFinish(b, text, sep){
+  if(!b) return;
+  if(!S.editPushed){ pushUndo(); S.editPushed = true; }
+  b.text = text;
+  if(!text.trim() && !hasPicto(b)){ S.editPushed = true; removeEmptyWord(b); }
+  else { const at = idxOf(b.id) + 1; commitEditor(true); startCompose(at); }
+  if(sep === '\n'){ const c = S.editor && find(S.editor.id); if(c) fbAfter('\n', applyComposeText(c, '\n', '')); }
+  else if(text.trim()) fbAfter(sep, [b]);
+}
 // Treu el bloc que s'està editant (ja sense text) i torna a l'escriptura contínua en el mateix lloc
 function removeEmptyWord(b){
   const i = idxOf(b.id); if(i < 0) return;
@@ -1327,9 +1345,10 @@ function pasteText(text){
   const b = find(S.editor.id);
   applyComposeText(b, edInput.value + text.replace(/\s+$/,'') + ' ', '');
 }
-function startEdit(b, keepNoPush){
+function startEdit(b, keepNoPush, flow){
   commitEditor(true);
-  S.selectedId = b.id; S.editor = {id:b.id, mode:'edit'}; S.editPushed = false;
+  // «flow»: s'hi ha entrat esborrant mentre s'escriu. No se selecciona: el panell de la dreta només s'obre quan la mestra fa clic en una paraula.
+  S.selectedId = flow ? null : b.id; S.editor = {id:b.id, mode:'edit', flow:!!flow}; S.editPushed = false;
   edInput.value = b.text;
   renderAll(); focusEditor();
 }

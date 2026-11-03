@@ -36,7 +36,7 @@ Documentació a `documentacio/`, en aquest ordre:
 1. **Text i pictograma són independents.** Editar el text d'un bloc mai elimina, substitueix ni torna a cercar el pictograma (exemple obligatori: escriure «menjar», esborrar-ho i escriure «HE MENJAT» conserva el mateix pictograma).
 2. **La frase escrita no canvia mai per opcions de visualització.** La «paraula dins el pictograma» és un text a part, dins el requadre.
 3. **Pantalla, PDF i impressió han de coincidir**: mateixes mides en mm, marges de 15 mm, mateixos salts de pàgina. El PDF es dibuixa llegint les posicions reals del DOM.
-4. **Pictogrames automàtics només per a substantius, verbs i adjectius** (tipus de paraula ARASAAC 2, 3 i 4). Articles, preposicions, conjuncions, pronoms, noms propis i expressions socials queden només amb text, amb el botó «Afegir pictograma».
+4. **Pictogrames automàtics a totes les paraules menys les gramaticals** (decisió de la mestra, 3/11/2026): articles, preposicions, conjuncions i nexes, pronoms febles i verbs auxiliars queden només amb text, amb el botó «Afegir pictograma» (llista `FUNC` de `src/app.html`, comparada amb accents: «és» no és «es»). Els pronoms personals, els noms propis i les expressions («hola», «gràcies», «sí») sí que en porten.
 5. **ARASAAC** (verificat amb el servei real el 30/10/2026):
    - Cerca exacta: `https://api.arasaac.org/api/pictograms/{ca|es}/bestsearch/{paraula}` (404 si no hi ha resultats).
    - Cerca àmplia: `.../search/{paraula}`. És molt sorollosa («la» → 476 resultats), cal filtrar per paraula clau igual o gairebé igual.
