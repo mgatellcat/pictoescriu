@@ -152,7 +152,8 @@ body.panel-open .workspace{right:var(--panel-w)}
 .today{flex:none;font-size:8pt;height:5.5mm;padding:0 2mm;margin-bottom:0.6mm;border:1px solid var(--accent-line);border-radius:5mm;background:#fff;color:var(--accent);cursor:pointer}
 
 /* Blocks */
-.blk{box-sizing:content-box;padding:0 max(1.2mm, calc(var(--fs, 20pt) * 0.25));display:flex;flex-direction:column;align-items:center;min-width:var(--pic);max-width:calc(var(--pic) * 2.3);position:relative;border-radius:2mm}
+.blk{box-sizing:content-box;padding:0 max(1.2mm, calc(var(--fs, 20pt) * 0.25));display:flex;flex-direction:column;align-items:center;min-width:min-content;max-width:calc(var(--pic) * 2.3);position:relative;border-radius:2mm}
+/* min-content = el més ample entre el pictograma i la paraula més llarga: una paraula no es parteix mai en dues línies */
 .blk.empty{min-width:5mm}
 .blk.empty .pic{width:0;padding:0;border:0}
 .blk.br{flex-basis:100%;min-width:0;max-width:none;height:0;padding:0}
@@ -160,7 +161,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 /* Paraula seleccionada: només un fons blau suau, sense cap requadre de línies. Mentre s'escriu o s'esborra, res: només el cursor. */
 .blk.sel{background:rgba(36,83,184,.10);box-shadow:0 0 0 1.2mm rgba(36,83,184,.10)}
 .blk.sel.editing{background:none;box-shadow:none}
-.lbl{flex:none;text-align:center;line-height:1.2;font-synthesis:none;overflow-wrap:break-word;max-width:100%;color:#000;margin-bottom:1.4mm;white-space:pre-wrap;cursor:default}
+.lbl{flex:none;text-align:center;line-height:1.2;font-synthesis:none;overflow-wrap:normal;max-width:100%;color:#000;margin-bottom:1.4mm;white-space:pre-wrap;cursor:default}
 .lbl:empty::before{content:"\00a0"}
 .blk.composing .lbl,.blk.editing .lbl{border-bottom:0.5mm solid var(--accent)}
 .notext .blk:not(.editing):not(.composing) .lbl.hasp{display:none}
@@ -170,7 +171,7 @@ body.panel-open .workspace{right:var(--panel-w)}
 .pic{flex:none;width:var(--pic);height:var(--pic);border:1.2mm solid transparent;padding:1mm;border-radius:1.8mm;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
 .pic img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none}
 .pic.spacer{visibility:hidden}
-.blk.textonly{min-width:0}
+.blk.textonly{min-width:min-content}
 /* Opció «Picto a sobre»: el pictograma damunt de la paraula (la frase queda a la línia de sota) */
 .pic-above .blk .pic{order:-1}
 .pic-above .blk .lbl{margin-bottom:0;margin-top:1.4mm}
@@ -570,7 +571,7 @@ body.is-full #bFull{display:none}
 </script>
 <script>
 'use strict';
-const VERSION = '0.11.1';
+const VERSION = '0.11.2';
 const ICONS = /*__ICONS__*/{};
 const FONTS = /*__FONTS_JSON__*/{};
 const WORDS = /*__WORDS__*/{};   // paraules freqüents per a la predicció (wordfreq, CC BY-SA 4.0)

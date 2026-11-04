@@ -355,7 +355,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.11\.1/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.11\.2/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -746,7 +746,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.1/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.2/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -872,6 +872,16 @@ let offline = false; const hits = [];
   const fitsL = await lp.evaluate(() => { const r = document.querySelector('#vkb').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top > document.querySelector('#topbar').offsetHeight; });
   ok('PORTÀTIL «Gran» és més ample que «Mitjana» i ocupa gairebé tota l\'amplada', wL > wM + 100 && wL > 1366 * .9 && fitsL, wM + ' → ' + wL);
   await lp.close();
+
+  // ================= Paraules llargues amb lletra gran: no es parteixen =================
+  const wp = await ctx.newPage(); wp.on('pageerror', e => errors.push('paraula llarga ' + e));
+  await wp.goto('file://' + APP); await wp.evaluate(() => localStorage.clear()); await wp.reload(); await wp.waitForTimeout(2600);
+  await wp.click('.flow'); await wp.keyboard.type('GELAT CARAMEL XOCOLATA ', {delay:20}); await wp.keyboard.press('Escape'); await wp.waitForTimeout(600);
+  await wp.evaluate(() => { S.selectedId = null; setFmt('size', 48); }); await wp.waitForTimeout(400);
+  const WL = await wp.evaluate(() => [...document.querySelectorAll('.blk')].filter(e => /^(GELAT|CARAMEL|XOCOLATA)$/.test(e.querySelector('.lbl').textContent)).map(e => { const l = e.querySelector('.lbl'), lh = parseFloat(getComputedStyle(l).lineHeight) || parseFloat(getComputedStyle(l).fontSize) * 1.2; return {t:l.textContent, lines:Math.round(l.getBoundingClientRect().height / lh), fits:l.scrollWidth <= e.clientWidth + 1, pic:Math.round(e.querySelector('.pic').getBoundingClientRect().top)}; }));
+  ok('PARAULA Una paraula llarga amb lletra gran no es parteix en dues línies', WL.length === 3 && WL.every(w => w.lines === 1 && w.fits), JSON.stringify(WL));
+  ok('PARAULA I els pictogrames queden alineats', new Set(WL.filter(w => w.t !== 'XOCOLATA').map(w => w.pic)).size === 1, JSON.stringify(WL));
+  await wp.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

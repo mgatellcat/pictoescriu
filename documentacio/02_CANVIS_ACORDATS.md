@@ -286,3 +286,6 @@ La mestra va detectar dos problemes:
   - l'amplada i l'alçada de les tecles van per separat;
   - **«Gran» ocupa tota l'amplada de la pantalla** i pot arribar al 60 % de l'alçada;
   - si l'alçada no dona per a més, les tecles es fan més baixes però continuen sent amples.
+
+## 22. Les paraules no es parteixen mai (versió 0.11.2, 4/11/2026)
+La mestra va veure «CARAME / L» escrivint amb lletra gran en majúscules: la paraula es partia en dues línies i el pictograma pujava. Cada bloc tenia una amplada màxima (2,3 vegades el pictograma) i, si la paraula hi passava, es tallava per on fos. Ara **una paraula sola no es parteix mai**: el bloc s'eixampla tant com calgui. Les expressions de diverses paraules («HE MENJAT») continuen podent passar a dues línies, però només entre paraules.
