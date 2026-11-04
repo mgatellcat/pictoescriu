@@ -355,7 +355,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.11\.0/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.11\.1/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -746,7 +746,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.0/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.1/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -857,6 +857,21 @@ let offline = false; const hits = [];
   await tp.click('#vkLock');
   ok('PREDICCIÓ Amb el cadenat, el configurador s\'amaga', await tp.evaluate(() => getComputedStyle(document.querySelector('#vkType')).display === 'none' && getComputedStyle(document.querySelector('#vkPics')).display === 'none'));
   await tp.close();
+
+  // ================= Portàtil de 1366×768: barra de dalt quieta i teclat Gran més ample =================
+  const lp = await browser.newPage({viewport:{width:1366, height:768}}); lp.on('pageerror', e => errors.push('portàtil ' + e));
+  await lp.route(/api\.arasaac\.org/, async r => { await new Promise(z => setTimeout(z, 250)); r.fulfill({status:404, body:'[]'}); });
+  await lp.goto('file://' + APP); await lp.evaluate(() => localStorage.clear()); await lp.reload(); await lp.waitForTimeout(2600);
+  await lp.click('#bKbd'); await lp.click('#vkType [data-v="pred"]');
+  const barPos = () => lp.evaluate(() => ['#bPdf', '#bPrint', '#sLang'].map(q => { const r = document.querySelector(q).getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top); }).join(' ') + ' h' + document.querySelector('#topbar').offsetHeight);
+  const bp0 = await barPos(); let moved = '';
+  for(const k of ['l', 'a', ' ', 'n', 'e', 'n', 'a', ' ']){ await lp.click(`.vk[data-k="${k}"]`); for(let i = 0; i < 3; i++){ await lp.waitForTimeout(90); const b = await barPos(); if(b !== bp0) moved = b; } }
+  ok('PORTÀTIL La barra de dalt no es mou mentre s\'escriu (avís «Cercant…»)', !moved, bp0 + ' → ' + moved);
+  const kbW = () => lp.evaluate(() => Math.round(document.querySelector('#vkb').getBoundingClientRect().width));
+  await lp.click('#vkSize [data-v="m"]'); const wM = await kbW(); await lp.click('#vkSize [data-v="l"]'); const wL = await kbW();
+  const fitsL = await lp.evaluate(() => { const r = document.querySelector('#vkb').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top > document.querySelector('#topbar').offsetHeight; });
+  ok('PORTÀTIL «Gran» és més ample que «Mitjana» i ocupa gairebé tota l\'amplada', wL > wM + 100 && wL > 1366 * .9 && fitsL, wM + ' → ' + wL);
+  await lp.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 

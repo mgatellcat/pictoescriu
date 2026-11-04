@@ -278,3 +278,11 @@ Petició de la mestra: un segon teclat amb caselles de predicció de paraules, s
 - **Pictos a les caselles:** la imatge recordada per a aquella paraula o el primer pictograma d'ARASAAC. Les paraules gramaticals no en porten. Només s'envia a ARASAAC la paraula proposada.
 - **Aspecte:** fons blau d'AREMI, tecles clares amb ombra, esborrar en vermell suau, Retorn en verd suau, Llegir en taronja, tecles de funció en gris blavós i caselles blanques.
 - **Pendent / idees:** predicció de la paraula següent (segons l'anterior), i que la predicció es pugui triar amb commutador o pas per tecles.
+
+## 21. Barra de dalt quieta i teclat Gran més ample (versió 0.11.1, 3/11/2026)
+La mestra va detectar dos problemes:
+- **La barra de dalt es movia mentre s'escrivia.** «Exportar PDF» i «Imprimir» saltaven de lloc. La causa era l'avís «Cercant pictogrames…», que apareixia un moment en acabar cada paraula i empenyia els botons. Ara és només una rodeta, amb el lloc sempre reservat, i el text surt si s'hi posa el ratolí a sobre.
+- **«Gran» no feia res en pantalles baixes** (portàtils de 1366×768). El teclat no pot passar d'aproximadament la meitat de l'alçada, i com que les tecles eren quadrades també quedaven estretes. Ara:
+  - l'amplada i l'alçada de les tecles van per separat;
+  - **«Gran» ocupa tota l'amplada de la pantalla** i pot arribar al 60 % de l'alçada;
+  - si l'alçada no dona per a més, les tecles es fan més baixes però continuen sent amples.
