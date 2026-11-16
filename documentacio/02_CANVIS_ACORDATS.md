@@ -289,3 +289,22 @@ La mestra va detectar dos problemes:
 
 ## 22. Les paraules no es parteixen mai (versió 0.11.2, 4/11/2026)
 La mestra va veure «CARAME / L» escrivint amb lletra gran en majúscules: la paraula es partia en dues línies i el pictograma pujava. Cada bloc tenia una amplada màxima (2,3 vegades el pictograma) i, si la paraula hi passava, es tallava per on fos. Ara **una paraula sola no es parteix mai**: el bloc s'eixampla tant com calgui. Les expressions de diverses paraules («HE MENJAT») continuen podent passar a dues línies, però només entre paraules.
+
+## 23. Desar triant carpeta i nom, imatges de l'ordinador i sense «?» (versió 0.12.0, 16/11/2026)
+Peticions de la mestra, acceptades tal com es van proposar:
+- **Desar com al Word:**
+  - **Desar** (Ctrl+S): la primera vegada s'obre la finestra de l'ordinador per triar la carpeta i el nom. Les vegades següents, es desa al mateix fitxer sense preguntar.
+  - **Desar com a…** (botó nou, Ctrl+Maj+S): sempre pregunta la carpeta i el nom, i proposa el nom actual.
+  - Un projecte obert amb **Obrir** es desa sobre el mateix fitxer. **Nou** torna a començar sense fitxer.
+  - **Exportar PDF** també obre la finestra per triar on es desa, amb el nom del projecte.
+  - Funciona amb Chrome i Edge d'ordinador. On el navegador no ho permet (mòbils, tauletes i altres navegadors), «Desar» demana el nom del fitxer i el desa a la carpeta de baixades; el PDF es baixa directament.
+  - Ctrl+S, Ctrl+O i Ctrl+P ara també funcionen mentre s'escriu.
+- **Imatges de l'ordinador** (botó «Imatge», arrossegant la imatge damunt del full o enganxant-la amb Ctrl+V):
+  - La imatge va en una **línia pròpia**, al lloc on hi ha el cursor. El text d'abans queda a sobre, i el de després, a sota. Les frases funcionen com sempre, amb pictogrames.
+  - En tocar-la surten unes **cantonades per estirar-la** i una barra amb les mides **Petita** (25 % de l'amplada del full), **Mitjana** (45 %, per defecte), **Gran** (70 %) i **Amplada del full**; la posició **a l'esquerra, al centre o a la dreta**; i **Treure la imatge**.
+  - Mai és més ampla que el full ni més alta que una pàgina. Si no cap a la pàgina, passa a la següent.
+  - Retrocés just després d'una imatge primer la selecciona; un segon Retrocés (o Supr) l'esborra. Es pot desfer.
+  - Es guarda dins del projecte, reduïda a 1600 px com a màxim (en PNG si té transparència, si no en JPEG). Surt igual a la pantalla, al PDF i a la impressió.
+  - Amb la pantalla bloquejada no es pot inserir, moure ni esborrar.
+  - **Pendent, per a una segona fase:** text al costat de la imatge o escrit per damunt (com el «text al voltant» del Word).
+- **Sense interrogant:** les paraules que no tenen pictograma ja no mostren el cercle amb «?». Queden només amb text, com les paraules gramaticals, i es pot afegir un pictograma tocant-les («Afegir pictograma»).

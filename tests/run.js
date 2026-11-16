@@ -73,7 +73,8 @@ let offline = false; const hits = [];
     return route.fulfill({status:200, headers:{'content-type':'application/json','access-control-allow-origin':'*'}, body:JSON.stringify(pages ? {query:{pages}} : {batchcomplete:''})});
   });
   await ctx.route(/upload\.wikimedia\.org/, route => route.fulfill({status:200, headers:{'content-type':'image/png','access-control-allow-origin':'*'}, body:fs.readFileSync(path.join(FIX, '4001.png'))}));
-  const page = await ctx.newPage();
+  await ctx.addInitScript(() => { window.showSaveFilePicker = undefined; window.showOpenFilePicker = undefined; });
+  const page = await ctx.newPage(); page.on('dialog', d => d.accept(d.defaultValue()));
   const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
   let fails = 0; const ok = (name, cond, info='') => { if(!cond) fails++; console.log(`${cond?'PASS':'FAIL'}  ${name}${info?'  ['+info+']':''}`); };
   await page.goto('file://' + APP);
@@ -301,7 +302,7 @@ let offline = false; const hits = [];
   const aux = await page.evaluate(() => doc.blocks.filter(b => !b.composing && b.kind==='word').map(b => b.text + ':' + (document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores') ? '?' : 'text')).join(' '));
   ok('Auxiliars («ha», «vaig») i articles sense resultats: només text, sense «?»', aux==='HA:text vaig:text els:text xyzzy:?', aux);
   await clickBlock('HA'); await page.click('#pTogglePic'); await idle();
-  ok('Auxiliar: «Afegir pictograma» torna a cercar i mostra el «?» si no n\'hi ha', await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='HA'); return !b.picOff && document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores'); }));
+  ok('Auxiliar: «Afegir pictograma» torna a cercar i, si no n\'hi ha, queda només el text', await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='HA'); return !b.picOff && document.querySelector(`.blk[data-id="${b.id}"]`).classList.contains('nores'); }));
 
   // Imatges de la web (Wikimedia Commons) i pròpies
   await page.keyboard.press('Escape');
@@ -331,6 +332,7 @@ let offline = false; const hits = [];
   await page.waitForFunction(() => { const b = doc.blocks.find(x => x.text==='visca'); return b.own && b.own.src; });
   ob = await page.evaluate(() => { const b = doc.blocks.find(x => x.text==='visca'); return {from:b.own.from, foot:document.querySelector('.attrib').textContent, off:document.querySelector('#pOwnOff').hidden}; });
   ok('Pròpia: imatge pujada de l\'ordinador', ob.from==='file' && !ob.off, JSON.stringify(ob));
+  ok('Pròpia: no afegeix cap imatge al document', await page.evaluate(() => !doc.blocks.some(b => b.kind === 'img')));
   // Desar i reobrir conserva les imatges
   const [dl3] = await Promise.all([page.waitForEvent('download'), page.click('#bSave')]);
   const projOwn = OUT + '/imatges.pictoescriu.json'; await dl3.saveAs(projOwn);
@@ -355,7 +357,7 @@ let offline = false; const hits = [];
   await page.screenshot({path: OUT + '/s-imatges.png'});
 
   await page.click('#bCredits');
-  ok('La versió surt als crèdits', /versió 0\.11\.2/.test(await page.textContent('.overlay')));
+  ok('La versió surt als crèdits', /versió 0\.12\.0/.test(await page.textContent('.overlay')));
   await page.click('.overlay .btn.primary');
 
   // ================= Esborrar (Retrocés i Supr) =================
@@ -746,7 +748,7 @@ let offline = false; const hits = [];
   const pc = await ctx.newPage(); pc.on('pageerror', e => errors.push('colors ' + e));
   await pc.goto('file://' + APP); await pc.waitForTimeout(300);
   let C = await pc.evaluate(() => { const sp = document.querySelector('#splash'); return {on:!!sp && !sp.classList.contains('out') && getComputedStyle(sp).display !== 'none', txt:sp ? sp.textContent : '', logo:!!(sp && sp.querySelector('circle[fill="#EB6B24"]'))}; });
-  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.11\.2/.test(C.txt) && C.logo, JSON.stringify(C));
+  ok('COLORS Pantalla d\'inici amb el logo, el nom i la versió', C.on && /PictoEscriu/.test(C.txt) && /Escriure i llegir amb pictogrames/.test(C.txt) && /versió 0\.12\.0/.test(C.txt) && C.logo, JSON.stringify(C));
   await pc.waitForTimeout(2700);
   C = await pc.evaluate(() => ({splash:!!document.querySelector('#splash'), bar:getComputedStyle(document.querySelector('.topbar .row')).backgroundColor, play:getComputedStyle(document.querySelector('#bPlay')).backgroundColor,
     pdf:getComputedStyle(document.querySelector('#bPdf')).backgroundColor, logo:!!document.querySelector('.brand circle[fill="#EB6B24"]')}));
@@ -882,6 +884,95 @@ let offline = false; const hits = [];
   ok('PARAULA Una paraula llarga amb lletra gran no es parteix en dues línies', WL.length === 3 && WL.every(w => w.lines === 1 && w.fits), JSON.stringify(WL));
   ok('PARAULA I els pictogrames queden alineats', new Set(WL.filter(w => w.t !== 'XOCOLATA').map(w => w.pic)).size === 1, JSON.stringify(WL));
   await wp.close();
+
+  // ================= Desar triant carpeta i nom (finestra de l'ordinador simulada) =================
+  const sv = await ctx.newPage(); sv.on('pageerror', e => errors.push('desar ' + e));
+  await sv.addInitScript(() => {
+    window.__picks = []; window.__files = {}; window.__cancel = false; window.__next = null;
+    const mkH = name => ({name, async createWritable(){ const parts = []; return {async write(b){ parts.push(b); }, async close(){ const bl = new Blob(parts); window.__files[name] = /\.json$/.test(name) ? await bl.text() : bl.size; }}; },
+      async getFile(){ return new File([window.__files[name] || ''], name, {type:'application/json'}); }});
+    window.showSaveFilePicker = async o => { window.__picks.push(o.suggestedName + '|' + Object.keys(o.types[0].accept)[0]); if(window.__cancel) throw new DOMException('cancel', 'AbortError'); const n = window.__next || o.suggestedName; window.__next = null; return mkH(n); };
+    window.showOpenFilePicker = async () => [mkH('conte.pictoescriu.json')];
+  });
+  await sv.goto('file://' + APP); await sv.evaluate(() => localStorage.clear()); await sv.reload(); await sv.waitForTimeout(2600);
+  await sv.click('.flow'); await sv.keyboard.type('hola gat ', {delay:15}); await sv.waitForTimeout(300);
+  await sv.evaluate(() => { window.__next = 'fitxa-gat.pictoescriu.json'; }); await sv.click('#bSave'); await sv.waitForTimeout(400);
+  let SVs = await sv.evaluate(() => ({picks:window.__picks.slice(), files:Object.keys(window.__files), gat:/"gat"/.test(window.__files['fitxa-gat.pictoescriu.json'] || '')}));
+  ok('DESAR La primera vegada s\'obre la finestra per triar la carpeta i el nom', SVs.picks.length === 1 && /\.pictoescriu\.json\|application\/json$/.test(SVs.picks[0]) && SVs.gat, JSON.stringify(SVs));
+  await sv.click('.flow'); await sv.keyboard.type('casa ', {delay:15}); await sv.waitForTimeout(300); await sv.keyboard.press('Control+s'); await sv.waitForTimeout(400);
+  SVs = await sv.evaluate(() => ({picks:window.__picks.length, casa:/"casa"/.test(window.__files['fitxa-gat.pictoescriu.json'])}));
+  ok('DESAR Les vegades següents es desa al mateix fitxer sense preguntar', SVs.picks === 1 && SVs.casa, JSON.stringify(SVs));
+  await sv.evaluate(() => { window.__next = 'copia.pictoescriu.json'; }); await sv.click('#bSaveAs'); await sv.waitForTimeout(400);
+  SVs = await sv.evaluate(() => ({picks:window.__picks.slice(), files:Object.keys(window.__files)}));
+  ok('DESAR «Desar com a…» torna a preguntar i proposa el nom actual', SVs.picks.length === 2 && SVs.picks[1].startsWith('fitxa-gat.pictoescriu.json') && SVs.files.includes('copia.pictoescriu.json'), JSON.stringify(SVs));
+  await sv.evaluate(() => { window.__cancel = true; }); await sv.click('#bSaveAs'); await sv.waitForTimeout(300);
+  ok('DESAR Si es cancel·la, no passa res', await sv.evaluate(() => !document.querySelector('.toast.error') && Object.keys(window.__files).length === 2));
+  await sv.evaluate(() => { window.__cancel = false; window.__files['conte.pictoescriu.json'] = window.__files['copia.pictoescriu.json'].replace('"casa"', '"conte"'); });
+  await sv.click('#bOpen'); await sv.waitForTimeout(600);
+  await sv.click('#bSave'); await sv.waitForTimeout(400);
+  SVs = await sv.evaluate(() => ({picks:window.__picks.length, words:doc.blocks.map(b => b.text).join(' '), conte:/"conte"/.test(window.__files['conte.pictoescriu.json'])}));
+  ok('DESAR Un projecte obert es desa al mateix fitxer', SVs.picks === 3 && /conte/.test(SVs.words) && SVs.conte, JSON.stringify(SVs));
+  await sv.click('#bPdf'); await sv.waitForTimeout(3500);
+  SVs = await sv.evaluate(() => ({picks:window.__picks.slice(-1)[0], size:window.__files['conte.pdf']}));
+  ok('DESAR El PDF també es desa on es tria, amb el nom del projecte', /^conte\.pdf\|application\/pdf$/.test(SVs.picks) && SVs.size > 3000, JSON.stringify(SVs));
+  await sv.close();
+  // Sense la finestra de l'ordinador (mòbils): es demana el nom i es baixa
+  const sm = await ctx.newPage(); sm.on('pageerror', e => errors.push('desar mòbil ' + e)); let askMsg = '';
+  sm.on('dialog', d => { askMsg = d.message(); d.accept('fitxa pau'); });
+  await sm.goto('file://' + APP); await sm.evaluate(() => localStorage.clear()); await sm.reload(); await sm.waitForTimeout(2600);
+  await sm.click('.flow'); await sm.keyboard.type('hola ', {delay:15});
+  const [dlS] = await Promise.all([sm.waitForEvent('download'), sm.click('#bSave')]);
+  ok('DESAR Sense la finestra (mòbils), es demana el nom del fitxer', /Nom del fitxer/.test(askMsg) && dlS.suggestedFilename() === 'fitxa pau.pictoescriu.json', askMsg + ' → ' + dlS.suggestedFilename());
+  await sm.close();
+
+  // ================= Imatges de l'ordinador =================
+  const im = await ctx.newPage(); im.on('pageerror', e => errors.push('imatges ' + e)); im.on('dialog', d => d.accept(d.defaultValue()));
+  await im.goto('file://' + APP); await im.evaluate(() => localStorage.clear()); await im.reload(); await im.waitForTimeout(2600);
+  await im.click('.flow'); await im.keyboard.type('La nena juga ', {delay:15}); await im.waitForTimeout(300);
+  await im.setInputFiles('#docImgIn', path.join(FIX, 'foto.jpg')); await im.waitForTimeout(500);
+  const kinds = () => im.evaluate(() => doc.blocks.filter(b => !b.composing).map(b => b.kind === 'img' ? '[IMG]' : b.kind === 'br' ? '¶' : b.text).join(' '));
+  const imGeo = () => im.evaluate(() => { const b = doc.blocks.find(x => x.kind === 'img'), f = document.querySelector('.imgf').getBoundingClientRect(), fl = document.querySelector('.flow').getBoundingClientRect(), pg = document.querySelector('.page').getBoundingClientRect();
+    return {w:Math.round(b.w), mm:Math.round(f.width * 210 / pg.width), flowMM:Math.round(fl.width * 210 / pg.width), left:Math.round(f.left - fl.left), right:Math.round(fl.right - f.right), align:b.align, sel:document.querySelector('.imgb').classList.contains('isel')}; });
+  let IG = await imGeo();
+  ok('IMATGE S\'insereix on hi ha el cursor, de mida mitjana i seleccionada', (await kinds()) === 'La nena juga [IMG]' && Math.abs(IG.mm - IG.flowMM * .45) <= 2 && IG.sel && Math.abs(IG.left - IG.right) <= 2, (await kinds()) + ' ' + JSON.stringify(IG));
+  await im.keyboard.type('Hola amics ', {delay:15}); await im.waitForTimeout(300);
+  ok('IMATGE El text d\'abans queda a sobre i el de després, a sota', (await kinds()) === 'La nena juga [IMG] Hola amics' && await im.evaluate(() => { const i = document.querySelector('.imgb').getBoundingClientRect(), h = [...document.querySelectorAll('.blk')].find(e => e.textContent === 'Hola').getBoundingClientRect(), l = [...document.querySelectorAll('.blk')].find(e => e.textContent === 'La').getBoundingClientRect(); return l.bottom <= i.top + 1 && h.top >= i.bottom - 1; }), await kinds());
+  await im.click('.imgf img'); await im.click('.ibar [data-a="f"]'); IG = await imGeo();
+  ok('IMATGE «Amplada del full» ocupa tot l\'ample', Math.abs(IG.mm - IG.flowMM) <= 1, JSON.stringify(IG));
+  await im.click('.ibar [data-a="s"]'); await im.click('.ibar [data-a="al"]'); IG = await imGeo();
+  ok('IMATGE Petita i a l\'esquerra', Math.abs(IG.mm - IG.flowMM * .25) <= 2 && IG.left <= 1 && IG.align === 'l', JSON.stringify(IG));
+  await im.click('.ibar [data-a="ar"]'); IG = await imGeo();
+  ok('IMATGE A la dreta', IG.right <= 1 && IG.align === 'r', JSON.stringify(IG));
+  const w0 = IG.w, imHb = await (await im.$('.ih.sw')).boundingBox(); await im.mouse.move(imHb.x + 5, imHb.y + 5); await im.mouse.down(); await im.mouse.move(imHb.x - 120, imHb.y + 5, {steps:6}); await im.mouse.up(); IG = await imGeo();
+  ok('IMATGE Es pot fer més gran estirant una cantonada', IG.w > w0 + 15 && IG.right <= 1, w0 + ' → ' + IG.w);
+  await im.evaluate(() => { const b = doc.blocks.find(x => x.kind === 'img'); b.w = 999; b.nh = b.nw * 4; renderAll(); }); IG = await imGeo();
+  ok('IMATGE Mai més ampla que el full ni més alta que una pàgina', await im.evaluate(() => { const r = document.querySelector('.imgf').getBoundingClientRect(), fl = document.querySelector('.flow').getBoundingClientRect(); return r.height <= fl.height && r.width <= fl.width + 1; }));
+  await im.evaluate(() => { const b = doc.blocks.find(x => x.kind === 'img'); b.nh = 800; b.nw = 1200; b.w = 80; renderAll(); });
+  await im.click('.imgf img'); await im.keyboard.press('Backspace'); await im.waitForTimeout(200);
+  ok('IMATGE Retrocés esborra la imatge seleccionada', (await kinds()) === 'La nena juga Hola amics', await kinds());
+  await im.keyboard.press('Control+z'); await im.waitForTimeout(300);
+  ok('IMATGE Es pot desfer', (await kinds()) === 'La nena juga [IMG] Hola amics', await kinds());
+  // Retrocés just després de la imatge: primer la selecciona
+  await im.click('.blk.imgb', {position:{x:5, y:100}}); await im.waitForTimeout(200); await im.keyboard.press('Backspace'); await im.waitForTimeout(200);
+  ok('IMATGE Retrocés després de la imatge primer la selecciona', await im.evaluate(() => !!S.imgSel && doc.blocks.some(b => b.kind === 'img')));
+  await im.keyboard.press('Escape');
+  // Enganxar (Ctrl+V) i arrossegar
+  const pngB64 = fs.readFileSync(path.join(FIX, 'transparent.png')).toString('base64');
+  await im.evaluate(async b64 => { const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); const dt = new DataTransfer(); dt.items.add(new File([bin], 'enganxada.png', {type:'image/png'})); document.dispatchEvent(new ClipboardEvent('paste', {clipboardData:dt, bubbles:true})); }, pngB64);
+  await im.waitForTimeout(500);
+  ok('IMATGE Es pot enganxar amb Ctrl+V', await im.evaluate(() => doc.blocks.filter(b => b.kind === 'img').length === 2 && /^data:image\/png/.test(doc.blocks.filter(b => b.kind === 'img')[1].src)));
+  await im.evaluate(async b64 => { const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); const dt = new DataTransfer(); dt.items.add(new File([bin], 'arrossegada.png', {type:'image/png'}));
+    const r = document.querySelector('.blk').getBoundingClientRect(); document.querySelector('.blk').dispatchEvent(new DragEvent('drop', {dataTransfer:dt, bubbles:true, cancelable:true, clientX:r.left + 2, clientY:r.top + r.height / 2})); }, pngB64);
+  await im.waitForTimeout(500);
+  ok('IMATGE Es pot arrossegar al full, al lloc on es deixa anar', (await kinds()).startsWith('[IMG] La nena juga [IMG]'), await kinds());
+  ok('IMATGE Es desa dins del projecte', await im.evaluate(() => JSON.stringify(snapshot()).split('"kind":"img"').length - 1 === 3));
+  const [dlI] = await Promise.all([im.waitForEvent('download', {timeout:20000}), im.click('#bPdf')]);
+  const pdfI = OUT + '/imatges-ordinador.pdf'; await dlI.saveAs(pdfI); const pdfTxt = fs.readFileSync(pdfI, 'latin1');
+  ok('IMATGE Surt al PDF', (pdfTxt.match(/\/Subtype \/Image/g) || []).length >= 3, String((pdfTxt.match(/\/Subtype \/Image/g) || []).length));
+  // Paraula sense pictograma: ja no hi surt l'interrogant
+  await im.evaluate(() => startCompose(doc.blocks.length)); await im.keyboard.type('xyzw ', {delay:15}); await im.waitForTimeout(800);
+  ok('INTERROGANT Una paraula sense pictograma no mostra el «?»', await im.evaluate(() => { const e = [...document.querySelectorAll('.blk')].find(x => x.textContent === 'xyzw'); return e && e.classList.contains('nores') && !/\?/.test(e.textContent) && getComputedStyle(e.querySelector('.ph')).visibility !== 'visible'; }));
+  await im.close();
 
   ok('Sense errors de JavaScript', errors.length===0, errors.slice(0,3).join(' | '));
 
